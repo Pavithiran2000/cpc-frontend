@@ -448,10 +448,11 @@ function StockLevelBars({
         Stock Levels
       </h3>
       <div className="space-y-3.5">
-        {balances.map((b) => {
-          const cap = capacityMap[b.product_id]
-          const pct = cap
-            ? Math.min(100, (b.quantity / cap) * 100)
+        {balances.map((b, idx) => {
+          const qty = Number(b.quantity ?? 0)
+          const cap = b.product_id ? Number(capacityMap[b.product_id] ?? 0) : 0
+          const pct = cap > 0
+            ? Math.min(100, (qty / cap) * 100)
             : null
           const barPct  = pct ?? 50
           const barColor =
@@ -462,10 +463,10 @@ function StockLevelBars({
           const isLitre = b.product?.measurement_unit === 'LITRE'
 
           return (
-            <div key={b.id} className="flex items-center gap-3">
+            <div key={b.id ?? idx} className="flex items-center gap-3">
               {/* Name */}
               <span className="w-36 shrink-0 truncate text-xs text-white/55">
-                {b.product?.name ?? b.product_id.slice(0, 8)}
+                {b.product?.name ?? (b.product_id ? b.product_id.slice(0, 8) : 'Unknown')}
               </span>
 
               {/* Bar track */}
@@ -479,7 +480,7 @@ function StockLevelBars({
               {/* Quantity + % */}
               <div className="flex w-36 shrink-0 items-center justify-between">
                 <span className="number text-xs text-white/55">
-                  {isLitre ? formatLitres(b.quantity) : `${b.quantity} units`}
+                  {isLitre ? formatLitres(qty) : `${qty} units`}
                 </span>
                 {pct !== null && (
                   <span
