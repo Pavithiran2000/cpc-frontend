@@ -1,0 +1,244 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/* ─── Tailwind v4: CSS-first design tokens ──────────────────────────────────
+   @theme generates utility classes.
+   Font vars: next/font injects --font-syne / --font-ibm-plex-sans /
+              --font-ibm-plex-mono onto <html>. @theme references them with
+              distinct names to avoid circular custom properties:
+              --font-sans: var(--font-ibm-plex-sans)  ← safe, different name
+              --font-syne is handled in @layer utilities instead.
+   Colours:   shadcn maps --color-primary → var(--primary). We set --primary
+              in :root / .dark to the CPC brand colour. Additional tokens
+              (success, warning, danger, surface, card) are added directly.
+──────────────────────────────────────────────────────────────────────────── */
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  /* shadcn semantic token pass-throughs (kept for shadcn component compat) */
+  --color-background:         var(--background);
+  --color-foreground:         var(--foreground);
+  --color-card:               var(--card);
+  --color-card-foreground:    var(--card-foreground);
+  --color-popover:            var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary:            var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary:          var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted:              var(--muted);
+  --color-muted-foreground:   var(--muted-foreground);
+  --color-accent:             var(--accent);
+  --color-accent-foreground:  var(--accent-foreground);
+  --color-destructive:        var(--destructive);
+  --color-border:             var(--border);
+  --color-input:              var(--input);
+  --color-ring:               var(--ring);
+  --color-sidebar:            var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary:    var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent:     var(--sidebar-accent);
+  --color-sidebar-accent-foreground:  var(--sidebar-accent-foreground);
+  --color-sidebar-border:     var(--sidebar-border);
+  --color-sidebar-ring:       var(--sidebar-ring);
+  --color-chart-1:            var(--chart-1);
+  --color-chart-2:            var(--chart-2);
+  --color-chart-3:            var(--chart-3);
+  --color-chart-4:            var(--chart-4);
+  --color-chart-5:            var(--chart-5);
+
+  /* ── CPC additional colour tokens ── */
+  --color-success:      #2D6A4F;
+  --color-warning:      #E9C46A;
+  --color-danger:       #E63946;
+  --color-primary-dark: #DC2F02;
+  --color-accent-brand: #F48C06;
+  --color-surface-dark: #111114;
+  --color-surface-light: #FFFFFF;
+  --color-card-dark:   #18181C;
+  --color-card-light:  #FEFEFE;
+  --color-border-dark: #2A2A30;
+  --color-border-light: #E4E2DC;
+
+  /* ── Font tokens ──
+     --font-sans / --font-mono reference next/font vars (non-circular).
+     --font-syne would be circular here so it lives in @layer utilities. */
+  --font-sans: var(--font-ibm-plex-sans);
+  --font-mono: var(--font-ibm-plex-mono);
+
+  /* Border radius scale */
+  --radius-sm:  calc(var(--radius) * 0.6);
+  --radius-md:  calc(var(--radius) * 0.8);
+  --radius-lg:  var(--radius);
+  --radius-xl:  calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* ─── Light theme ───────────────────────────────────────────────────────────
+   Override shadcn defaults with CPC palette so bg-primary → #E85D04 etc.  */
+:root {
+  /* CPC brand overrides */
+  --primary:            #E85D04;
+  --primary-foreground: #FFFFFF;
+  --accent:             #F48C06;
+  --accent-foreground:  #FFFFFF;
+  --destructive:        #E63946;
+
+  /* Light surfaces */
+  --background:   #FFFFFF;
+  --foreground:   #0A0A0B;
+  --card:         #FEFEFE;
+  --card-foreground: #0A0A0B;
+  --popover:      #FFFFFF;
+  --popover-foreground: #0A0A0B;
+  --secondary:    #F4F0EB;
+  --secondary-foreground: #111114;
+  --muted:        #F4F0EB;
+  --muted-foreground: #6B6B78;
+  --border:       #E4E2DC;
+  --input:        #E4E2DC;
+  --ring:         #E85D04;
+  --radius:       0.5rem;
+
+  /* Charts — orange/amber palette */
+  --chart-1: #E85D04;
+  --chart-2: #F48C06;
+  --chart-3: #E9C46A;
+  --chart-4: #2D6A4F;
+  --chart-5: #E63946;
+
+  /* Sidebar — always dark */
+  --sidebar:                  #111114;
+  --sidebar-foreground:       rgba(255,255,255,0.80);
+  --sidebar-primary:          #E85D04;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent:           rgba(255,255,255,0.06);
+  --sidebar-accent-foreground: rgba(255,255,255,0.80);
+  --sidebar-border:           rgba(255,255,255,0.06);
+  --sidebar-ring:             #E85D04;
+}
+
+/* ─── Dark theme ────────────────────────────────────────────────────────────
+   Primary CPC mode — Bloomberg-density dark UI.                             */
+.dark {
+  --primary:            #E85D04;
+  --primary-foreground: #FFFFFF;
+  --accent:             #F48C06;
+  --accent-foreground:  #FFFFFF;
+  --destructive:        #E63946;
+
+  --background:   #0A0A0B;
+  --foreground:   rgba(255,255,255,0.90);
+  --card:         #18181C;
+  --card-foreground: rgba(255,255,255,0.90);
+  --popover:      #18181C;
+  --popover-foreground: rgba(255,255,255,0.90);
+  --secondary:    #1E1E23;
+  --secondary-foreground: rgba(255,255,255,0.70);
+  --muted:        #1E1E23;
+  --muted-foreground: rgba(255,255,255,0.40);
+  --border:       #2A2A30;
+  --input:        #2A2A30;
+  --ring:         #E85D04;
+
+  /* Charts */
+  --chart-1: #E85D04;
+  --chart-2: #F48C06;
+  --chart-3: #E9C46A;
+  --chart-4: #2D6A4F;
+  --chart-5: #E63946;
+
+  /* Sidebar — always dark (same in both themes) */
+  --sidebar:                  #111114;
+  --sidebar-foreground:       rgba(255,255,255,0.80);
+  --sidebar-primary:          #E85D04;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent:           rgba(255,255,255,0.06);
+  --sidebar-accent-foreground: rgba(255,255,255,0.80);
+  --sidebar-border:           rgba(255,255,255,0.06);
+  --sidebar-ring:             #E85D04;
+}
+
+/* ─── Base layer ────────────────────────────────────────────────────────────*/
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-ibm-plex-sans), ui-sans-serif, system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-syne), ui-sans-serif, system-ui, sans-serif;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+}
+
+/* ─── Utilities ─────────────────────────────────────────────────────────────*/
+@layer utilities {
+  /* font-syne: Syne display font — not in @theme (avoids circular var ref) */
+  .font-syne {
+    font-family: var(--font-syne), ui-sans-serif, system-ui, sans-serif;
+  }
+
+  /* Numeric display — IBM Plex Mono, tabular, used on every number/amount */
+  .number {
+    font-family: var(--font-ibm-plex-mono), ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+
+  /* Meter / fuel readings — large mono display */
+  .fuel-reading {
+    font-family: var(--font-ibm-plex-mono), ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+    font-size: 1.5rem;
+    letter-spacing: 0.05em;
+    line-height: 1;
+  }
+}
+
+/* ─── Custom scrollbar ───────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #111114;
+}
+::-webkit-scrollbar-thumb {
+  background: #E85D04;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #F48C06;
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #E85D04 #111114;
+}
+
+/* ─── Selection colour ──────────────────────────────────────────────────── */
+::selection {
+  background-color: rgba(232, 93, 4, 0.30);
+  color: inherit;
+}
+::-moz-selection {
+  background-color: rgba(232, 93, 4, 0.30);
+  color: inherit;
+}
