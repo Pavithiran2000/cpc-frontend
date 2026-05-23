@@ -158,7 +158,7 @@ export default function AttendancePage() {
             {sessions.map((s) => (
               <option key={s.id} value={s.id} className="bg-[#18181C]">
                 {formatDate(s.business_date)} —{' '}
-                {s.shift_template?.name ?? s.shift_template_id} ({s.status})
+                {s.shift_template?.shift_name ?? s.shift_template_id} ({s.status})
               </option>
             ))}
           </select>

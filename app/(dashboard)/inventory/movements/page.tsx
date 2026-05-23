@@ -87,7 +87,7 @@ export default function StockMovementsPage() {
         header: 'Product',
         cell: ({ row }) => (
           <span className="text-sm font-medium text-white">
-            {row.original.product?.name ?? row.original.product_id}
+            {row.original.product?.product_name ?? row.original.product_id}
           </span>
         ),
       },

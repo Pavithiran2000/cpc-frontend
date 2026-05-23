@@ -354,7 +354,7 @@ function SaleFormContent({ onSuccess }: { onSuccess: () => void }) {
           <option value="" className="bg-[#18181C]">Select product…</option>
           {products.map((p) => (
             <option key={p.id} value={p.id} className="bg-[#18181C]">
-              {p.name} ({p.category})
+              {p.product_name} ({p.category})
             </option>
           ))}
         </select>
@@ -391,7 +391,7 @@ function SaleFormContent({ onSuccess }: { onSuccess: () => void }) {
           <option value="" className="bg-[#18181C]">None</option>
           {sessions.map((s) => (
             <option key={s.id} value={s.id} className="bg-[#18181C]">
-              {formatDate(s.business_date)} — {s.shift_template?.name ?? s.shift_template_id}
+              {formatDate(s.business_date)} — {s.shift_template?.shift_name ?? s.shift_template_id}
             </option>
           ))}
         </select>
@@ -462,7 +462,7 @@ function CreditSalesTab() {
         header: 'Product',
         cell: ({ row }) => (
           <span className="text-xs text-white/60">
-            {row.original.product?.name ?? row.original.product_id}
+            {row.original.product?.product_name ?? row.original.product_id}
           </span>
         ),
       },

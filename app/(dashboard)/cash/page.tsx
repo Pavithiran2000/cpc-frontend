@@ -106,7 +106,7 @@ function ShiftCashSummaryTab() {
           <option value="" className="bg-[#18181C]">Select a session…</option>
           {sessions.map((s) => (
             <option key={s.id} value={s.id} className="bg-[#18181C]">
-              {formatDate(s.business_date)} — {s.shift_template?.name ?? s.shift_template_id} ({s.status})
+              {formatDate(s.business_date)} — {s.shift_template?.shift_name ?? s.shift_template_id} ({s.status})
             </option>
           ))}
         </select>

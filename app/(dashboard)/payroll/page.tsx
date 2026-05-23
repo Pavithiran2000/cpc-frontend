@@ -78,8 +78,8 @@ function Field({
 // ─── Create Payroll Run Form ──────────────────────────────────────────────────
 
 const runSchema = z.object({
-  period_from: z.string().min(1, 'Required'),
-  period_to: z.string().min(1, 'Required'),
+  period_start: z.string().min(1, 'Required'),
+  period_end:   z.string().min(1, 'Required'),
 })
 type RunForm = z.infer<typeof runSchema>
 
@@ -92,10 +92,10 @@ function CreatePayrollRunForm({ onSuccess }: { onSuccess: () => void }) {
   } = useForm<RunForm>({
     resolver: zodResolver(runSchema),
     defaultValues: {
-      period_from: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+      period_start: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
         .toISOString()
         .slice(0, 10),
-      period_to: new Date().toISOString().slice(0, 10),
+      period_end: new Date().toISOString().slice(0, 10),
     },
   })
 
@@ -112,18 +112,18 @@ function CreatePayrollRunForm({ onSuccess }: { onSuccess: () => void }) {
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-4">
-      <Field label="Period From" error={errors.period_from?.message}>
+      <Field label="Period From" error={errors.period_start?.message}>
         <input
-          {...register('period_from')}
+          {...register('period_start')}
           type="date"
-          className={inputCls(!!errors.period_from) + ' number'}
+          className={inputCls(!!errors.period_start) + ' number'}
         />
       </Field>
-      <Field label="Period To" error={errors.period_to?.message}>
+      <Field label="Period To" error={errors.period_end?.message}>
         <input
-          {...register('period_to')}
+          {...register('period_end')}
           type="date"
-          className={inputCls(!!errors.period_to) + ' number'}
+          className={inputCls(!!errors.period_end) + ' number'}
         />
       </Field>
       <p className="text-xs text-white/35">
@@ -166,20 +166,20 @@ function PayrollRunsTab() {
   const columns = useMemo<ColumnDef<PayrollRun>[]>(
     () => [
       {
-        id: 'period_from',
+        id: 'period_start',
         header: 'Period From',
         cell: ({ row }) => (
           <span className="number text-sm text-white">
-            {formatDate(row.original.period_from)}
+            {formatDate(row.original.period_start)}
           </span>
         ),
       },
       {
-        id: 'period_to',
+        id: 'period_end',
         header: 'Period To',
         cell: ({ row }) => (
           <span className="number text-sm text-white/70">
-            {formatDate(row.original.period_to)}
+            {formatDate(row.original.period_end)}
           </span>
         ),
       },

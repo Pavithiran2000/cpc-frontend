@@ -97,10 +97,10 @@ function TemplateForm({
     resolver: zodResolver(templateSchema),
     defaultValues: template
       ? {
-          name:        template.name,
+          name:        template.shift_name,
           start_time:  template.start_time,
           end_time:    template.end_time,
-          sequence_no: template.sequence,
+          sequence_no: template.sequence_no,
           status:      template.status as 'ACTIVE' | 'INACTIVE',
         }
       : { status: 'ACTIVE' as const },
@@ -272,7 +272,7 @@ export default function ShiftTemplatesPage() {
         id: 'name',
         header: 'Shift Name',
         cell: ({ row }) => (
-          <span className="font-medium text-white">{row.original.name}</span>
+          <span className="font-medium text-white">{row.original.shift_name}</span>
         ),
       },
       {
@@ -306,7 +306,7 @@ export default function ShiftTemplatesPage() {
         id: 'sequence',
         header: 'Seq',
         cell: ({ row }) => (
-          <span className="number text-xs text-white/50">{row.original.sequence}</span>
+          <span className="number text-xs text-white/50">{row.original.sequence_no}</span>
         ),
       },
       {

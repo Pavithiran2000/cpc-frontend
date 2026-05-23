@@ -92,7 +92,7 @@ export interface Staff {
   id: string
   employee_no: string
   name: string
-  contact?: string
+  phone?: string
   nic?: string
   address?: string
   operational_role_id: string
@@ -119,9 +119,12 @@ export type MeasurementUnit = 'LITRE' | 'UNIT'
 export interface Product {
   id: string
   product_code: string
-  name: string
+  product_name: string
   category: ProductCategory
-  measurement_unit: MeasurementUnit
+  measurement_unit_id?: string
+  is_fuel?: boolean
+  is_gas?: boolean
+  is_lubricant?: boolean
   current_price?: number
   status: ProductStatus
 }
@@ -142,11 +145,11 @@ export type ShiftSessionStatus = 'DRAFT' | 'OPEN' | 'CLOSED' | 'CANCELLED'
 
 export interface ShiftTemplate {
   id: string
-  name: string
+  shift_name: string
   start_time: string
   end_time: string
   is_night_shift: boolean
-  sequence: number
+  sequence_no: number
   status: ProductStatus
 }
 
@@ -208,8 +211,8 @@ export interface Nozzle {
   pump_id: string
   nozzle_code: string
   nozzle_name: string
-  fuel_product_id: string
-  fuel_product?: Product
+  product_id: string
+  product?: Product
   meter_capacity: number
   status: ProductStatus
 }
@@ -231,7 +234,7 @@ export interface StockBalance {
   id: string
   product_id: string
   product?: Product
-  quantity: number
+  quantity_on_hand: number
   updated_at: string
 }
 
@@ -406,8 +409,8 @@ export type DeductionStatus = 'PENDING' | 'APPROVED'
 
 export interface PayrollRun {
   id: string
-  period_from: string
-  period_to: string
+  period_start: string
+  period_end: string
   status: PayrollRunStatus
   created_at: string
 }
@@ -426,22 +429,32 @@ export interface SalaryDeduction {
 // ─── Reports ──────────────────────────────────────────────────────────────────
 
 export interface DashboardReport {
-  today_revenue: number
-  fuel_dispensed_today: number
+  today_sales: number
   active_shift_count: number
-  cash_shortfalls_today: number
-  pending_bowser_receipts: number
-  low_stock_alerts: number
-  revenue_last_7_days: Array<{ date: string; revenue: number }>
-  fuel_sales_by_product: Array<{ product_name: string; litres: number }>
+  fuel_stock_summary: Array<{ product_code: string; product_name: string; category: string; quantity_on_hand: string }>
+  cash_shortfall_count: number
+  pending_approvals: number
+  credit_outstanding: number
+  cheques_pending: number
+  // Legacy fields — not returned by backend; kept for components that degrade gracefully
+  today_revenue?: number
+  fuel_dispensed_today?: number
+  cash_shortfalls_today?: number
+  pending_bowser_receipts?: number
+  low_stock_alerts?: number
+  revenue_last_7_days?: Array<{ date: string; revenue: number }>
+  fuel_sales_by_product?: Array<{ product_name: string; litres: number }>
 }
 
 export interface ShiftSummaryRow {
+  id: string
   business_date: string
   shift_name: string
-  total_revenue: number
-  fuel_litres: number
-  staff_count: number
+  status: string
+  expected_cash: number
+  actual_cash: number
+  shortfall: number
+  excess: number
 }
 
 export interface StockReportRow {
@@ -454,11 +467,13 @@ export interface StockReportRow {
 }
 
 export interface ProfitLossReport {
+  period: { date_from?: string; date_to?: string }
   revenue: number
-  cost_of_sales: number
-  gross_profit: number
-  expenses: number
-  net_profit: number
+  supplier_payments: number
+  approved_deductions: number
+  gross_profit_estimate: number
+  net_profit_estimate: number
+  credit_outstanding: number
 }
 
 // Backward-compat

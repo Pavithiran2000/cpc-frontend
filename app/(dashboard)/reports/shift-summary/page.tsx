@@ -6,7 +6,7 @@ import { Printer } from 'lucide-react'
 
 import { reportsApi } from '@/lib/api/reports'
 import type { ShiftSummaryRow } from '@/lib/types'
-import { formatDate, formatCurrency, formatLitres } from '@/lib/utils'
+import { formatDate, formatCurrency } from '@/lib/utils'
 import { usePagination } from '@/lib/hooks/usePagination'
 
 import { DataTable, type ColumnDef } from '@/components/shared/DataTable'
@@ -51,24 +51,33 @@ export default function ShiftSummaryReportPage() {
       cell: ({ row }) => <span className="text-sm text-white/80">{row.original.shift_name}</span>,
     },
     {
-      id: 'total_revenue',
-      header: 'Revenue',
+      id: 'expected_cash',
+      header: 'Expected Cash',
       cell: ({ row }) => (
-        <span className="number text-sm font-semibold text-white/90">{formatCurrency(row.original.total_revenue)}</span>
+        <span className="number text-sm font-semibold text-white/90">{formatCurrency(row.original.expected_cash)}</span>
       ),
     },
     {
-      id: 'fuel_litres',
-      header: 'Fuel Dispensed',
+      id: 'actual_cash',
+      header: 'Actual Cash',
       cell: ({ row }) => (
-        <span className="number text-xs text-white/70">{formatLitres(row.original.fuel_litres)}</span>
+        <span className="number text-sm text-white/70">{formatCurrency(row.original.actual_cash)}</span>
       ),
     },
     {
-      id: 'staff_count',
-      header: 'Staff',
+      id: 'shortfall',
+      header: 'Shortfall',
       cell: ({ row }) => (
-        <span className="number text-xs text-white/60">{row.original.staff_count}</span>
+        <span className={`number text-xs ${row.original.shortfall > 0 ? 'text-rose-400' : 'text-white/40'}`}>
+          {row.original.shortfall > 0 ? formatCurrency(row.original.shortfall) : '—'}
+        </span>
+      ),
+    },
+    {
+      id: 'status',
+      header: 'Status',
+      cell: ({ row }) => (
+        <span className="text-xs text-white/60">{row.original.status}</span>
       ),
     },
   ], [])

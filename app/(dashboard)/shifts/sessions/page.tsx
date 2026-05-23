@@ -250,7 +250,7 @@ function CreateSessionModal({
               <option value="" className="bg-[#18181C]">Select template…</option>
               {templates.map((t) => (
                 <option key={t.id} value={t.id} className="bg-[#18181C]">
-                  {t.name} ({t.start_time} – {t.end_time})
+                  {t.shift_name} ({t.start_time} – {t.end_time})
                 </option>
               ))}
             </select>
@@ -904,7 +904,7 @@ function SessionDetailPanel({ sessionId }: { sessionId: string }) {
       <div className="flex items-start gap-3 border-b border-white/8 px-6 py-4 shrink-0">
         <div className="flex-1 min-w-0">
           <p className="font-syne text-base font-semibold text-white truncate">
-            {session.shift_template?.name ?? 'Session'} — {formatDate(session.business_date)}
+            {session.shift_template?.shift_name ?? 'Session'} — {formatDate(session.business_date)}
           </p>
           <div className="mt-1.5">
             <StatusBadge status={session.status} />
@@ -1023,7 +1023,7 @@ export default function ShiftSessionsPage() {
         header: 'Shift',
         cell: ({ row }) => (
           <span className="text-sm text-white/70">
-            {row.original.shift_template?.name ?? row.original.shift_template_id}
+            {row.original.shift_template?.shift_name ?? row.original.shift_template_id}
           </span>
         ),
       },

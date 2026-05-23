@@ -449,7 +449,7 @@ function StockLevelBars({
       </h3>
       <div className="space-y-3.5">
         {balances.map((b, idx) => {
-          const qty = Number(b.quantity ?? 0)
+          const qty = Number(b.quantity_on_hand ?? 0)
           const cap = b.product_id ? Number(capacityMap[b.product_id] ?? 0) : 0
           const pct = cap > 0
             ? Math.min(100, (qty / cap) * 100)
@@ -466,7 +466,7 @@ function StockLevelBars({
             <div key={b.id ?? idx} className="flex items-center gap-3">
               {/* Name */}
               <span className="w-36 shrink-0 truncate text-xs text-white/55">
-                {b.product?.name ?? (b.product_id ? b.product_id.slice(0, 8) : 'Unknown')}
+                {b.product?.product_name ?? (b.product_id ? b.product_id.slice(0, 8) : 'Unknown')}
               </span>
 
               {/* Bar track */}
@@ -590,7 +590,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard
           title="Today's Revenue"
-          value={formatCurrency(data?.today_revenue)}
+          value={formatCurrency(data?.today_sales)}
           icon={Banknote}
           variant="fuel"
           isLoading={isLoading}
@@ -609,7 +609,7 @@ export default function DashboardPage() {
         />
         <StatCard
           title="Cash Shortfalls"
-          value={formatCurrency(data?.cash_shortfalls_today)}
+          value={String(data?.cash_shortfall_count ?? 0)}
           icon={AlertTriangle}
           variant="danger"
           isLoading={isLoading}
@@ -619,15 +619,15 @@ export default function DashboardPage() {
       {/* Row 2 — 2 stat cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <StatCard
-          title="Pending Bowser Receipts"
-          value={String(data?.pending_bowser_receipts ?? 0)}
+          title="Pending Approvals"
+          value={String(data?.pending_approvals ?? 0)}
           icon={Truck}
           variant="warning"
           isLoading={isLoading}
         />
         <StatCard
-          title="Low Stock Alerts"
-          value={String(data?.low_stock_alerts ?? 0)}
+          title="Cheques Pending"
+          value={String(data?.cheques_pending ?? 0)}
           icon={Package}
           variant="danger"
           isLoading={isLoading}

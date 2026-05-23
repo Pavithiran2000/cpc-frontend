@@ -52,11 +52,11 @@ export default function NightVerifyPage() {
         .map((b) => {
           const counted = parseFloat(counts[b.product_id] ?? '0')
           return {
-            product_name: b.product?.name ?? b.product_id,
+            product_name: b.product?.product_name ?? b.product_id,
             product_id:   b.product_id,
-            system_qty:   b.quantity,
+            system_qty:   b.quantity_on_hand,
             counted_qty:  counted,
-            variance:     counted - b.quantity,
+            variance:     counted - b.quantity_on_hand,
           }
         })
       setResults(mapped)
@@ -212,10 +212,10 @@ export default function NightVerifyPage() {
                   >
                     <div>
                       <p className="text-sm font-medium text-white">
-                        {b.product?.name ?? b.product_id}
+                        {b.product?.product_name ?? b.product_id}
                       </p>
                       <p className="text-xs text-white/40">
-                        System: {formatLitres(b.quantity)}
+                        System: {formatLitres(b.quantity_on_hand)}
                       </p>
                     </div>
                     <div className="text-right">

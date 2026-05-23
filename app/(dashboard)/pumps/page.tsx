@@ -50,10 +50,10 @@ function Field({
 // ─── Add Pump Sheet (with inline nozzle builder) ──────────────────────────────
 
 const nozzleRowSchema = z.object({
-  nozzle_code:     z.string().min(1, 'Required'),
-  nozzle_name:     z.string().min(1, 'Required'),
-  fuel_product_id: z.string().min(1, 'Required'),
-  meter_capacity:  z.number().positive('> 0'),
+  nozzle_code:    z.string().min(1, 'Required'),
+  nozzle_name:    z.string().min(1, 'Required'),
+  product_id:     z.string().min(1, 'Required'),
+  meter_capacity: z.number().positive('> 0'),
 })
 
 const addPumpSchema = z.object({
@@ -86,7 +86,7 @@ function AddPumpSheet({
     defaultValues: {
       status: 'ACTIVE' as const,
       nozzles: [
-        { nozzle_code: '', nozzle_name: '', fuel_product_id: '', meter_capacity: 99999.999 },
+        { nozzle_code: '', nozzle_name: '', product_id: '', meter_capacity: 99999.999 },
       ],
     },
   })
@@ -162,7 +162,7 @@ function AddPumpSheet({
                     append({
                       nozzle_code: '',
                       nozzle_name: '',
-                      fuel_product_id: '',
+                      product_id: '',
                       meter_capacity: 99999.999,
                     })
                   }
@@ -223,19 +223,19 @@ function AddPumpSheet({
                       </Field>
                       <Field
                         label="Fuel Product"
-                        error={errors.nozzles?.[idx]?.fuel_product_id?.message}
+                        error={errors.nozzles?.[idx]?.product_id?.message}
                       >
                         <select
-                          {...register(`nozzles.${idx}.fuel_product_id`)}
+                          {...register(`nozzles.${idx}.product_id`)}
                           className={
-                            inputCls(!!errors.nozzles?.[idx]?.fuel_product_id) +
+                            inputCls(!!errors.nozzles?.[idx]?.product_id) +
                             ' cursor-pointer'
                           }
                         >
                           <option value="" className="bg-[#18181C]">Select…</option>
                           {fuelProducts.map((p) => (
                             <option key={p.id} value={p.id} className="bg-[#18181C]">
-                              {p.name}
+                              {p.product_name}
                             </option>
                           ))}
                         </select>
@@ -378,11 +378,11 @@ function EditPumpModal({
 // ─── Edit Nozzle Modal ────────────────────────────────────────────────────────
 
 const editNozzleSchema = z.object({
-  nozzle_code:     z.string().min(1, 'Required'),
-  nozzle_name:     z.string().min(1, 'Required'),
-  fuel_product_id: z.string().min(1, 'Required'),
-  meter_capacity:  z.number().positive('> 0'),
-  status:          z.enum(['ACTIVE', 'INACTIVE']),
+  nozzle_code:    z.string().min(1, 'Required'),
+  nozzle_name:    z.string().min(1, 'Required'),
+  product_id:     z.string().min(1, 'Required'),
+  meter_capacity: z.number().positive('> 0'),
+  status:         z.enum(['ACTIVE', 'INACTIVE']),
 })
 type EditNozzleForm = z.infer<typeof editNozzleSchema>
 
@@ -405,11 +405,11 @@ function EditNozzleModal({
   } = useForm<EditNozzleForm>({
     resolver: zodResolver(editNozzleSchema),
     defaultValues: {
-      nozzle_code:     nozzle.nozzle_code,
-      nozzle_name:     nozzle.nozzle_name,
-      fuel_product_id: nozzle.fuel_product_id,
-      meter_capacity:  nozzle.meter_capacity,
-      status:          nozzle.status,
+      nozzle_code:    nozzle.nozzle_code,
+      nozzle_name:    nozzle.nozzle_name,
+      product_id:     nozzle.product_id,
+      meter_capacity: nozzle.meter_capacity,
+      status:         nozzle.status,
     },
   })
 
@@ -451,14 +451,14 @@ function EditNozzleModal({
               />
             </Field>
           </div>
-          <Field label="Fuel Product" error={errors.fuel_product_id?.message}>
+          <Field label="Fuel Product" error={errors.product_id?.message}>
             <select
-              {...register('fuel_product_id')}
-              className={inputCls(!!errors.fuel_product_id) + ' cursor-pointer'}
+              {...register('product_id')}
+              className={inputCls(!!errors.product_id) + ' cursor-pointer'}
             >
               {fuelProducts.map((p) => (
                 <option key={p.id} value={p.id} className="bg-[#18181C]">
-                  {p.name}
+                  {p.product_name}
                 </option>
               ))}
             </select>
@@ -508,10 +508,10 @@ function EditNozzleModal({
 // ─── Add Nozzle Modal ─────────────────────────────────────────────────────────
 
 const addNozzleSchema = z.object({
-  nozzle_code:     z.string().min(1, 'Required'),
-  nozzle_name:     z.string().min(1, 'Required'),
-  fuel_product_id: z.string().min(1, 'Required'),
-  meter_capacity:  z.number().positive('> 0'),
+  nozzle_code:    z.string().min(1, 'Required'),
+  nozzle_name:    z.string().min(1, 'Required'),
+  product_id:     z.string().min(1, 'Required'),
+  meter_capacity: z.number().positive('> 0'),
 })
 type AddNozzleForm = z.infer<typeof addNozzleSchema>
 
@@ -578,15 +578,15 @@ function AddNozzleModal({
               />
             </Field>
           </div>
-          <Field label="Fuel Product" error={errors.fuel_product_id?.message}>
+          <Field label="Fuel Product" error={errors.product_id?.message}>
             <select
-              {...register('fuel_product_id')}
-              className={inputCls(!!errors.fuel_product_id) + ' cursor-pointer'}
+              {...register('product_id')}
+              className={inputCls(!!errors.product_id) + ' cursor-pointer'}
             >
               <option value="" className="bg-[#18181C]">Select…</option>
               {fuelProducts.map((p) => (
                 <option key={p.id} value={p.id} className="bg-[#18181C]">
-                  {p.name}
+                  {p.product_name}
                 </option>
               ))}
             </select>
@@ -642,8 +642,8 @@ function NozzleCard({
         <div>
           <p className="number text-[10px] text-white/30">{nozzle.nozzle_code}</p>
           <p className="text-xs font-medium text-white/70">{nozzle.nozzle_name}</p>
-          {nozzle.fuel_product && (
-            <p className="text-[10px] text-white/30">{nozzle.fuel_product.name}</p>
+          {nozzle.product && (
+            <p className="text-[10px] text-white/30">{nozzle.product.product_name}</p>
           )}
         </div>
       </div>

@@ -74,7 +74,7 @@ function Field({
 const staffSchema = z.object({
   employee_no:          z.string().min(1, 'Required'),
   name:                 z.string().min(1, 'Required'),
-  contact:              z.string().optional(),
+  phone:                z.string().optional(),
   nic:                  z.string().optional(),
   address:              z.string().optional(),
   operational_role_id:  z.string().min(1, 'Select a role'),
@@ -105,7 +105,7 @@ function StaffFormContent({
       ? {
           employee_no:         staff.employee_no,
           name:                staff.name,
-          contact:             staff.contact,
+          phone:               staff.phone,
           nic:                 staff.nic,
           address:             staff.address,
           operational_role_id: staff.operational_role_id,
@@ -158,9 +158,9 @@ function StaffFormContent({
             className={inputCls(false) + ' number'}
           />
         </Field>
-        <Field label="Contact" error={errors.contact?.message}>
+        <Field label="Phone" error={errors.phone?.message}>
           <input
-            {...register('contact')}
+            {...register('phone')}
             placeholder="+94 77 000 0000"
             className={inputCls(false)}
           />
@@ -327,10 +327,10 @@ export default function StaffPage() {
         ),
       },
       {
-        id: 'contact',
-        header: 'Contact',
+        id: 'phone',
+        header: 'Phone',
         cell: ({ row }) => (
-          <span className="text-xs text-white/50">{row.original.contact ?? '—'}</span>
+          <span className="text-xs text-white/50">{row.original.phone ?? '—'}</span>
         ),
       },
       {

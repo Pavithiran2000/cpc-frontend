@@ -64,13 +64,13 @@ export default function ProfitLossPage() {
   const rows = useMemo<PLRow[]>(() => {
     if (!pl) return []
     return [
-      { label: 'Total Revenue',       value: pl.revenue,        bold: true, variant: 'positive' },
-      { label: 'Cost of Sales',       value: -pl.cost_of_sales, indent: true, variant: 'negative' },
-      { label: 'Gross Profit',        value: pl.gross_profit,   bold: true, divider: true,
-        variant: pl.gross_profit >= 0 ? 'positive' : 'negative' },
-      { label: 'Operating Expenses',  value: -pl.expenses,      indent: true, variant: 'negative' },
-      { label: 'Net Profit',          value: pl.net_profit,     bold: true, divider: true,
-        variant: pl.net_profit >= 0 ? 'positive' : 'negative' },
+      { label: 'Total Revenue',        value: pl.revenue,                  bold: true, variant: 'positive' },
+      { label: 'Supplier Payments',    value: -pl.supplier_payments,        indent: true, variant: 'negative' },
+      { label: 'Approved Deductions',  value: -pl.approved_deductions,      indent: true, variant: 'negative' },
+      { label: 'Gross Profit (est.)',  value: pl.gross_profit_estimate,     bold: true, divider: true,
+        variant: pl.gross_profit_estimate >= 0 ? 'positive' : 'negative' },
+      { label: 'Net Profit (est.)',    value: pl.net_profit_estimate,       bold: true, divider: true,
+        variant: pl.net_profit_estimate >= 0 ? 'positive' : 'negative' },
     ]
   }, [pl])
 

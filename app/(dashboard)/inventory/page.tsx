@@ -54,9 +54,9 @@ function StockCard({
   capacity: number | null
 }) {
   const product  = balance.product
-  const name     = product?.name ?? balance.product_id
+  const name     = product?.product_name ?? balance.product_id
   const category = product?.category ?? 'UNKNOWN'
-  const qty      = balance.quantity != null ? Number(balance.quantity) : 0
+  const qty      = balance.quantity_on_hand != null ? Number(balance.quantity_on_hand) : 0
 
   const pct = capacity && capacity > 0 ? (qty / capacity) * 100 : null
 

@@ -64,11 +64,11 @@ function Field({
 // ─── Add Product Modal ────────────────────────────────────────────────────────
 
 const productSchema = z.object({
-  product_code:     z.string().min(1, 'Required'),
-  name:             z.string().min(1, 'Required'),
-  category:         z.enum(['FUEL', 'GAS', 'LUBRICANT']),
-  measurement_unit: z.enum(['LITRE', 'UNIT']),
-  status:           z.enum(['ACTIVE', 'INACTIVE']),
+  product_code:        z.string().min(1, 'Required'),
+  product_name:        z.string().min(1, 'Required'),
+  category:            z.enum(['FUEL', 'GAS', 'LUBRICANT']),
+  measurement_unit_id: z.string().uuid('Required'),
+  status:              z.enum(['ACTIVE', 'INACTIVE']),
 })
 type ProductFormValues = z.infer<typeof productSchema>
 
@@ -127,11 +127,11 @@ function AddProductModal({
                 className={inputCls(!!errors.product_code) + ' number uppercase'}
               />
             </Field>
-            <Field label="Name" error={errors.name?.message}>
+            <Field label="Name" error={errors.product_name?.message}>
               <input
-                {...register('name')}
+                {...register('product_name')}
                 placeholder="Petrol 92"
-                className={inputCls(!!errors.name)}
+                className={inputCls(!!errors.product_name)}
               />
             </Field>
           </div>
@@ -146,13 +146,13 @@ function AddProductModal({
                 <option value="LUBRICANT" className="bg-[#18181C]">Lubricant</option>
               </select>
             </Field>
-            <Field label="Unit" error={errors.measurement_unit?.message}>
+            <Field label="Unit" error={errors.measurement_unit_id?.message}>
               <select
-                {...register('measurement_unit')}
-                className={inputCls(!!errors.measurement_unit) + ' cursor-pointer'}
+                {...register('measurement_unit_id')}
+                className={inputCls(!!errors.measurement_unit_id) + ' cursor-pointer'}
               >
-                <option value="LITRE" className="bg-[#18181C]">Litre</option>
-                <option value="UNIT"  className="bg-[#18181C]">Unit</option>
+                <option value="ff8993f8-cbb7-4641-8fa9-a56eaeae9813" className="bg-[#18181C]">Litre</option>
+                <option value="99a14f56-59e1-4efd-ad9a-0681b14f4c88" className="bg-[#18181C]">Unit</option>
               </select>
             </Field>
           </div>
@@ -249,7 +249,7 @@ function UpdatePriceModal({
         <h3 className="mb-1 font-syne text-base font-semibold text-white">
           Update Price
         </h3>
-        <p className="mb-4 text-xs text-white/40">{product.name}</p>
+        <p className="mb-4 text-xs text-white/40">{product.product_name}</p>
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
           <Field label="New Selling Price (LKR)" error={errors.selling_price?.message}>
             <input
@@ -392,7 +392,7 @@ function ProductCard({ product }: { product: Product }) {
             <span className="number text-[10px] text-white/30">{product.product_code}</span>
           </div>
           <p className="font-syne text-lg font-semibold text-white leading-tight truncate">
-            {product.name}
+            {product.product_name}
           </p>
           <p className="text-[11px] text-white/35 mt-0.5">per {unit}</p>
         </div>

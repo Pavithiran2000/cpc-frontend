@@ -177,7 +177,7 @@ function CreateOrderForm({ onSuccess }: { onSuccess: () => void }) {
                   <option value="" className="bg-[#18181C]">Select…</option>
                   {products.map((p) => (
                     <option key={p.id} value={p.id} className="bg-[#18181C]">
-                      {p.name}
+                      {p.product_name}
                     </option>
                   ))}
                 </select>

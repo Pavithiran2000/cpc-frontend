@@ -11,8 +11,8 @@ export const payrollApi = {
     api.get<PaginatedResponse<PayrollRun>>('/payroll-runs', { params }),
 
   createRun: (data: {
-    period_from: string
-    period_to: string
+    period_start: string
+    period_end: string
     staff_ids?: string[]
   }) => api.post<PayrollRun>('/payroll-runs', data),
 

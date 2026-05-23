@@ -205,7 +205,7 @@ function ApproveReceiptForm({
                   className={inputCls(!!(errors.lines?.[idx] as { product_id?: unknown })?.product_id) + ' cursor-pointer'}>
                   <option value="" className="bg-[#18181C]">Select product…</option>
                   {fuelProducts.map((p) => (
-                    <option key={p.id} value={p.id} className="bg-[#18181C]">{p.name}</option>
+                    <option key={p.id} value={p.id} className="bg-[#18181C]">{p.product_name}</option>
                   ))}
                 </select>
               </Field>
@@ -323,7 +323,7 @@ function ReceiptDetailDrawer({
                     {fullReceipt.lines.map((line) => (
                       <div key={line.id} className="flex items-center justify-between px-3.5 py-2.5">
                         <div>
-                          <p className="text-sm text-white">{line.product?.name ?? line.product_id}</p>
+                          <p className="text-sm text-white">{line.product?.product_name ?? line.product_id}</p>
                           <p className="number text-xs text-white/40">{formatLitres(line.received_litres)}</p>
                         </div>
                         <p className="number text-xs text-white/60">{formatCurrency(line.unit_cost)}/L</p>
