@@ -50,16 +50,14 @@ function Field({
 // ─── Add Pump Sheet (with inline nozzle builder) ──────────────────────────────
 
 const nozzleRowSchema = z.object({
-  nozzle_code:    z.string().min(1, 'Required'),
-  nozzle_name:    z.string().min(1, 'Required'),
-  product_id:     z.string().min(1, 'Required'),
-  meter_capacity: z.number().positive('> 0'),
+  nozzle_code: z.string().min(1, 'Required'),
+  nozzle_name: z.string().min(1, 'Required'),
+  product_id:  z.string().min(1, 'Required'),
 })
 
 const addPumpSchema = z.object({
   pump_code: z.string().min(1, 'Required'),
   pump_name: z.string().min(1, 'Required'),
-  status:    z.enum(['ACTIVE', 'INACTIVE']),
   nozzles:   z.array(nozzleRowSchema).min(1, 'At least one nozzle required'),
 })
 
@@ -84,9 +82,8 @@ function AddPumpSheet({
   } = useForm<AddPumpForm>({
     resolver: zodResolver(addPumpSchema),
     defaultValues: {
-      status: 'ACTIVE' as const,
       nozzles: [
-        { nozzle_code: '', nozzle_name: '', product_id: '', meter_capacity: 99999.999 },
+        { nozzle_code: '', nozzle_name: '', product_id: '' },
       ],
     },
   })
@@ -98,7 +95,6 @@ function AddPumpSheet({
       await pumpsApi.create({
         pump_code: data.pump_code,
         pump_name: data.pump_name,
-        status:    data.status,
         nozzles:   data.nozzles as Parameters<typeof pumpsApi.create>[0]['nozzles'],
       })
       await queryClient.invalidateQueries({ queryKey: ['pumps'] })
@@ -140,16 +136,6 @@ function AddPumpSheet({
                 />
               </Field>
             </div>
-            <Field label="Status" error={errors.status?.message}>
-              <select
-                {...register('status')}
-                className={inputCls(!!errors.status) + ' cursor-pointer'}
-              >
-                <option value="ACTIVE"   className="bg-[#18181C]">Active</option>
-                <option value="INACTIVE" className="bg-[#18181C]">Inactive</option>
-              </select>
-            </Field>
-
             {/* Nozzle builder */}
             <div>
               <div className="flex items-center justify-between mb-3">
@@ -163,7 +149,6 @@ function AddPumpSheet({
                       nozzle_code: '',
                       nozzle_name: '',
                       product_id: '',
-                      meter_capacity: 99999.999,
                     })
                   }
                   className="flex items-center gap-1 text-xs text-[#E85D04]/70 hover:text-[#E85D04] transition-colors"
@@ -240,22 +225,6 @@ function AddPumpSheet({
                           ))}
                         </select>
                       </Field>
-                      <Field
-                        label="Meter Capacity"
-                        error={errors.nozzles?.[idx]?.meter_capacity?.message}
-                      >
-                        <input
-                          {...register(`nozzles.${idx}.meter_capacity`, {
-                            setValueAs: (v) =>
-                              v === '' || v == null ? undefined : parseFloat(v),
-                          })}
-                          type="number"
-                          step="0.001"
-                          className={
-                            inputCls(!!errors.nozzles?.[idx]?.meter_capacity) + ' number'
-                          }
-                        />
-                      </Field>
                     </div>
                   </div>
                 ))}
@@ -279,7 +248,6 @@ function AddPumpSheet({
 // ─── Edit Pump Modal ──────────────────────────────────────────────────────────
 
 const editPumpSchema = z.object({
-  pump_code: z.string().min(1, 'Required'),
   pump_name: z.string().min(1, 'Required'),
   status:    z.enum(['ACTIVE', 'INACTIVE']),
 })
@@ -302,7 +270,6 @@ function EditPumpModal({
   } = useForm<EditPumpForm>({
     resolver: zodResolver(editPumpSchema),
     defaultValues: {
-      pump_code: pump.pump_code,
       pump_name: pump.pump_name,
       status:    pump.status,
     },
@@ -332,12 +299,6 @@ function EditPumpModal({
       >
         <h3 className="mb-4 font-syne text-base font-semibold text-white">Edit Pump</h3>
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
-          <Field label="Pump Code" error={errors.pump_code?.message}>
-            <input
-              {...register('pump_code')}
-              className={inputCls(!!errors.pump_code) + ' number uppercase'}
-            />
-          </Field>
           <Field label="Pump Name" error={errors.pump_name?.message}>
             <input
               {...register('pump_name')}
@@ -508,10 +469,9 @@ function EditNozzleModal({
 // ─── Add Nozzle Modal ─────────────────────────────────────────────────────────
 
 const addNozzleSchema = z.object({
-  nozzle_code:    z.string().min(1, 'Required'),
-  nozzle_name:    z.string().min(1, 'Required'),
-  product_id:     z.string().min(1, 'Required'),
-  meter_capacity: z.number().positive('> 0'),
+  nozzle_code: z.string().min(1, 'Required'),
+  nozzle_name: z.string().min(1, 'Required'),
+  product_id:  z.string().min(1, 'Required'),
 })
 type AddNozzleForm = z.infer<typeof addNozzleSchema>
 
@@ -534,7 +494,7 @@ function AddNozzleModal({
     formState: { errors, isSubmitting },
   } = useForm<AddNozzleForm>({
     resolver: zodResolver(addNozzleSchema),
-    defaultValues: { meter_capacity: 99999.999 },
+    defaultValues: {},
   })
 
   const onSubmit = handleSubmit(async (data) => {
@@ -590,17 +550,6 @@ function AddNozzleModal({
                 </option>
               ))}
             </select>
-          </Field>
-          <Field label="Meter Capacity" error={errors.meter_capacity?.message}>
-            <input
-              {...register('meter_capacity', {
-                setValueAs: (v) =>
-                  v === '' || v == null ? undefined : parseFloat(v),
-              })}
-              type="number"
-              step="0.001"
-              className={inputCls(!!errors.meter_capacity) + ' number'}
-            />
           </Field>
           <div className="flex gap-2 pt-1">
             <button

@@ -116,7 +116,7 @@ function TemplateForm({
       start_time:  data.start_time,
       end_time:    data.end_time,
       sequence_no: data.sequence_no,
-      status:      data.status,
+      ...(template ? { status: data.status } : {}),
     }
 
     try {

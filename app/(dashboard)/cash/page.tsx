@@ -233,6 +233,8 @@ function DailyBalancingTab() {
     mutationFn: () =>
       cashApi.createDailyBalance({
         business_date: new Date().toISOString().slice(0, 10),
+        expected_cash: 0,
+        actual_cash:   0,
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['daily-balancing'] })

@@ -86,9 +86,9 @@ function StockCard({
             </p>
           </div>
         </div>
-        {product?.measurement_unit && (
+        {product && (
           <span className="text-[10px] uppercase tracking-wider text-white/30">
-            {product.measurement_unit === 'LITRE' ? 'L' : 'UNIT'}
+            {product.category === 'FUEL' ? 'L' : 'UNIT'}
           </span>
         )}
       </div>
@@ -96,7 +96,7 @@ function StockCard({
       <div className="mt-3">
         <div className="flex items-baseline justify-between gap-2">
           <span className="number text-2xl font-bold text-white">
-            {product?.measurement_unit === 'LITRE'
+            {product?.category === 'FUEL'
               ? qty.toLocaleString('en-LK', { minimumFractionDigits: 3, maximumFractionDigits: 3 })
               : qty.toLocaleString('en-LK')}
           </span>

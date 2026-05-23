@@ -25,7 +25,6 @@ import type {
   Staff,
   MeterReading,
   CashSubmission,
-  PumperAssignment,
 } from '@/lib/types'
 import { formatDate, formatDateTime, cn } from '@/lib/utils'
 import { usePagination } from '@/lib/hooks/usePagination'
@@ -335,14 +334,9 @@ function AddAssignmentModal({
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      const nozzle = nozzles.find((n) => n.id === data.nozzle_id)
-      if (!nozzle) return
-      const assignment: PumperAssignment = {
-        pumper_id: data.pumper_id,
-        pump_id: nozzle.pump_id,
-        nozzle_id: data.nozzle_id,
-      }
-      await shiftsApi.setAssignments(sessionId, [assignment])
+      await shiftsApi.setAssignments(sessionId, [
+        { pumper_id: data.pumper_id, nozzle_id: data.nozzle_id },
+      ])
       await queryClient.invalidateQueries({ queryKey: ['shift-session', sessionId] })
       toast.success('Assignment added')
       reset()
@@ -497,9 +491,8 @@ function OpeningReadingsSection({ session }: { session: SessionDetail }) {
       const readings = assignments
         .filter((a) => values[a.nozzle_id] !== '' && values[a.nozzle_id] != null)
         .map((a) => ({
-          pump_id: a.pump_id,
           nozzle_id: a.nozzle_id,
-          opening_reading: parseFloat(values[a.nozzle_id] ?? '0'),
+          meter_reading: parseFloat(values[a.nozzle_id] ?? '0'),
         }))
       await shiftsApi.setOpeningReadings(session.id, readings)
       await queryClient.invalidateQueries({ queryKey: ['shift-session', session.id] })
@@ -616,9 +609,8 @@ function ClosingReadingsSection({ session }: { session: SessionDetail }) {
       const readings = assignments
         .filter((a) => values[a.nozzle_id] !== '' && values[a.nozzle_id] != null)
         .map((a) => ({
-          pump_id: a.pump_id,
           nozzle_id: a.nozzle_id,
-          closing_reading: parseFloat(values[a.nozzle_id] ?? '0'),
+          meter_reading: parseFloat(values[a.nozzle_id] ?? '0'),
         }))
       await shiftsApi.setClosingReadings(session.id, readings)
       await queryClient.invalidateQueries({ queryKey: ['shift-session', session.id] })
@@ -878,7 +870,14 @@ function SessionDetailPanel({ sessionId }: { sessionId: string }) {
   })
 
   const closeMutation = useMutation({
-    mutationFn: () => shiftsApi.closeSession(sessionId),
+    mutationFn: () => {
+      const closingReadings = (session?.meter_readings ?? [])
+        .filter((r) => r.closing_reading != null)
+        .map((r) => ({ nozzle_id: r.nozzle_id, meter_reading: r.closing_reading as number }))
+      const cashSubmissions = (session?.cash_submissions ?? [])
+        .map((s) => ({ pumper_id: s.pumper_id, actual_cash: s.actual_cash }))
+      return shiftsApi.closeSession(sessionId, closingReadings, cashSubmissions)
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['shift-session', sessionId] })
       queryClient.invalidateQueries({ queryKey: ['shift-sessions'] })

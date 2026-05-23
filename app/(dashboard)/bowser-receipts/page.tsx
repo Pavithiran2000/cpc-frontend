@@ -38,6 +38,12 @@ const createSchema = z.object({
   vehicle_no:    z.string().optional(),
   driver_name:   z.string().optional(),
   received_date: z.string().min(1, 'Date is required'),
+  lines: z.array(z.object({
+    tank_id:         z.string().min(1, 'Tank required'),
+    product_id:      z.string().min(1, 'Product required'),
+    received_litres: z.number().positive('Must be > 0'),
+    unit_cost:       z.number().positive('Must be > 0'),
+  })).min(1, 'At least one delivery line required'),
 })
 
 type CreateFormValues = z.infer<typeof createSchema>
@@ -77,22 +83,40 @@ function Field({ label, error, children }: { label: string; error?: string; chil
   )
 }
 
-// ─── Create draft form ────────────────────────────────────────────────────────
+// ─── Create receipt form ──────────────────────────────────────────────────────
 
 function CreateReceiptForm({ onSuccess }: { onSuccess: () => void }) {
   const queryClient = useQueryClient()
 
-  const { register, handleSubmit, formState: { errors, isSubmitting } } =
+  const tanksQuery = useQuery({
+    queryKey: TANKS_KEY,
+    queryFn:  () => inventoryApi.listTanks({ limit: 100 }).then((r) => r.data.data),
+    staleTime: 5 * 60 * 1000,
+  })
+  const productsQuery = useQuery({
+    queryKey: PRODUCTS_KEY,
+    queryFn:  () => inventoryApi.listProducts({ limit: 100, status: 'ACTIVE' }).then((r) => r.data.data),
+    staleTime: 5 * 60 * 1000,
+  })
+  const tanks        = tanksQuery.data    ?? []
+  const fuelProducts = (productsQuery.data ?? []).filter((p) => p.category === 'FUEL')
+
+  const { register, control, handleSubmit, formState: { errors, isSubmitting } } =
     useForm<CreateFormValues>({
       resolver: zodResolver(createSchema),
-      defaultValues: { received_date: new Date().toISOString().slice(0, 10) },
+      defaultValues: {
+        received_date: new Date().toISOString().slice(0, 10),
+        lines: [{ tank_id: '', product_id: '', received_litres: 0, unit_cost: 0 }],
+      },
     })
+
+  const { fields, append, remove } = useFieldArray({ control, name: 'lines' })
 
   const onSubmit = handleSubmit(async (data) => {
     try {
       await bowserApi.create(data)
       await queryClient.invalidateQueries({ queryKey: ['bowser-receipts'] })
-      toast.success('Draft receipt created')
+      toast.success('Receipt created')
       onSuccess()
     } catch {
       toast.error('Failed to create receipt')
@@ -123,9 +147,74 @@ function CreateReceiptForm({ onSuccess }: { onSuccess: () => void }) {
         <input {...register('driver_name')} type="text" placeholder="Driver name"
           className={inputCls(!!errors.driver_name)} />
       </Field>
+
+      {/* Delivery lines */}
+      <div>
+        <div className="mb-2 flex items-center justify-between">
+          <p className="text-[11px] font-semibold uppercase tracking-widest text-white/40">
+            Delivery Lines
+          </p>
+          <button type="button"
+            onClick={() => append({ tank_id: '', product_id: '', received_litres: 0, unit_cost: 0 })}
+            className="flex items-center gap-1 text-xs text-[#E85D04]/70 hover:text-[#E85D04]">
+            <Plus size={11} /> Add line
+          </button>
+        </div>
+        {(errors.lines as { message?: string } | undefined)?.message && (
+          <p className="mb-2 text-xs text-rose-400">{(errors.lines as { message?: string }).message}</p>
+        )}
+        <div className="flex flex-col gap-3">
+          {fields.map((field, idx) => (
+            <div key={field.id} className="relative rounded-lg border border-white/8 p-3">
+              <div className="mb-2 flex items-center justify-between">
+                <span className="text-[10px] uppercase tracking-wider text-white/30">Line {idx + 1}</span>
+                {fields.length > 1 && (
+                  <button type="button" onClick={() => remove(idx)}
+                    className="text-white/25 hover:text-rose-400">
+                    <Trash2 size={12} />
+                  </button>
+                )}
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <Field label="Tank" error={(errors.lines?.[idx] as { tank_id?: { message?: string } })?.tank_id?.message}>
+                  <select {...register(`lines.${idx}.tank_id`)}
+                    className={inputCls(!!(errors.lines?.[idx] as { tank_id?: unknown })?.tank_id) + ' cursor-pointer'}>
+                    <option value="" className="bg-[#18181C]">Select tank…</option>
+                    {tanks.map((t) => (
+                      <option key={t.id} value={t.id} className="bg-[#18181C]">
+                        {t.tank_code} ({t.capacity_litres.toLocaleString('en-LK', { maximumFractionDigits: 0 })} L)
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+                <Field label="Product" error={(errors.lines?.[idx] as { product_id?: { message?: string } })?.product_id?.message}>
+                  <select {...register(`lines.${idx}.product_id`)}
+                    className={inputCls(!!(errors.lines?.[idx] as { product_id?: unknown })?.product_id) + ' cursor-pointer'}>
+                    <option value="" className="bg-[#18181C]">Select product…</option>
+                    {fuelProducts.map((p) => (
+                      <option key={p.id} value={p.id} className="bg-[#18181C]">{p.product_name}</option>
+                    ))}
+                  </select>
+                </Field>
+                <Field label="Litres" error={(errors.lines?.[idx] as { received_litres?: { message?: string } })?.received_litres?.message}>
+                  <input {...register(`lines.${idx}.received_litres`, { setValueAs: (v) => v === '' ? 0 : parseFloat(v) })}
+                    type="number" step="0.001" min="0" placeholder="0.000"
+                    className={inputCls(!!(errors.lines?.[idx] as { received_litres?: unknown })?.received_litres) + ' number'} />
+                </Field>
+                <Field label="Unit Cost (LKR/L)" error={(errors.lines?.[idx] as { unit_cost?: { message?: string } })?.unit_cost?.message}>
+                  <input {...register(`lines.${idx}.unit_cost`, { setValueAs: (v) => v === '' ? 0 : parseFloat(v) })}
+                    type="number" step="0.01" min="0" placeholder="0.00"
+                    className={inputCls(!!(errors.lines?.[idx] as { unit_cost?: unknown })?.unit_cost) + ' number'} />
+                </Field>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <button type="submit" disabled={isSubmitting}
         className="mt-2 flex h-10 w-full items-center justify-center rounded-lg bg-[#E85D04] text-sm font-semibold text-white hover:bg-[#F48C06] disabled:opacity-60">
-        {isSubmitting ? 'Creating…' : 'Create Draft Receipt'}
+        {isSubmitting ? 'Creating…' : 'Create Receipt'}
       </button>
     </form>
   )
@@ -501,7 +590,7 @@ export default function BowserReceiptsPage() {
       <Sheet open={createOpen} onOpenChange={setCreateOpen}>
         <SheetContent
           side="right"
-          className="flex w-full flex-col border-l border-white/8 bg-[#111114] p-0 sm:max-w-[420px]"
+          className="flex w-full flex-col border-l border-white/8 bg-[#111114] p-0 sm:max-w-[520px]"
         >
           <SheetHeader className="border-b border-white/5 px-5 py-4">
             <SheetTitle className="font-syne text-base font-semibold text-white">

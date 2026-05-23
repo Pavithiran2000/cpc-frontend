@@ -122,7 +122,8 @@ function StaffFormContent({
       if (staff) {
         await staffApi.update(staff.id, data)
       } else {
-        await staffApi.create(data)
+        const { status: _status, ...createData } = data
+        await staffApi.create(createData)
       }
       await queryClient.invalidateQueries({ queryKey: ['staff'] })
       toast.success(staff ? 'Staff updated' : 'Staff member added')

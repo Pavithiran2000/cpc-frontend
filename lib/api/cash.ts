@@ -10,9 +10,10 @@ export const cashApi = {
 
   createDailyBalance: (data: {
     business_date: string
+    expected_cash: number
+    actual_cash: number
     opening_cash?: number
     bank_deposit?: number
-    cash_shortfalls?: Array<{ staff_id: string; amount: number }>
   }) => api.post<DailyCashBalance>('/daily-balancing', data),
 
   closeDailyBalance: (id: string) =>

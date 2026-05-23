@@ -66,7 +66,6 @@ const chequeSchema = z.object({
   amount: z.number().positive('Must be > 0'),
   received_date: z.string().min(1, 'Required'),
   cheque_date: z.string().optional(),
-  status: z.enum(['RECEIVED', 'DEPOSITED', 'CLEARED', 'RETURNED', 'CANCELLED']),
 })
 type ChequeFormValues = z.infer<typeof chequeSchema>
 
@@ -80,7 +79,6 @@ function ChequeFormContent({ onSuccess }: { onSuccess: () => void }) {
     resolver: zodResolver(chequeSchema),
     defaultValues: {
       received_date: new Date().toISOString().slice(0, 10),
-      status: 'RECEIVED' as const,
     },
   })
 
@@ -151,15 +149,6 @@ function ChequeFormContent({ onSuccess }: { onSuccess: () => void }) {
           />
         </Field>
       </div>
-      <Field label="Status" error={errors.status?.message}>
-        <select {...register('status')} className={selectCls(!!errors.status)}>
-          <option value="RECEIVED" className="bg-[#18181C]">Received</option>
-          <option value="DEPOSITED" className="bg-[#18181C]">Deposited</option>
-          <option value="CLEARED" className="bg-[#18181C]">Cleared</option>
-          <option value="RETURNED" className="bg-[#18181C]">Returned</option>
-          <option value="CANCELLED" className="bg-[#18181C]">Cancelled</option>
-        </select>
-      </Field>
       <button
         type="submit"
         disabled={isSubmitting}

@@ -192,7 +192,8 @@ function FuelPieChart({
     )
   }
 
-  if (!series.length) {
+  const safeSeries = series ?? []
+  if (!safeSeries.length) {
     return <EmptyState icon={Package} message="No fuel sales data" />
   }
 
@@ -202,7 +203,7 @@ function FuelPieChart({
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
-              data={series}
+              data={safeSeries}
               dataKey="litres"
               nameKey="product_name"
               cx="50%"
@@ -211,7 +212,7 @@ function FuelPieChart({
               innerRadius={52}
               strokeWidth={0}
             >
-              {series.map((item, i) => (
+              {safeSeries.map((item, i) => (
                 <Cell
                   key={item.product_name}
                   fill={fuelColor(item.product_name, i)}
@@ -225,7 +226,7 @@ function FuelPieChart({
 
       {/* Legend */}
       <div className="mt-3 flex flex-wrap justify-center gap-x-4 gap-y-2">
-        {series.map((item, i) => (
+        {safeSeries.map((item, i) => (
           <div key={item.product_name} className="flex items-center gap-1.5">
             <span
               className="h-2.5 w-2.5 shrink-0 rounded-full"
@@ -305,7 +306,7 @@ function ActiveShiftsTable({
                   {formatDate(s.business_date)}
                 </TableCell>
                 <TableCell className="px-3 py-2 text-xs text-white/70">
-                  {s.shift_template?.name ?? '—'}
+                  {s.shift_template?.shift_name ?? '—'}
                 </TableCell>
                 <TableCell className="px-3 py-2">
                   <StatusBadge status={s.status} />
@@ -460,7 +461,7 @@ function StockLevelBars({
             : pct > 30    ? '#2D6A4F'
             : pct > 10    ? '#E9C46A'
             :               '#E63946'
-          const isLitre = b.product?.measurement_unit === 'LITRE'
+          const isLitre = b.product?.category === 'FUEL'
 
           return (
             <div key={b.id ?? idx} className="flex items-center gap-3">

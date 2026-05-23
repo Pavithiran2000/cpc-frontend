@@ -68,7 +68,6 @@ const productSchema = z.object({
   product_name:        z.string().min(1, 'Required'),
   category:            z.enum(['FUEL', 'GAS', 'LUBRICANT']),
   measurement_unit_id: z.string().uuid('Required'),
-  status:              z.enum(['ACTIVE', 'INACTIVE']),
 })
 type ProductFormValues = z.infer<typeof productSchema>
 
@@ -88,9 +87,7 @@ function AddProductModal({
   } = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
     defaultValues: {
-      category:         'FUEL' as const,
-      measurement_unit: 'LITRE' as const,
-      status:           'ACTIVE' as const,
+      category: 'FUEL' as const,
     },
   })
 
@@ -156,15 +153,6 @@ function AddProductModal({
               </select>
             </Field>
           </div>
-          <Field label="Status" error={errors.status?.message}>
-            <select
-              {...register('status')}
-              className={inputCls(!!errors.status) + ' cursor-pointer'}
-            >
-              <option value="ACTIVE"   className="bg-[#18181C]">Active</option>
-              <option value="INACTIVE" className="bg-[#18181C]">Inactive</option>
-            </select>
-          </Field>
           <div className="flex gap-2 pt-1">
             <button
               type="button"
@@ -374,7 +362,7 @@ function PriceHistoryAccordion({ product }: { product: Product }) {
 
 function ProductCard({ product }: { product: Product }) {
   const [priceModalOpen, setPriceModalOpen] = useState(false)
-  const unit = UNIT_LABELS[product.measurement_unit] ?? product.measurement_unit
+  const unit = product.category === 'FUEL' ? 'L' : 'unit'
 
   return (
     <div className="flex flex-col rounded-xl border border-white/8 bg-[#18181C] p-4">
