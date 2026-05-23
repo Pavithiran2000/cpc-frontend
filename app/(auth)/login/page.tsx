@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Eye, EyeOff, AlertCircle } from 'lucide-react'
 import type { AxiosError } from 'axios'
+import Link from 'next/link'
 import { useAuth } from '@/lib/hooks/useAuth'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 
@@ -263,8 +264,13 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Footer */}
-          <p className="mt-10 text-center text-xs text-white/20">CPC © 2025</p>
+          <p className="mt-8 text-center text-xs text-white/35">
+            New station?{' '}
+            <Link href="/register" className="font-semibold text-[#E85D04] hover:text-[#F48C06]">
+              Register your station
+            </Link>
+          </p>
+          <p className="mt-4 text-center text-xs text-white/20">CPC © 2025</p>
         </div>
       </div>
     </div>
