@@ -6,7 +6,7 @@ import {
   SheetContent,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import { Sidebar } from './Sidebar'
+import { Sidebar } from './sidebar'
 
 export function MobileNav() {
   return (

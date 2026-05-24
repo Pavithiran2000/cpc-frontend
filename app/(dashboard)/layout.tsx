@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Sidebar } from '@/components/layout/Sidebar'
+import { Sidebar } from '@/components/layout/sidebar'
 import { Topbar } from '@/components/layout/Topbar'
 import { ErrorBoundary } from '@/components/shared/ErrorBoundary'
 import { Toaster } from '@/components/ui/sonner'

@@ -30,8 +30,11 @@ export interface PortalUser {
   id: string
   email: string
   name: string
+  phone?: string
   portal_role: PortalRole
   tenant_id: string
+  last_login_at?: string
+  two_factor_enabled?: boolean
   tenant?: Tenant
 }
 
