@@ -37,17 +37,17 @@ export function ConfirmDialog({
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="border-white/10 bg-[#18181C]">
+      <AlertDialogContent className="border-border bg-card">
         <AlertDialogHeader>
-          <AlertDialogTitle className="text-white">{title}</AlertDialogTitle>
+          <AlertDialogTitle className="text-foreground">{title}</AlertDialogTitle>
           {description && (
-            <AlertDialogDescription className="text-white/50">
+            <AlertDialogDescription className="text-foreground/50">
               {description}
             </AlertDialogDescription>
           )}
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel className="border-white/10 bg-transparent text-white/60 hover:bg-white/5">
+          <AlertDialogCancel className="border-border bg-transparent text-foreground/60 hover:bg-foreground/5">
             Cancel
           </AlertDialogCancel>
           <AlertDialogAction

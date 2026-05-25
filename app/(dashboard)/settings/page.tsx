@@ -36,7 +36,7 @@ const TAB_ICONS = {
 
 function TabBar({ active, onChange }: { active: Tab; onChange: (t: Tab) => void }) {
   return (
-    <div className="flex gap-1 rounded-lg border border-white/8 bg-white/[0.03] p-1 w-fit max-w-full overflow-x-auto">
+    <div className="flex gap-1 rounded-lg border border-border bg-card/50 p-1 w-fit max-w-full overflow-x-auto">
       {TABS.map((t) => {
         const Icon = TAB_ICONS[t]
         return (
@@ -47,7 +47,7 @@ function TabBar({ active, onChange }: { active: Tab; onChange: (t: Tab) => void 
               'flex items-center gap-2 rounded-md px-3 sm:px-4 py-1.5 text-sm font-medium transition-colors whitespace-nowrap',
               active === t
                 ? 'bg-[#E85D04] text-white'
-                : 'text-white/40 hover:text-white/70',
+                : 'text-foreground/40 hover:text-foreground/70',
             )}
           >
             <Icon size={13} className="shrink-0" />
@@ -63,9 +63,9 @@ function TabBar({ active, onChange }: { active: Tab; onChange: (t: Tab) => void 
 
 function inputCls(hasError?: boolean) {
   return [
-    'w-full rounded-lg border bg-white/5 px-3 py-2 text-sm text-white',
-    'placeholder:text-white/25 outline-none',
-    hasError ? 'border-rose-500/50' : 'border-white/10 focus:border-[#E85D04]/60',
+    'w-full rounded-lg border bg-background px-3 py-2 text-sm text-foreground',
+    'placeholder:text-foreground/30 outline-none transition-colors',
+    hasError ? 'border-rose-500/50' : 'border-input focus:border-[#E85D04]/60',
   ].join(' ')
 }
 
@@ -80,7 +80,7 @@ function Field({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-[11px] font-semibold uppercase tracking-widest text-white/40">
+      <label className="text-[11px] font-semibold uppercase tracking-widest text-foreground/40">
         {label}
       </label>
       {children}
@@ -91,7 +91,7 @@ function Field({
 
 function SectionCard({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rounded-xl border border-white/8 bg-[#18181C] p-5">
+    <div className="rounded-xl border border-border bg-card p-5">
       {children}
     </div>
   )
@@ -99,7 +99,7 @@ function SectionCard({ children }: { children: React.ReactNode }) {
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <p className="mb-4 text-[11px] font-semibold uppercase tracking-widest text-white/35">
+    <p className="mb-4 text-[11px] font-semibold uppercase tracking-widest text-foreground/35">
       {children}
     </p>
   )
@@ -143,20 +143,20 @@ function ToggleRow({
   badge?: string
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 py-3 border-b border-white/5 last:border-0">
+    <div className="flex items-center justify-between gap-4 py-3 border-b border-border last:border-0">
       <div className="min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
-          <p className={cn('text-sm font-medium', disabled ? 'text-white/30' : 'text-white')}>
+          <p className={cn('text-sm font-medium', disabled ? 'text-foreground/30' : 'text-foreground')}>
             {label}
           </p>
           {badge && (
-            <span className="rounded-full bg-white/8 px-2 py-px text-[10px] font-semibold text-white/35">
+            <span className="rounded-full bg-foreground/8 px-2 py-px text-[10px] font-semibold text-foreground/35">
               {badge}
             </span>
           )}
         </div>
         {description && (
-          <p className={cn('text-[11px]', disabled ? 'text-white/20' : 'text-white/40')}>
+          <p className={cn('text-[11px]', disabled ? 'text-foreground/20' : 'text-foreground/40')}>
             {description}
           </p>
         )}
@@ -168,7 +168,7 @@ function ToggleRow({
         className={cn(
           'relative h-5 w-9 rounded-full transition-colors shrink-0',
           disabled ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer',
-          checked && !disabled ? 'bg-[#E85D04]' : 'bg-white/15',
+          checked && !disabled ? 'bg-[#E85D04]' : 'bg-foreground/15',
         )}
       >
         <span
@@ -235,7 +235,7 @@ function ProfileTab() {
               disabled
               className={inputCls() + ' opacity-40 cursor-not-allowed'}
             />
-            <p className="text-[10px] text-white/30">Email cannot be changed here</p>
+            <p className="text-[10px] text-foreground/30">Email cannot be changed here</p>
           </Field>
 
           <Field label="Phone" error={errors.phone?.message}>
@@ -249,7 +249,7 @@ function ProfileTab() {
 
           <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
             <div className="flex flex-col gap-0.5">
-              <p className="text-[11px] font-semibold uppercase tracking-widest text-white/35">
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-foreground/35">
                 Role
               </p>
               <span
@@ -266,10 +266,10 @@ function ProfileTab() {
 
             {user?.last_login_at && (
               <div className="text-right">
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-white/35">
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-foreground/35">
                   Last Sign-in
                 </p>
-                <p className="font-mono text-xs text-white/40">
+                <p className="font-mono text-xs text-foreground/40">
                   {formatDateTime(user.last_login_at)}
                 </p>
               </div>
@@ -359,13 +359,13 @@ function Setup2faSheet({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-full sm:max-w-md bg-[#111114] border-white/8 overflow-y-auto">
+      <SheetContent side="right" className="w-full sm:max-w-md bg-card border-border overflow-y-auto">
         <SheetHeader className="mb-6">
-          <SheetTitle className="text-white flex items-center gap-2">
+          <SheetTitle className="text-foreground flex items-center gap-2">
             <ShieldCheck size={16} className="text-[#E85D04]" />
             Enable Two-Step Verification
           </SheetTitle>
-          <SheetDescription className="text-white/40">
+          <SheetDescription className="text-foreground/40">
             Secure your account with a TOTP authenticator app
           </SheetDescription>
         </SheetHeader>
@@ -373,28 +373,28 @@ function Setup2faSheet({
         {step === 'qr' && (
           <div className="flex flex-col gap-5">
             <div className="flex flex-col gap-2">
-              <p className="text-xs font-semibold uppercase tracking-widest text-white/35">Step 1</p>
-              <p className="text-sm text-white/70">
+              <p className="text-xs font-semibold uppercase tracking-widest text-foreground/35">Step 1</p>
+              <p className="text-sm text-foreground/70">
                 Open your authenticator app (Google Authenticator, Authy, etc.) and scan the QR code below.
               </p>
             </div>
 
             {setupMutation.isPending ? (
               <div className="flex h-48 items-center justify-center">
-                <div className="h-6 w-6 animate-spin rounded-full border-2 border-white/20 border-t-[#E85D04]" />
+                <div className="h-6 w-6 animate-spin rounded-full border-2 border-foreground/20 border-t-[#E85D04]" />
               </div>
             ) : qrUrl ? (
               <div className="flex flex-col items-center gap-3">
-                <div className="rounded-xl border border-white/10 bg-white p-3">
+                <div className="rounded-xl border border-border bg-white p-3">
                   <Image src={qrUrl} alt="2FA QR code" width={180} height={180} unoptimized />
                 </div>
-                <p className="text-[11px] text-white/30">Can&apos;t scan? Enter this key manually:</p>
-                <div className="flex w-full items-center gap-2 rounded-lg border border-white/8 bg-white/5 px-3 py-2">
-                  <code className="flex-1 font-mono text-xs text-white/60 break-all">{manualKey}</code>
+                <p className="text-[11px] text-foreground/30">Can&apos;t scan? Enter this key manually:</p>
+                <div className="flex w-full items-center gap-2 rounded-lg border border-border bg-background px-3 py-2">
+                  <code className="flex-1 font-mono text-xs text-foreground/60 break-all">{manualKey}</code>
                   <button
                     type="button"
                     onClick={handleCopy}
-                    className="shrink-0 text-white/30 transition-colors hover:text-white/70"
+                    className="shrink-0 text-foreground/30 transition-colors hover:text-foreground/70"
                   >
                     {copied ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
                   </button>
@@ -416,8 +416,8 @@ function Setup2faSheet({
         {step === 'verify' && (
           <div className="flex flex-col gap-5">
             <div className="flex flex-col gap-2">
-              <p className="text-xs font-semibold uppercase tracking-widest text-white/35">Step 2</p>
-              <p className="text-sm text-white/70">
+              <p className="text-xs font-semibold uppercase tracking-widest text-foreground/35">Step 2</p>
+              <p className="text-sm text-foreground/70">
                 Enter the 6-digit code shown in your authenticator app to confirm setup.
               </p>
             </div>
@@ -433,8 +433,8 @@ function Setup2faSheet({
                   placeholder="000000"
                   className={
                     errors.code
-                      ? 'w-full rounded-lg border border-rose-500/50 bg-white/5 px-3 py-2.5 text-center font-mono text-xl tracking-[0.4em] text-white outline-none'
-                      : 'w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2.5 text-center font-mono text-xl tracking-[0.4em] text-white outline-none focus:border-[#E85D04]/60'
+                      ? 'w-full rounded-lg border border-rose-500/50 bg-background px-3 py-2.5 text-center font-mono text-xl tracking-[0.4em] text-foreground outline-none'
+                      : 'w-full rounded-lg border border-input bg-background px-3 py-2.5 text-center font-mono text-xl tracking-[0.4em] text-foreground outline-none focus:border-[#E85D04]/60'
                   }
                 />
               </Field>
@@ -448,7 +448,7 @@ function Setup2faSheet({
               <button
                 type="button"
                 onClick={() => setStep('qr')}
-                className="text-sm text-white/35 transition-colors hover:text-white/60"
+                className="text-sm text-foreground/35 transition-colors hover:text-foreground/60"
               >
                 ← Back
               </button>
@@ -493,13 +493,13 @@ function Disable2faSheet({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-full sm:max-w-md bg-[#111114] border-white/8">
+      <SheetContent side="right" className="w-full sm:max-w-md bg-card border-border">
         <SheetHeader className="mb-6">
-          <SheetTitle className="text-white flex items-center gap-2">
+          <SheetTitle className="text-foreground flex items-center gap-2">
             <ShieldOff size={16} className="text-rose-400" />
             Disable Two-Step Verification
           </SheetTitle>
-          <SheetDescription className="text-white/40">
+          <SheetDescription className="text-foreground/40">
             Confirm with your password and current authenticator code
           </SheetDescription>
         </SheetHeader>
@@ -538,7 +538,7 @@ function Disable2faSheet({
             <button
               type="button"
               onClick={() => onOpenChange(false)}
-              className="w-full rounded-lg border border-white/8 py-2.5 text-sm text-white/40 transition-colors hover:text-white/70"
+              className="w-full rounded-lg border border-border py-2.5 text-sm text-foreground/40 transition-colors hover:text-foreground/70"
             >
               Cancel
             </button>
@@ -736,7 +736,7 @@ function PreferencesTab() {
                 'flex items-center justify-between rounded-lg border px-3 py-2.5 cursor-pointer transition-colors',
                 code === 'en'
                   ? 'border-[#E85D04]/40 bg-[#E85D04]/8'
-                  : 'border-white/8 bg-white/[0.02] opacity-45 cursor-not-allowed',
+                  : 'border-border bg-foreground/[0.02] opacity-45 cursor-not-allowed',
               )}
             >
               <div className="flex items-center gap-2.5">
@@ -748,12 +748,12 @@ function PreferencesTab() {
                   disabled={!enabled}
                   className="accent-[#E85D04]"
                 />
-                <span className={cn('text-sm', enabled ? 'text-white' : 'text-white/40')}>
+                <span className={cn('text-sm', enabled ? 'text-foreground' : 'text-foreground/40')}>
                   {label}
                 </span>
               </div>
               {!enabled && (
-                <span className="rounded-full bg-white/8 px-2 py-px text-[10px] font-semibold text-white/30">
+                <span className="rounded-full bg-foreground/8 px-2 py-px text-[10px] font-semibold text-foreground/30">
                   Coming soon
                 </span>
               )}
@@ -768,10 +768,10 @@ function PreferencesTab() {
           <select
             value={timezone}
             onChange={(e) => setTimezone(e.target.value)}
-            className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-[#E85D04]/60 cursor-pointer"
+            className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-[#E85D04]/60 cursor-pointer"
           >
             {TIMEZONES.map((tz) => (
-              <option key={tz.value} value={tz.value} className="bg-[#18181C]">
+              <option key={tz.value} value={tz.value} className="bg-card">
                 {tz.label}
               </option>
             ))}
@@ -809,7 +809,7 @@ function PreferencesTab() {
           checked={notifSummary}
           onChange={(v) => handleNotifToggle(LS_NOTIF_SUMMARY, setNotifSummary, v)}
         />
-        <p className="mt-3 text-[10px] text-white/25">
+        <p className="mt-3 text-[10px] text-foreground/25">
           Notification preferences are saved locally on this device.
         </p>
       </SectionCard>
@@ -820,12 +820,13 @@ function PreferencesTab() {
 // ─── TAB 4: Theme ─────────────────────────────────────────────────────────────
 
 const THEME_OPTIONS = [
-  { value: 'light' as const, label: 'Light', Icon: Sun  },
-  { value: 'dark'  as const, label: 'Dark',  Icon: Moon },
+  { value: 'light'  as const, label: 'Light',  Icon: Sun     },
+  { value: 'dark'   as const, label: 'Dark',   Icon: Moon    },
+  { value: 'system' as const, label: 'System', Icon: Monitor },
 ]
 
 function ThemeTab() {
-  const { resolvedTheme, setTheme } = useTheme()
+  const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
 
@@ -833,9 +834,9 @@ function ThemeTab() {
     <div className="flex flex-col gap-4 max-w-lg w-full">
       <SectionCard>
         <SectionTitle>Appearance</SectionTitle>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-3 gap-3">
           {THEME_OPTIONS.map(({ value, label, Icon }) => {
-            const active = mounted && resolvedTheme === value
+            const active = mounted && theme === value
             return (
               <button
                 key={value}
@@ -845,7 +846,7 @@ function ThemeTab() {
                   'flex flex-col items-center gap-3 rounded-xl border p-4 transition-all',
                   active
                     ? 'border-[#E85D04] bg-[#E85D04]/8 text-[#E85D04]'
-                    : 'border-white/8 bg-white/[0.02] text-white/40 hover:border-white/15 hover:text-white/65',
+                    : 'border-border bg-foreground/[0.02] text-foreground/40 hover:border-border/80 hover:text-foreground/65',
                 )}
               >
                 <Icon size={22} />
@@ -854,8 +855,8 @@ function ThemeTab() {
             )
           })}
         </div>
-        <p className="mt-4 text-[10px] text-white/25">
-          Theme preference is stored locally in your browser.
+        <p className="mt-4 text-[10px] text-foreground/25">
+          System follows your OS preference and updates automatically.
         </p>
       </SectionCard>
     </div>

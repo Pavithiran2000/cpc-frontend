@@ -18,7 +18,7 @@ export default function DashboardLayout({
   const [mobileOpen, setMobileOpen] = useState(false)
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#0A0A0B]">
+    <div className="flex h-screen overflow-hidden bg-background">
       {/* Desktop sidebar — fixed, always visible ≥ md */}
       <div className="hidden md:flex">
         <Sidebar />

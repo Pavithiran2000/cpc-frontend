@@ -8,14 +8,17 @@ import {
   useState,
 } from "react";
 
-type Theme = "dark" | "light";
+export type Theme = "dark" | "light" | "system";
+export type ResolvedTheme = "dark" | "light";
 
 interface ThemeContextValue {
-  resolvedTheme: Theme;
+  theme: Theme;
+  resolvedTheme: ResolvedTheme;
   setTheme: (theme: Theme) => void;
 }
 
 const ThemeContext = createContext<ThemeContextValue>({
+  theme: "dark",
   resolvedTheme: "dark",
   setTheme: () => {},
 });
@@ -24,25 +27,63 @@ export function useTheme(): ThemeContextValue {
   return useContext(ThemeContext);
 }
 
+function getSystemPreference(): ResolvedTheme {
+  if (typeof window === "undefined") return "dark";
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+}
+
+function resolve(t: Theme): ResolvedTheme {
+  return t === "system" ? getSystemPreference() : t;
+}
+
+function applyClass(resolved: ResolvedTheme) {
+  const root = document.documentElement;
+  root.classList.remove("dark", "light");
+  root.classList.add(resolved);
+  root.style.colorScheme = resolved;
+}
+
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>("dark");
+  const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>("dark");
 
-  // Read stored preference once on mount
+  // Restore stored preference on mount
   useEffect(() => {
     try {
       const stored = localStorage.getItem("theme") as Theme | null;
-      if (stored === "light" || stored === "dark") {
-        apply(stored);
-        setThemeState(stored);
-      }
+      const t: Theme =
+        stored === "light" || stored === "dark" || stored === "system"
+          ? stored
+          : "dark";
+      const r = resolve(t);
+      applyClass(r);
+      setThemeState(t);
+      setResolvedTheme(r);
     } catch {
       // localStorage unavailable — stay dark
     }
   }, []);
 
+  // Follow OS preference changes when in system mode
+  useEffect(() => {
+    if (theme !== "system") return;
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const handler = (e: MediaQueryListEvent) => {
+      const r: ResolvedTheme = e.matches ? "dark" : "light";
+      applyClass(r);
+      setResolvedTheme(r);
+    };
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, [theme]);
+
   const setTheme = useCallback((t: Theme) => {
-    apply(t);
+    const r = resolve(t);
+    applyClass(r);
     setThemeState(t);
+    setResolvedTheme(r);
     try {
       localStorage.setItem("theme", t);
     } catch {
@@ -51,15 +92,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <ThemeContext.Provider value={{ resolvedTheme: theme, setTheme }}>
+    <ThemeContext.Provider value={{ theme, resolvedTheme, setTheme }}>
       {children}
     </ThemeContext.Provider>
   );
-}
-
-function apply(theme: Theme) {
-  const root = document.documentElement;
-  root.classList.remove("dark", "light");
-  root.classList.add(theme);
-  root.style.colorScheme = theme;
 }

@@ -31,6 +31,10 @@ export const metadata: Metadata = {
   description: 'Multi-tenant management platform for CPC filling stations',
 }
 
+// Inline script applied before first paint to eliminate FOUC.
+// Reads localStorage and applies the correct class to <html> synchronously.
+const themeInitScript = `(function(){try{var s=localStorage.getItem('theme')||'dark';var r=s==='system'?(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'):s==='light'?'light':'dark';document.documentElement.classList.add(r);document.documentElement.style.colorScheme=r;}catch(e){document.documentElement.classList.add('dark');}})()`
+
 export default function RootLayout({
   children,
 }: {
@@ -40,9 +44,11 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`dark ${syne.variable} ${ibmPlexSans.variable} ${ibmPlexMono.variable} h-full`}
+      className={`${syne.variable} ${ibmPlexSans.variable} ${ibmPlexMono.variable} h-full`}
     >
-      <body className="h-full bg-[#0A0A0B] font-sans antialiased">
+      <body className="h-full bg-background font-sans antialiased" suppressHydrationWarning>
+        {/* Theme init must be first in body — runs synchronously before paint */}
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <ThemeProvider>
           <QueryProvider>
             <AuthProvider>{children}</AuthProvider>

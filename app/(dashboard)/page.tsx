@@ -35,6 +35,7 @@ import { StatCard }      from '@/components/shared/StatCard'
 import { StatusBadge }   from '@/components/shared/StatusBadge'
 import { EmptyState }    from '@/components/shared/EmptyState'
 import { PageHeader }    from '@/components/shared/PageHeader'
+import { useTheme }      from '@/providers/ThemeProvider'
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table'
@@ -63,12 +64,6 @@ function fuelColor(name: string, idx: number) {
 
 const GRAD_ID = 'revGrad'
 
-const tickStyle = {
-  fontSize: 10,
-  fontFamily: 'var(--font-ibm-plex-mono)',
-  fill: 'rgba(255,255,255,0.35)',
-}
-
 function RevTooltip({ active, payload, label }: {
   active?: boolean
   payload?: Array<{ value: number }>
@@ -76,8 +71,8 @@ function RevTooltip({ active, payload, label }: {
 }) {
   if (!active || !payload?.length) return null
   return (
-    <div className="rounded-lg border border-white/10 bg-[#18181C] px-3 py-2 text-xs shadow-xl">
-      <p className="mb-1 text-white/40">
+    <div className="rounded-lg border border-border bg-card px-3 py-2 text-xs shadow-xl">
+      <p className="mb-1 text-foreground/40">
         {label ? format(parseISO(label), 'd MMM yyyy') : ''}
       </p>
       <p className="number font-semibold text-[#E85D04]">
@@ -90,15 +85,27 @@ function RevTooltip({ active, payload, label }: {
 function RevenueChart({
   series,
   isLoading,
+  isDark,
 }: {
   series: DashboardReport['revenue_last_7_days']
   isLoading: boolean
+  isDark: boolean
 }) {
+  const tickFill   = isDark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.40)'
+  const gridStroke = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.06)'
+  const dotStroke  = isDark ? '#0A0A0B' : '#FEFEFE'
+
+  const tickStyle = {
+    fontSize: 10,
+    fontFamily: 'var(--font-ibm-plex-mono)',
+    fill: tickFill,
+  }
+
   if (isLoading) {
     return (
       <div className="flex h-[220px] animate-pulse items-end gap-1.5 px-2 pb-4">
         {[55, 70, 42, 88, 65, 78, 50].map((h, i) => (
-          <div key={i} className="flex-1 rounded-t bg-white/8" style={{ height: `${h}%` }} />
+          <div key={i} className="flex-1 rounded-t bg-foreground/8" style={{ height: `${h}%` }} />
         ))}
       </div>
     )
@@ -115,7 +122,7 @@ function RevenueChart({
         </defs>
         <CartesianGrid
           strokeDasharray="3 3"
-          stroke="rgba(255,255,255,0.04)"
+          stroke={gridStroke}
           vertical={false}
         />
         <XAxis
@@ -147,7 +154,7 @@ function RevenueChart({
           strokeWidth={2}
           fill={`url(#${GRAD_ID})`}
           dot={false}
-          activeDot={{ r: 4, fill: '#E85D04', stroke: '#0A0A0B', strokeWidth: 2 }}
+          activeDot={{ r: 4, fill: '#E85D04', stroke: dotStroke, strokeWidth: 2 }}
         />
       </AreaChart>
     </ResponsiveContainer>
@@ -162,9 +169,9 @@ function PieTooltipContent({ active, payload }: {
 }) {
   if (!active || !payload?.length) return null
   return (
-    <div className="rounded-lg border border-white/10 bg-[#18181C] px-3 py-2 text-xs shadow-xl">
-      <p className="text-white/50">{payload[0].name}</p>
-      <p className="number font-semibold text-white">{formatLitres(payload[0].value)}</p>
+    <div className="rounded-lg border border-border bg-card px-3 py-2 text-xs shadow-xl">
+      <p className="text-foreground/50">{payload[0].name}</p>
+      <p className="number font-semibold text-foreground">{formatLitres(payload[0].value)}</p>
     </div>
   )
 }
@@ -179,12 +186,12 @@ function FuelPieChart({
   if (isLoading) {
     return (
       <div className="flex flex-col items-center gap-4">
-        <div className="h-[170px] w-[170px] animate-pulse rounded-full bg-white/8" />
+        <div className="h-[170px] w-[170px] animate-pulse rounded-full bg-foreground/8" />
         <div className="flex gap-4">
           {[80, 60, 70].map((w, i) => (
             <div key={i} className="flex items-center gap-1.5">
-              <div className="h-2.5 w-2.5 animate-pulse rounded-full bg-white/8" />
-              <div className="h-2.5 animate-pulse rounded bg-white/8" style={{ width: w }} />
+              <div className="h-2.5 w-2.5 animate-pulse rounded-full bg-foreground/8" />
+              <div className="h-2.5 animate-pulse rounded bg-foreground/8" style={{ width: w }} />
             </div>
           ))}
         </div>
@@ -232,8 +239,8 @@ function FuelPieChart({
               className="h-2.5 w-2.5 shrink-0 rounded-full"
               style={{ background: fuelColor(item.product_name, i) }}
             />
-            <span className="text-xs text-white/55">{item.product_name}</span>
-            <span className="number text-xs font-medium text-white/80">
+            <span className="text-xs text-foreground/55">{item.product_name}</span>
+            <span className="number text-xs font-medium text-foreground/80">
               {formatLitres(item.litres)}
             </span>
           </div>
@@ -253,9 +260,9 @@ function ActiveShiftsTable({
   isLoading: boolean
 }) {
   return (
-    <div className="flex flex-col overflow-hidden rounded-lg border border-white/5">
-      <div className="flex items-center justify-between border-b border-white/5 bg-[#111114] px-4 py-3">
-        <h3 className="font-syne text-sm font-semibold text-white/80">
+    <div className="flex flex-col overflow-hidden rounded-lg border border-border">
+      <div className="flex items-center justify-between border-b border-border bg-surface px-4 py-3">
+        <h3 className="font-syne text-sm font-semibold text-foreground/80">
           Active Shift Sessions
         </h3>
         <Link
@@ -267,13 +274,13 @@ function ActiveShiftsTable({
       </div>
 
       {isLoading ? (
-        <div className="animate-pulse divide-y divide-white/5">
+        <div className="animate-pulse divide-y divide-border">
           {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="flex items-center gap-3 px-4 py-3">
-              <div className="h-3 w-20 rounded bg-white/8" />
-              <div className="h-3 w-24 rounded bg-white/8" />
-              <div className="h-4 w-14 rounded-full bg-white/8" />
-              <div className="ml-auto h-3 w-16 rounded bg-white/8" />
+              <div className="h-3 w-20 rounded bg-foreground/8" />
+              <div className="h-3 w-24 rounded bg-foreground/8" />
+              <div className="h-4 w-14 rounded-full bg-foreground/8" />
+              <div className="ml-auto h-3 w-16 rounded bg-foreground/8" />
             </div>
           ))}
         </div>
@@ -282,11 +289,11 @@ function ActiveShiftsTable({
       ) : (
         <Table>
           <TableHeader>
-            <TableRow className="border-white/5 hover:bg-transparent">
+            <TableRow className="border-border hover:bg-transparent">
               {['Date', 'Shift', 'Status', 'Opened', ''].map((h) => (
                 <TableHead
                   key={h}
-                  className="h-8 px-3 text-[10px] font-semibold uppercase tracking-widest text-white/35"
+                  className="h-8 px-3 text-[10px] font-semibold uppercase tracking-widest text-foreground/35"
                 >
                   {h}
                 </TableHead>
@@ -298,20 +305,20 @@ function ActiveShiftsTable({
               <TableRow
                 key={s.id}
                 className={cn(
-                  'border-white/5',
-                  i % 2 === 0 ? 'bg-[#18181C]' : 'bg-[#1A1A1E]',
+                  'border-border',
+                  i % 2 === 0 ? 'bg-card' : 'bg-muted/30',
                 )}
               >
-                <TableCell className="number px-3 py-2 text-xs text-white/70">
+                <TableCell className="number px-3 py-2 text-xs text-foreground/70">
                   {formatDate(s.business_date)}
                 </TableCell>
-                <TableCell className="px-3 py-2 text-xs text-white/70">
+                <TableCell className="px-3 py-2 text-xs text-foreground/70">
                   {s.shift_template?.shift_name ?? '—'}
                 </TableCell>
                 <TableCell className="px-3 py-2">
                   <StatusBadge status={s.status} />
                 </TableCell>
-                <TableCell className="number px-3 py-2 text-xs text-white/45">
+                <TableCell className="number px-3 py-2 text-xs text-foreground/45">
                   {s.opened_at ? formatDateTime(s.opened_at) : '—'}
                 </TableCell>
                 <TableCell className="px-3 py-2 text-right">
@@ -341,9 +348,9 @@ function RecentReceiptsTable({
   isLoading: boolean
 }) {
   return (
-    <div className="flex flex-col overflow-hidden rounded-lg border border-white/5">
-      <div className="flex items-center justify-between border-b border-white/5 bg-[#111114] px-4 py-3">
-        <h3 className="font-syne text-sm font-semibold text-white/80">
+    <div className="flex flex-col overflow-hidden rounded-lg border border-border">
+      <div className="flex items-center justify-between border-b border-border bg-surface px-4 py-3">
+        <h3 className="font-syne text-sm font-semibold text-foreground/80">
           Recent Bowser Receipts
         </h3>
         <Link
@@ -355,13 +362,13 @@ function RecentReceiptsTable({
       </div>
 
       {isLoading ? (
-        <div className="animate-pulse divide-y divide-white/5">
+        <div className="animate-pulse divide-y divide-border">
           {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="flex items-center gap-3 px-4 py-3">
-              <div className="h-3 w-20 rounded bg-white/8" />
-              <div className="h-3 w-28 rounded bg-white/8" />
-              <div className="h-4 w-16 rounded-full bg-white/8" />
-              <div className="ml-auto h-3 w-16 rounded bg-white/8" />
+              <div className="h-3 w-20 rounded bg-foreground/8" />
+              <div className="h-3 w-28 rounded bg-foreground/8" />
+              <div className="h-4 w-16 rounded-full bg-foreground/8" />
+              <div className="ml-auto h-3 w-16 rounded bg-foreground/8" />
             </div>
           ))}
         </div>
@@ -370,11 +377,11 @@ function RecentReceiptsTable({
       ) : (
         <Table>
           <TableHeader>
-            <TableRow className="border-white/5 hover:bg-transparent">
+            <TableRow className="border-border hover:bg-transparent">
               {['Receipt No', 'Supplier', 'Status', 'Date'].map((h) => (
                 <TableHead
                   key={h}
-                  className="h-8 px-3 text-[10px] font-semibold uppercase tracking-widest text-white/35"
+                  className="h-8 px-3 text-[10px] font-semibold uppercase tracking-widest text-foreground/35"
                 >
                   {h}
                 </TableHead>
@@ -386,20 +393,20 @@ function RecentReceiptsTable({
               <TableRow
                 key={r.id}
                 className={cn(
-                  'border-white/5',
-                  i % 2 === 0 ? 'bg-[#18181C]' : 'bg-[#1A1A1E]',
+                  'border-border',
+                  i % 2 === 0 ? 'bg-card' : 'bg-muted/30',
                 )}
               >
-                <TableCell className="number px-3 py-2 text-xs font-medium text-white/75">
+                <TableCell className="number px-3 py-2 text-xs font-medium text-foreground/75">
                   {r.receipt_no}
                 </TableCell>
-                <TableCell className="px-3 py-2 text-xs text-white/65">
+                <TableCell className="px-3 py-2 text-xs text-foreground/65">
                   {r.supplier_name ?? '—'}
                 </TableCell>
                 <TableCell className="px-3 py-2">
                   <StatusBadge status={r.status} />
                 </TableCell>
-                <TableCell className="number px-3 py-2 text-xs text-white/45">
+                <TableCell className="number px-3 py-2 text-xs text-foreground/45">
                   {formatDate(r.received_date)}
                 </TableCell>
               </TableRow>
@@ -424,16 +431,16 @@ function StockLevelBars({
 }) {
   if (isLoading) {
     return (
-      <div className="rounded-lg border border-white/5 bg-[#18181C] p-5">
-        <h3 className="font-syne mb-4 text-sm font-semibold text-white/80">
+      <div className="rounded-lg border border-border bg-card p-5">
+        <h3 className="font-syne mb-4 text-sm font-semibold text-foreground/80">
           Stock Levels
         </h3>
         <div className="animate-pulse space-y-4">
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="flex items-center gap-3">
-              <div className="h-3 w-32 shrink-0 rounded bg-white/8" />
-              <div className="h-1.5 flex-1 rounded-full bg-white/8" />
-              <div className="h-3 w-24 shrink-0 rounded bg-white/8" />
+              <div className="h-3 w-32 shrink-0 rounded bg-foreground/8" />
+              <div className="h-1.5 flex-1 rounded-full bg-foreground/8" />
+              <div className="h-3 w-24 shrink-0 rounded bg-foreground/8" />
             </div>
           ))}
         </div>
@@ -444,8 +451,8 @@ function StockLevelBars({
   if (!balances.length) return null
 
   return (
-    <div className="rounded-lg border border-white/5 bg-[#18181C] p-5">
-      <h3 className="font-syne mb-4 text-sm font-semibold text-white/80">
+    <div className="rounded-lg border border-border bg-card p-5">
+      <h3 className="font-syne mb-4 text-sm font-semibold text-foreground/80">
         Stock Levels
       </h3>
       <div className="space-y-3.5">
@@ -466,12 +473,12 @@ function StockLevelBars({
           return (
             <div key={b.id ?? idx} className="flex items-center gap-3">
               {/* Name */}
-              <span className="w-36 shrink-0 truncate text-xs text-white/55">
+              <span className="w-36 shrink-0 truncate text-xs text-foreground/55">
                 {b.product?.product_name ?? (b.product_id ? b.product_id.slice(0, 8) : 'Unknown')}
               </span>
 
               {/* Bar track */}
-              <div className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-white/8">
+              <div className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-foreground/8">
                 <div
                   className="absolute inset-y-0 left-0 rounded-full transition-all duration-700"
                   style={{ width: `${barPct.toFixed(1)}%`, background: barColor }}
@@ -480,7 +487,7 @@ function StockLevelBars({
 
               {/* Quantity + % */}
               <div className="flex w-36 shrink-0 items-center justify-between">
-                <span className="number text-xs text-white/55">
+                <span className="number text-xs text-foreground/55">
                   {isLitre ? formatLitres(qty) : `${qty} units`}
                 </span>
                 {pct !== null && (
@@ -504,6 +511,8 @@ function StockLevelBars({
 
 export default function DashboardPage() {
   const queryClient = useQueryClient()
+  const { resolvedTheme } = useTheme()
+  const isDark = resolvedTheme === 'dark'
 
   const dashQuery = useQuery({
     queryKey: ['dashboard'],
@@ -536,7 +545,6 @@ export default function DashboardPage() {
     staleTime: 10 * 60_000,
   })
 
-  // Capacity map: product_id → total litres across all tanks
   const capacityMap = useMemo(() => {
     const map: Record<string, number> = {}
     for (const t of (tanksQuery.data ?? [])) {
@@ -545,7 +553,7 @@ export default function DashboardPage() {
     return map
   }, [tanksQuery.data])
 
-  const data     = dashQuery.data
+  const data      = dashQuery.data
   const isLoading = dashQuery.isLoading
   const isFetching = dashQuery.isFetching
 
@@ -571,12 +579,12 @@ export default function DashboardPage() {
           className="mb-0"
         />
         <div className="flex shrink-0 items-center gap-2">
-          <span className="hidden text-xs text-white/30 sm:block">
+          <span className="hidden text-xs text-foreground/30 sm:block">
             Updated {lastUpdated}
           </span>
           <button
             onClick={handleRefresh}
-            className="flex h-8 items-center gap-1.5 rounded-lg border border-white/10 px-2.5 text-xs text-white/50 transition-colors hover:border-[#E85D04]/30 hover:text-[#E85D04]"
+            className="flex h-8 items-center gap-1.5 rounded-lg border border-border px-2.5 text-xs text-foreground/50 transition-colors hover:border-[#E85D04]/30 hover:text-[#E85D04]"
           >
             <RotateCcw
               size={13}
@@ -637,18 +645,19 @@ export default function DashboardPage() {
 
       {/* Row 3 — Charts (60/40) */}
       <div className="grid gap-4 lg:grid-cols-5">
-        <div className="rounded-lg border border-white/5 bg-[#18181C] p-4 lg:col-span-3">
-          <h3 className="font-syne mb-4 text-sm font-semibold text-white/80">
+        <div className="rounded-lg border border-border bg-card p-4 lg:col-span-3">
+          <h3 className="font-syne mb-4 text-sm font-semibold text-foreground/80">
             Revenue — Last 7 Days
           </h3>
           <RevenueChart
             series={data?.revenue_last_7_days ?? []}
             isLoading={isLoading}
+            isDark={isDark}
           />
         </div>
 
-        <div className="rounded-lg border border-white/5 bg-[#18181C] p-4 lg:col-span-2">
-          <h3 className="font-syne mb-4 text-sm font-semibold text-white/80">
+        <div className="rounded-lg border border-border bg-card p-4 lg:col-span-2">
+          <h3 className="font-syne mb-4 text-sm font-semibold text-foreground/80">
             Fuel Sales by Product
           </h3>
           <FuelPieChart
