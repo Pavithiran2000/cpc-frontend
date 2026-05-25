@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
@@ -41,32 +41,32 @@ export default function PumperShortfallsPage() {
     {
       id: 'date',
       header: 'Date',
-      cell: ({ row }) => <span className="number text-xs text-white/60">{formatDate(row.original.shift_date)}</span>,
+      cell: ({ row }) => <span className="number text-xs text-foreground/60">{formatDate(row.original.shift_date)}</span>,
     },
     {
       id: 'staff',
       header: 'Pumper',
       cell: ({ row }) => (
         <div>
-          <p className="font-medium text-white">{row.original.staff_name ?? row.original.staff_id}</p>
-          {row.original.employee_no && <p className="number text-[10px] text-white/40">{row.original.employee_no}</p>}
+          <p className="font-medium text-foreground">{row.original.staff_name ?? row.original.staff_id}</p>
+          {row.original.employee_no && <p className="number text-[10px] text-foreground/40">{row.original.employee_no}</p>}
         </div>
       ),
     },
     {
       id: 'shift_name',
       header: 'Shift',
-      cell: ({ row }) => <span className="text-xs text-white/60">{row.original.shift_name ?? '—'}</span>,
+      cell: ({ row }) => <span className="text-xs text-foreground/60">{row.original.shift_name ?? '—'}</span>,
     },
     {
       id: 'expected',
       header: 'Expected',
-      cell: ({ row }) => <span className="number text-xs text-white/60">{formatCurrency(row.original.expected_cash)}</span>,
+      cell: ({ row }) => <span className="number text-xs text-foreground/60">{formatCurrency(row.original.expected_cash)}</span>,
     },
     {
       id: 'actual',
       header: 'Actual',
-      cell: ({ row }) => <span className="number text-xs text-white/60">{formatCurrency(row.original.actual_cash)}</span>,
+      cell: ({ row }) => <span className="number text-xs text-foreground/60">{formatCurrency(row.original.actual_cash)}</span>,
     },
     {
       id: 'shortfall',
@@ -84,21 +84,21 @@ export default function PumperShortfallsPage() {
         description="Cash shortfall records per pumper"
         actions={
           <button onClick={() => window.print()}
-            className="flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-sm text-white/60 hover:text-white/80">
+            className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm text-foreground/60 hover:text-foreground/80">
             <Printer size={14} /> Print
           </button>
         }
       />
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-2">
-          <label className="text-[11px] uppercase tracking-widest text-white/35">From</label>
+          <label className="text-[11px] uppercase tracking-widest text-foreground/35">From</label>
           <input type="date" value={dateFrom} onChange={(e) => { setDateFrom(e.target.value); resetPage() }}
-            className="number rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white/70 outline-none focus:border-[#E85D04]/60" />
+            className="number rounded-lg border border-border bg-muted/50 px-3 py-1.5 text-sm text-foreground/70 outline-none focus:border-[#E85D04]/60" />
         </div>
         <div className="flex items-center gap-2">
-          <label className="text-[11px] uppercase tracking-widest text-white/35">To</label>
+          <label className="text-[11px] uppercase tracking-widest text-foreground/35">To</label>
           <input type="date" value={dateTo} onChange={(e) => { setDateTo(e.target.value); resetPage() }}
-            className="number rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white/70 outline-none focus:border-[#E85D04]/60" />
+            className="number rounded-lg border border-border bg-muted/50 px-3 py-1.5 text-sm text-foreground/70 outline-none focus:border-[#E85D04]/60" />
         </div>
       </div>
       <DataTable columns={columns} data={query.data?.data ?? []} total={query.data?.meta.total ?? 0}

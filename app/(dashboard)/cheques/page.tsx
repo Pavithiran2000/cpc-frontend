@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -27,9 +27,9 @@ type StatusTab = (typeof STATUS_TABS)[number]
 
 function inputCls(hasError?: boolean) {
   return [
-    'w-full rounded-lg border bg-white/5 px-3 py-2 text-sm text-white',
-    'placeholder:text-white/25 outline-none',
-    hasError ? 'border-rose-500/50' : 'border-white/10 focus:border-[#E85D04]/60',
+    'w-full rounded-lg border bg-muted/50 px-3 py-2 text-sm text-foreground',
+    'placeholder:text-muted-foreground outline-none',
+    hasError ? 'border-rose-500/50' : 'border-border focus:border-[#E85D04]/60',
   ].join(' ')
 }
 
@@ -48,7 +48,7 @@ function Field({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-[11px] font-semibold uppercase tracking-widest text-white/40">
+      <label className="text-[11px] font-semibold uppercase tracking-widest text-foreground/40">
         {label}
       </label>
       {children}
@@ -192,13 +192,13 @@ function StatusUpdateMenu({ cheque }: { cheque: Cheque }) {
     <div className="relative">
       <button
         onClick={(e) => { e.stopPropagation(); setOpen((v) => !v) }}
-        className="flex items-center gap-1 rounded-lg border border-white/10 px-2.5 py-1.5 text-xs text-white/50 hover:border-white/20 hover:text-white/80 transition-colors"
+        className="flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-xs text-foreground/50 hover:border-foreground/30 hover:text-foreground/80 transition-colors"
       >
         Update <ChevronDown size={11} />
       </button>
       {open && (
         <div
-          className="absolute right-0 top-full z-20 mt-1 min-w-[130px] rounded-lg border border-white/10 bg-[#18181C] py-1 shadow-xl"
+          className="absolute right-0 top-full z-20 mt-1 min-w-[130px] rounded-lg border border-border bg-card py-1 shadow-xl"
           onClick={(e) => e.stopPropagation()}
         >
           {transitions.map((s) => (
@@ -206,7 +206,7 @@ function StatusUpdateMenu({ cheque }: { cheque: Cheque }) {
               key={s}
               onClick={() => mutation.mutate(s)}
               disabled={mutation.isPending}
-              className="w-full px-3 py-1.5 text-left text-xs text-white/60 hover:bg-white/5 hover:text-white disabled:opacity-50"
+              className="w-full px-3 py-1.5 text-left text-xs text-foreground/60 hover:bg-muted/50 hover:text-foreground/80 disabled:opacity-50"
             >
               {s.charAt(0) + s.slice(1).toLowerCase()}
             </button>
@@ -220,7 +220,7 @@ function StatusUpdateMenu({ cheque }: { cheque: Cheque }) {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function ChequesPage() {
-  const { page, limit, setPage, setLimit, resetPage } = usePagination()
+  const { page, limit, sortBy, sortOrder, setPage, setLimit, setSort, resetPage } = usePagination()
   const [statusTab, setStatusTab] = useState<StatusTab>('ALL')
   const [search, setSearch] = useState('')
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -231,8 +231,10 @@ export default function ChequesPage() {
       limit,
       search: search || undefined,
       status: statusTab === 'ALL' ? undefined : statusTab,
+      sort_by: sortBy,
+      sort_order: sortOrder,
     }),
-    [page, limit, search, statusTab],
+    [page, limit, search, statusTab, sortBy, sortOrder],
   )
 
   const query = useQuery({
@@ -245,8 +247,9 @@ export default function ChequesPage() {
       {
         id: 'cheque_no',
         header: 'Cheque #',
+        meta: { sortKey: 'cheque_no', defaultSortDir: 'ASC' as const },
         cell: ({ row }) => (
-          <span className="number text-sm font-medium text-white">
+          <span className="number text-sm font-medium text-foreground">
             {row.original.cheque_no}
           </span>
         ),
@@ -254,11 +257,12 @@ export default function ChequesPage() {
       {
         id: 'bank_name',
         header: 'Bank',
+        meta: { sortKey: 'bank_name', defaultSortDir: 'ASC' as const },
         cell: ({ row }) => (
           <div>
-            <p className="text-sm text-white/70">{row.original.bank_name}</p>
+            <p className="text-sm text-foreground/70">{row.original.bank_name}</p>
             {row.original.branch_name && (
-              <p className="text-[10px] text-white/35">{row.original.branch_name}</p>
+              <p className="text-[10px] text-foreground/35">{row.original.branch_name}</p>
             )}
           </div>
         ),
@@ -266,8 +270,9 @@ export default function ChequesPage() {
       {
         id: 'amount',
         header: 'Amount',
+        meta: { sortKey: 'amount', defaultSortDir: 'DESC' as const },
         cell: ({ row }) => (
-          <span className="number text-sm font-semibold text-white">
+          <span className="number text-sm font-semibold text-foreground">
             {formatCurrency(row.original.amount)}
           </span>
         ),
@@ -276,7 +281,7 @@ export default function ChequesPage() {
         id: 'cheque_date',
         header: 'Cheque Date',
         cell: ({ row }) => (
-          <span className="number text-xs text-white/50">
+          <span className="number text-xs text-foreground/50">
             {row.original.cheque_date ? formatDate(row.original.cheque_date) : '—'}
           </span>
         ),
@@ -284,8 +289,9 @@ export default function ChequesPage() {
       {
         id: 'received_date',
         header: 'Received',
+        meta: { sortKey: 'received_date', defaultSortDir: 'DESC' as const },
         cell: ({ row }) => (
-          <span className="number text-xs text-white/50">
+          <span className="number text-xs text-foreground/50">
             {formatDate(row.original.received_date)}
           </span>
         ),
@@ -293,6 +299,7 @@ export default function ChequesPage() {
       {
         id: 'status',
         header: 'Status',
+        meta: { sortKey: 'status', defaultSortDir: 'ASC' as const },
         cell: ({ row }) => <StatusBadge status={row.original.status} />,
       },
       {
@@ -324,7 +331,7 @@ export default function ChequesPage() {
       />
 
       {/* Status filter tabs */}
-      <div className="flex flex-wrap gap-1 rounded-lg border border-white/8 bg-white/[0.03] p-1 w-fit">
+      <div className="flex flex-wrap gap-1 rounded-lg border border-border bg-muted/30 p-1 w-fit">
         {STATUS_TABS.map((t) => (
           <button
             key={t}
@@ -333,7 +340,7 @@ export default function ChequesPage() {
               'rounded-md px-3 py-1.5 text-xs font-medium transition-colors',
               statusTab === t
                 ? 'bg-[#E85D04] text-white'
-                : 'text-white/40 hover:text-white/70',
+                : 'text-foreground/40 hover:text-foreground/70',
             )}
           >
             {t.charAt(0) + t.slice(1).toLowerCase()}
@@ -353,15 +360,18 @@ export default function ChequesPage() {
         searchable
         onSearch={(q) => { setSearch(q); resetPage() }}
         emptyMessage="No cheques found"
+        sortBy={sortBy}
+        sortOrder={sortOrder}
+        onSortChange={setSort}
       />
 
       <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
         <SheetContent
           side="right"
-          className="flex w-full flex-col border-l border-white/8 bg-[#111114] p-0 sm:max-w-[420px]"
+          className="flex w-full flex-col border-l border-border bg-card p-0 sm:max-w-[420px]"
         >
-          <SheetHeader className="border-b border-white/5 px-5 py-4">
-            <SheetTitle className="font-syne text-base font-semibold text-white">
+          <SheetHeader className="border-b border-border/60 px-5 py-4">
+            <SheetTitle className="font-syne text-base font-semibold text-foreground">
               Add Cheque
             </SheetTitle>
           </SheetHeader>

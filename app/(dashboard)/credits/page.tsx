@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useMemo } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -33,7 +33,7 @@ type Tab = (typeof TABS)[number]
 
 function TabBar({ active, onChange }: { active: Tab; onChange: (t: Tab) => void }) {
   return (
-    <div className="flex gap-1 rounded-lg border border-white/8 bg-white/[0.03] p-1 w-fit">
+    <div className="flex gap-1 rounded-lg border border-border bg-muted/30 p-1 w-fit">
       {TABS.map((t) => (
         <button
           key={t}
@@ -42,7 +42,7 @@ function TabBar({ active, onChange }: { active: Tab; onChange: (t: Tab) => void 
             'rounded-md px-4 py-1.5 text-sm font-medium transition-colors',
             active === t
               ? 'bg-[#E85D04] text-white'
-              : 'text-white/40 hover:text-white/70',
+              : 'text-foreground/40 hover:text-foreground/70',
           )}
         >
           {t}
@@ -54,9 +54,9 @@ function TabBar({ active, onChange }: { active: Tab; onChange: (t: Tab) => void 
 
 function inputCls(hasError?: boolean) {
   return [
-    'w-full rounded-lg border bg-white/5 px-3 py-2 text-sm text-white',
-    'placeholder:text-white/25 outline-none',
-    hasError ? 'border-rose-500/50' : 'border-white/10 focus:border-[#E85D04]/60',
+    'w-full rounded-lg border bg-muted/50 px-3 py-2 text-sm text-foreground',
+    'placeholder:text-muted-foreground outline-none',
+    hasError ? 'border-rose-500/50' : 'border-border focus:border-[#E85D04]/60',
   ].join(' ')
 }
 
@@ -75,7 +75,7 @@ function Field({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-[11px] font-semibold uppercase tracking-widest text-white/40">
+      <label className="text-[11px] font-semibold uppercase tracking-widest text-foreground/40">
         {label}
       </label>
       {children}
@@ -179,15 +179,15 @@ function CustomerFormContent({
 }
 
 function CustomersTab() {
-  const { page, limit, setPage, setLimit, resetPage } = usePagination()
+  const { page, limit, sortBy, sortOrder, setPage, setLimit, setSort, resetPage } = usePagination()
   const [search, setSearch] = useState('')
   const [drawerCustomer, setDrawerCustomer] = useState<CreditCustomer | null | undefined>(
     undefined,
   )
 
   const filters = useMemo(
-    () => ({ page, limit, search: search || undefined }),
-    [page, limit, search],
+    () => ({ page, limit, search: search || undefined, sort_by: sortBy, sort_order: sortOrder }),
+    [page, limit, search, sortBy, sortOrder],
   )
 
   const query = useQuery({
@@ -200,22 +200,24 @@ function CustomersTab() {
       {
         id: 'customer_name',
         header: 'Name',
+        meta: { sortKey: 'customer_name', defaultSortDir: 'ASC' as const },
         cell: ({ row }) => (
-          <p className="font-medium text-white">{row.original.customer_name}</p>
+          <p className="font-medium text-foreground">{row.original.customer_name}</p>
         ),
       },
       {
         id: 'phone',
         header: 'Contact',
         cell: ({ row }) => (
-          <span className="text-xs text-white/50">{row.original.phone ?? '—'}</span>
+          <span className="text-xs text-foreground/50">{row.original.phone ?? '—'}</span>
         ),
       },
       {
         id: 'credit_limit',
         header: 'Credit Limit',
+        meta: { sortKey: 'credit_limit', defaultSortDir: 'DESC' as const },
         cell: ({ row }) => (
-          <span className="number text-xs text-white/50">
+          <span className="number text-xs text-foreground/50">
             {row.original.credit_limit != null
               ? formatCurrency(row.original.credit_limit)
               : '—'}
@@ -225,6 +227,7 @@ function CustomersTab() {
       {
         id: 'status',
         header: 'Status',
+        meta: { sortKey: 'status', defaultSortDir: 'ASC' as const },
         cell: ({ row }) => <StatusBadge status={row.original.status} />,
       },
     ],
@@ -255,6 +258,9 @@ function CustomersTab() {
         onSearch={(q) => { setSearch(q); resetPage() }}
         emptyMessage="No credit customers found"
         onRowClick={(row) => setDrawerCustomer(row)}
+        sortBy={sortBy}
+        sortOrder={sortOrder}
+        onSortChange={setSort}
       />
 
       <Sheet
@@ -263,10 +269,10 @@ function CustomersTab() {
       >
         <SheetContent
           side="right"
-          className="flex w-full flex-col border-l border-white/8 bg-[#111114] p-0 sm:max-w-[420px]"
+          className="flex w-full flex-col border-l border-border bg-card p-0 sm:max-w-[420px]"
         >
-          <SheetHeader className="border-b border-white/5 px-5 py-4">
-            <SheetTitle className="font-syne text-base font-semibold text-white">
+          <SheetHeader className="border-b border-border/60 px-5 py-4">
+            <SheetTitle className="font-syne text-base font-semibold text-foreground">
               {drawerCustomer ? 'Edit Customer' : 'Add Customer'}
             </SheetTitle>
           </SheetHeader>
@@ -341,9 +347,9 @@ function SaleFormContent({ onSuccess }: { onSuccess: () => void }) {
     <form onSubmit={onSubmit} className="flex flex-col gap-4">
       <Field label="Customer" error={errors.customer_id?.message}>
         <select {...register('customer_id')} className={selectCls(!!errors.customer_id)}>
-          <option value="" className="bg-[#18181C]">Select customer…</option>
+          <option value="" className="bg-card">Select customer…</option>
           {customers.map((c) => (
-            <option key={c.id} value={c.id} className="bg-[#18181C]">
+            <option key={c.id} value={c.id} className="bg-card">
               {c.customer_name}
             </option>
           ))}
@@ -351,9 +357,9 @@ function SaleFormContent({ onSuccess }: { onSuccess: () => void }) {
       </Field>
       <Field label="Product" error={errors.product_id?.message}>
         <select {...register('product_id')} className={selectCls(!!errors.product_id)}>
-          <option value="" className="bg-[#18181C]">Select product…</option>
+          <option value="" className="bg-card">Select product…</option>
           {products.map((p) => (
-            <option key={p.id} value={p.id} className="bg-[#18181C]">
+            <option key={p.id} value={p.id} className="bg-card">
               {p.product_name} ({p.category})
             </option>
           ))}
@@ -388,9 +394,9 @@ function SaleFormContent({ onSuccess }: { onSuccess: () => void }) {
           {...register('shift_session_id')}
           className={selectCls(!!errors.shift_session_id)}
         >
-          <option value="" className="bg-[#18181C]">None</option>
+          <option value="" className="bg-card">None</option>
           {sessions.map((s) => (
-            <option key={s.id} value={s.id} className="bg-[#18181C]">
+            <option key={s.id} value={s.id} className="bg-card">
               {formatDate(s.business_date)} — {s.shift_template?.shift_name ?? s.shift_template_id}
             </option>
           ))}
@@ -415,7 +421,7 @@ function SaleFormContent({ onSuccess }: { onSuccess: () => void }) {
 }
 
 function CreditSalesTab() {
-  const { page, limit, setPage, setLimit, resetPage } = usePagination()
+  const { page, limit, sortBy, sortOrder, setPage, setLimit, setSort, resetPage } = usePagination()
   const [search, setSearch] = useState('')
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
@@ -428,8 +434,10 @@ function CreditSalesTab() {
       search: search || undefined,
       date_from: dateFrom || undefined,
       date_to: dateTo || undefined,
+      sort_by: sortBy,
+      sort_order: sortOrder,
     }),
-    [page, limit, search, dateFrom, dateTo],
+    [page, limit, search, dateFrom, dateTo, sortBy, sortOrder],
   )
 
   const query = useQuery({
@@ -442,8 +450,9 @@ function CreditSalesTab() {
       {
         id: 'date',
         header: 'Date',
+        meta: { sortKey: 'created_at', defaultSortDir: 'DESC' as const },
         cell: ({ row }) => (
-          <span className="number text-xs text-white/60">
+          <span className="number text-xs text-foreground/60">
             {formatDate(row.original.created_at)}
           </span>
         ),
@@ -452,7 +461,7 @@ function CreditSalesTab() {
         id: 'customer',
         header: 'Customer',
         cell: ({ row }) => (
-          <span className="text-sm font-medium text-white">
+          <span className="text-sm font-medium text-foreground">
             {row.original.customer?.customer_name ?? row.original.customer_id}
           </span>
         ),
@@ -461,7 +470,7 @@ function CreditSalesTab() {
         id: 'product',
         header: 'Product',
         cell: ({ row }) => (
-          <span className="text-xs text-white/60">
+          <span className="text-xs text-foreground/60">
             {row.original.product?.product_name ?? row.original.product_id}
           </span>
         ),
@@ -470,7 +479,7 @@ function CreditSalesTab() {
         id: 'quantity',
         header: 'Qty',
         cell: ({ row }) => (
-          <span className="number text-xs text-white/60">
+          <span className="number text-xs text-foreground/60">
             {row.original.quantity.toFixed(3)}
           </span>
         ),
@@ -479,7 +488,7 @@ function CreditSalesTab() {
         id: 'unit_price',
         header: 'Unit Price',
         cell: ({ row }) => (
-          <span className="number text-xs text-white/50">
+          <span className="number text-xs text-foreground/50">
             {formatCurrency(row.original.unit_price)}
           </span>
         ),
@@ -487,8 +496,9 @@ function CreditSalesTab() {
       {
         id: 'total_amount',
         header: 'Total',
+        meta: { sortKey: 'total_amount', defaultSortDir: 'DESC' as const },
         cell: ({ row }) => (
-          <span className="number text-sm font-medium text-white">
+          <span className="number text-sm font-medium text-foreground">
             {formatCurrency(row.original.total_amount)}
           </span>
         ),
@@ -496,6 +506,7 @@ function CreditSalesTab() {
       {
         id: 'status',
         header: 'Status',
+        meta: { sortKey: 'status', defaultSortDir: 'ASC' as const },
         cell: ({ row }) => <StatusBadge status={row.original.status} />,
       },
     ],
@@ -510,14 +521,14 @@ function CreditSalesTab() {
             type="date"
             value={dateFrom}
             onChange={(e) => { setDateFrom(e.target.value); resetPage() }}
-            className="number rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white outline-none focus:border-[#E85D04]/50"
+            className="number rounded-lg border border-border bg-muted/50 px-3 py-1.5 text-xs text-foreground outline-none focus:border-[#E85D04]/50"
           />
-          <span className="text-white/30 text-xs">to</span>
+          <span className="text-foreground/30 text-xs">to</span>
           <input
             type="date"
             value={dateTo}
             onChange={(e) => { setDateTo(e.target.value); resetPage() }}
-            className="number rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white outline-none focus:border-[#E85D04]/50"
+            className="number rounded-lg border border-border bg-muted/50 px-3 py-1.5 text-xs text-foreground outline-none focus:border-[#E85D04]/50"
           />
         </div>
         <button
@@ -540,15 +551,18 @@ function CreditSalesTab() {
         searchable
         onSearch={(q) => { setSearch(q); resetPage() }}
         emptyMessage="No credit sales found"
+        sortBy={sortBy}
+        sortOrder={sortOrder}
+        onSortChange={setSort}
       />
 
       <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
         <SheetContent
           side="right"
-          className="flex w-full flex-col border-l border-white/8 bg-[#111114] p-0 sm:max-w-[440px]"
+          className="flex w-full flex-col border-l border-border bg-card p-0 sm:max-w-[440px]"
         >
-          <SheetHeader className="border-b border-white/5 px-5 py-4">
-            <SheetTitle className="font-syne text-base font-semibold text-white">
+          <SheetHeader className="border-b border-border/60 px-5 py-4">
+            <SheetTitle className="font-syne text-base font-semibold text-foreground">
               Add Credit Sale
             </SheetTitle>
           </SheetHeader>
@@ -621,9 +635,9 @@ function CollectionFormContent({ onSuccess }: { onSuccess: () => void }) {
     <form onSubmit={onSubmit} className="flex flex-col gap-4">
       <Field label="Customer" error={errors.customer_id?.message}>
         <select {...register('customer_id')} className={selectCls(!!errors.customer_id)}>
-          <option value="" className="bg-[#18181C]">Select customer…</option>
+          <option value="" className="bg-card">Select customer…</option>
           {customers.map((c) => (
-            <option key={c.id} value={c.id} className="bg-[#18181C]">
+            <option key={c.id} value={c.id} className="bg-card">
               {c.customer_name}
             </option>
           ))}
@@ -635,9 +649,9 @@ function CollectionFormContent({ onSuccess }: { onSuccess: () => void }) {
           className={selectCls(!!errors.credit_sale_id)}
           disabled={!selectedCustomerId}
         >
-          <option value="" className="bg-[#18181C]">Select sale…</option>
+          <option value="" className="bg-card">Select sale…</option>
           {filteredSales.map((s) => (
-            <option key={s.id} value={s.id} className="bg-[#18181C]">
+            <option key={s.id} value={s.id} className="bg-card">
               {formatDate(s.created_at)} — {formatCurrency(s.total_amount)} ({s.status})
             </option>
           ))}
@@ -666,9 +680,9 @@ function CollectionFormContent({ onSuccess }: { onSuccess: () => void }) {
           {...register('payment_method')}
           className={selectCls(!!errors.payment_method)}
         >
-          <option value="CASH" className="bg-[#18181C]">Cash</option>
-          <option value="CHEQUE" className="bg-[#18181C]">Cheque</option>
-          <option value="TRANSFER" className="bg-[#18181C]">Transfer</option>
+          <option value="CASH" className="bg-card">Cash</option>
+          <option value="CHEQUE" className="bg-card">Cheque</option>
+          <option value="TRANSFER" className="bg-card">Transfer</option>
         </select>
       </Field>
       <button
@@ -683,7 +697,7 @@ function CollectionFormContent({ onSuccess }: { onSuccess: () => void }) {
 }
 
 function CollectionsTab() {
-  const { page, limit, setPage, setLimit, resetPage } = usePagination()
+  const { page, limit, sortBy, sortOrder, setPage, setLimit, setSort, resetPage } = usePagination()
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -694,8 +708,10 @@ function CollectionsTab() {
       limit,
       date_from: dateFrom || undefined,
       date_to: dateTo || undefined,
+      sort_by: sortBy,
+      sort_order: sortOrder,
     }),
-    [page, limit, dateFrom, dateTo],
+    [page, limit, dateFrom, dateTo, sortBy, sortOrder],
   )
 
   const query = useQuery({
@@ -708,8 +724,9 @@ function CollectionsTab() {
       {
         id: 'date',
         header: 'Date',
+        meta: { sortKey: 'collection_date', defaultSortDir: 'DESC' as const },
         cell: ({ row }) => (
-          <span className="number text-xs text-white/60">
+          <span className="number text-xs text-foreground/60">
             {formatDate(row.original.collection_date)}
           </span>
         ),
@@ -718,7 +735,7 @@ function CollectionsTab() {
         id: 'customer',
         header: 'Customer',
         cell: ({ row }) => (
-          <span className="text-sm font-medium text-white">
+          <span className="text-sm font-medium text-foreground">
             {row.original.customer_id}
           </span>
         ),
@@ -726,6 +743,7 @@ function CollectionsTab() {
       {
         id: 'amount',
         header: 'Amount',
+        meta: { sortKey: 'amount_collected', defaultSortDir: 'DESC' as const },
         cell: ({ row }) => (
           <span className="number text-sm font-semibold text-emerald-400">
             {formatCurrency(row.original.amount_collected)}
@@ -735,8 +753,9 @@ function CollectionsTab() {
       {
         id: 'payment_method',
         header: 'Method',
+        meta: { sortKey: 'payment_method', defaultSortDir: 'ASC' as const },
         cell: ({ row }) => (
-          <span className="rounded-full bg-white/8 px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide text-white/60">
+          <span className="rounded-full bg-muted/50 px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide text-foreground/60">
             {row.original.payment_method}
           </span>
         ),
@@ -753,14 +772,14 @@ function CollectionsTab() {
             type="date"
             value={dateFrom}
             onChange={(e) => { setDateFrom(e.target.value); resetPage() }}
-            className="number rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white outline-none focus:border-[#E85D04]/50"
+            className="number rounded-lg border border-border bg-muted/50 px-3 py-1.5 text-xs text-foreground outline-none focus:border-[#E85D04]/50"
           />
-          <span className="text-white/30 text-xs">to</span>
+          <span className="text-foreground/30 text-xs">to</span>
           <input
             type="date"
             value={dateTo}
             onChange={(e) => { setDateTo(e.target.value); resetPage() }}
-            className="number rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white outline-none focus:border-[#E85D04]/50"
+            className="number rounded-lg border border-border bg-muted/50 px-3 py-1.5 text-xs text-foreground outline-none focus:border-[#E85D04]/50"
           />
         </div>
         <button
@@ -781,15 +800,18 @@ function CollectionsTab() {
         onLimitChange={setLimit}
         isLoading={query.isLoading}
         emptyMessage="No collections found"
+        sortBy={sortBy}
+        sortOrder={sortOrder}
+        onSortChange={setSort}
       />
 
       <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
         <SheetContent
           side="right"
-          className="flex w-full flex-col border-l border-white/8 bg-[#111114] p-0 sm:max-w-[420px]"
+          className="flex w-full flex-col border-l border-border bg-card p-0 sm:max-w-[420px]"
         >
-          <SheetHeader className="border-b border-white/5 px-5 py-4">
-            <SheetTitle className="font-syne text-base font-semibold text-white">
+          <SheetHeader className="border-b border-border/60 px-5 py-4">
+            <SheetTitle className="font-syne text-base font-semibold text-foreground">
               Record Collection
             </SheetTitle>
           </SheetHeader>

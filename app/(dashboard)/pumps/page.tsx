@@ -21,9 +21,9 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 
 function inputCls(hasError?: boolean) {
   return [
-    'w-full rounded-lg border bg-white/5 px-3 py-2 text-sm text-white',
-    'placeholder:text-white/25 outline-none',
-    hasError ? 'border-rose-500/50' : 'border-white/10 focus:border-[#E85D04]/60',
+    'w-full rounded-lg border bg-muted/50 px-3 py-2 text-sm text-foreground',
+    'placeholder:text-muted-foreground outline-none',
+    hasError ? 'border-rose-500/50' : 'border-border focus:border-[#E85D04]/60',
   ].join(' ')
 }
 
@@ -38,7 +38,7 @@ function Field({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-[11px] font-semibold uppercase tracking-widest text-white/40">
+      <label className="text-[11px] font-semibold uppercase tracking-widest text-foreground/40">
         {label}
       </label>
       {children}
@@ -110,10 +110,10 @@ function AddPumpSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="flex w-full flex-col border-l border-white/8 bg-[#111114] p-0 sm:max-w-[560px]"
+        className="flex w-full flex-col border-l border-border bg-card p-0 sm:max-w-[560px]"
       >
-        <SheetHeader className="border-b border-white/5 px-5 py-4">
-          <SheetTitle className="font-syne text-base font-semibold text-white">
+        <SheetHeader className="border-b border-border/60 px-5 py-4">
+          <SheetTitle className="font-syne text-base font-semibold text-foreground">
             New Pump
           </SheetTitle>
         </SheetHeader>
@@ -139,7 +139,7 @@ function AddPumpSheet({
             {/* Nozzle builder */}
             <div>
               <div className="flex items-center justify-between mb-3">
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-white/40">
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-foreground/40">
                   Nozzles
                 </p>
                 <button
@@ -167,17 +167,17 @@ function AddPumpSheet({
                 {fields.map((field, idx) => (
                   <div
                     key={field.id}
-                    className="rounded-lg border border-white/8 bg-white/[0.02] p-3"
+                    className="rounded-lg border border-border bg-muted/20 p-3"
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <span className="number text-[10px] text-white/30">
+                      <span className="number text-[10px] text-foreground/30">
                         Nozzle {idx + 1}
                       </span>
                       {fields.length > 1 && (
                         <button
                           type="button"
                           onClick={() => remove(idx)}
-                          className="rounded p-0.5 text-white/20 hover:bg-rose-500/10 hover:text-rose-400"
+                          className="rounded p-0.5 text-foreground/20 hover:bg-rose-500/10 hover:text-rose-400"
                         >
                           <Trash2 size={11} />
                         </button>
@@ -217,9 +217,9 @@ function AddPumpSheet({
                             ' cursor-pointer'
                           }
                         >
-                          <option value="" className="bg-[#18181C]">Select…</option>
+                          <option value="" className="bg-card">Select…</option>
                           {fuelProducts.map((p) => (
-                            <option key={p.id} value={p.id} className="bg-[#18181C]">
+                            <option key={p.id} value={p.id} className="bg-card">
                               {p.product_name}
                             </option>
                           ))}
@@ -294,10 +294,10 @@ function EditPumpModal({
       onClick={() => onOpenChange(false)}
     >
       <div
-        className="w-full max-w-sm rounded-xl border border-white/10 bg-[#18181C] p-5"
+        className="w-full max-w-sm rounded-xl border border-border bg-card p-5"
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 className="mb-4 font-syne text-base font-semibold text-white">Edit Pump</h3>
+        <h3 className="mb-4 font-syne text-base font-semibold text-foreground">Edit Pump</h3>
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
           <Field label="Pump Name" error={errors.pump_name?.message}>
             <input
@@ -310,15 +310,15 @@ function EditPumpModal({
               {...register('status')}
               className={inputCls(!!errors.status) + ' cursor-pointer'}
             >
-              <option value="ACTIVE"   className="bg-[#18181C]">Active</option>
-              <option value="INACTIVE" className="bg-[#18181C]">Inactive</option>
+              <option value="ACTIVE"   className="bg-card">Active</option>
+              <option value="INACTIVE" className="bg-card">Inactive</option>
             </select>
           </Field>
           <div className="flex gap-2 pt-1">
             <button
               type="button"
               onClick={() => onOpenChange(false)}
-              className="flex-1 rounded-lg border border-white/10 py-2 text-sm text-white/60 hover:bg-white/5"
+              className="flex-1 rounded-lg border border-border py-2 text-sm text-foreground/60 hover:bg-muted/50"
             >
               Cancel
             </button>
@@ -393,10 +393,10 @@ function EditNozzleModal({
       onClick={() => onOpenChange(false)}
     >
       <div
-        className="w-full max-w-sm rounded-xl border border-white/10 bg-[#18181C] p-5"
+        className="w-full max-w-sm rounded-xl border border-border bg-card p-5"
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 className="mb-4 font-syne text-base font-semibold text-white">Edit Nozzle</h3>
+        <h3 className="mb-4 font-syne text-base font-semibold text-foreground">Edit Nozzle</h3>
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
           <div className="grid grid-cols-2 gap-4">
             <Field label="Code" error={errors.nozzle_code?.message}>
@@ -418,7 +418,7 @@ function EditNozzleModal({
               className={inputCls(!!errors.product_id) + ' cursor-pointer'}
             >
               {fuelProducts.map((p) => (
-                <option key={p.id} value={p.id} className="bg-[#18181C]">
+                <option key={p.id} value={p.id} className="bg-card">
                   {p.product_name}
                 </option>
               ))}
@@ -440,15 +440,15 @@ function EditNozzleModal({
               {...register('status')}
               className={inputCls(!!errors.status) + ' cursor-pointer'}
             >
-              <option value="ACTIVE"   className="bg-[#18181C]">Active</option>
-              <option value="INACTIVE" className="bg-[#18181C]">Inactive</option>
+              <option value="ACTIVE"   className="bg-card">Active</option>
+              <option value="INACTIVE" className="bg-card">Inactive</option>
             </select>
           </Field>
           <div className="flex gap-2 pt-1">
             <button
               type="button"
               onClick={() => onOpenChange(false)}
-              className="flex-1 rounded-lg border border-white/10 py-2 text-sm text-white/60 hover:bg-white/5"
+              className="flex-1 rounded-lg border border-border py-2 text-sm text-foreground/60 hover:bg-muted/50"
             >
               Cancel
             </button>
@@ -517,10 +517,10 @@ function AddNozzleModal({
       onClick={() => onOpenChange(false)}
     >
       <div
-        className="w-full max-w-sm rounded-xl border border-white/10 bg-[#18181C] p-5"
+        className="w-full max-w-sm rounded-xl border border-border bg-card p-5"
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 className="mb-4 font-syne text-base font-semibold text-white">Add Nozzle</h3>
+        <h3 className="mb-4 font-syne text-base font-semibold text-foreground">Add Nozzle</h3>
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
           <div className="grid grid-cols-2 gap-4">
             <Field label="Code" error={errors.nozzle_code?.message}>
@@ -543,9 +543,9 @@ function AddNozzleModal({
               {...register('product_id')}
               className={inputCls(!!errors.product_id) + ' cursor-pointer'}
             >
-              <option value="" className="bg-[#18181C]">Select…</option>
+              <option value="" className="bg-card">Select…</option>
               {fuelProducts.map((p) => (
-                <option key={p.id} value={p.id} className="bg-[#18181C]">
+                <option key={p.id} value={p.id} className="bg-card">
                   {p.product_name}
                 </option>
               ))}
@@ -555,7 +555,7 @@ function AddNozzleModal({
             <button
               type="button"
               onClick={() => onOpenChange(false)}
-              className="flex-1 rounded-lg border border-white/10 py-2 text-sm text-white/60 hover:bg-white/5"
+              className="flex-1 rounded-lg border border-border py-2 text-sm text-foreground/60 hover:bg-muted/50"
             >
               Cancel
             </button>
@@ -585,19 +585,19 @@ function NozzleCard({
   const [editOpen, setEditOpen] = useState(false)
 
   return (
-    <div className="flex items-center justify-between rounded-lg bg-white/[0.03] px-3 py-2">
+    <div className="flex items-center justify-between rounded-lg bg-muted/30 px-3 py-2">
       <div className="flex items-center gap-2">
         <Fuel size={12} className="shrink-0 text-amber-400/60" />
         <div>
-          <p className="number text-[10px] text-white/30">{nozzle.nozzle_code}</p>
-          <p className="text-xs font-medium text-white/70">{nozzle.nozzle_name}</p>
+          <p className="number text-[10px] text-foreground/30">{nozzle.nozzle_code}</p>
+          <p className="text-xs font-medium text-foreground/70">{nozzle.nozzle_name}</p>
           {nozzle.product && (
-            <p className="text-[10px] text-white/30">{nozzle.product.product_name}</p>
+            <p className="text-[10px] text-foreground/30">{nozzle.product.product_name}</p>
           )}
         </div>
       </div>
       <div className="flex items-center gap-2">
-        <span className="number text-[10px] text-white/25">
+        <span className="number text-[10px] text-foreground/25">
           {nozzle.meter_capacity != null
             ? Number(nozzle.meter_capacity).toLocaleString('en-LK', { maximumFractionDigits: 0 })
             : '—'}{' '}
@@ -606,7 +606,7 @@ function NozzleCard({
         <StatusBadge status={nozzle.status} />
         <button
           onClick={() => setEditOpen(true)}
-          className="rounded p-1 text-white/20 hover:bg-white/5 hover:text-white/60"
+          className="rounded p-1 text-foreground/20 hover:bg-muted/50 hover:text-foreground/60"
         >
           <Pencil size={11} />
         </button>
@@ -635,13 +635,13 @@ function PumpCard({
   const [addNozzleOpen, setAddNozzleOpen] = useState(false)
 
   return (
-    <div className="flex flex-col rounded-xl border border-white/8 bg-[#18181C]">
+    <div className="flex flex-col rounded-xl border border-border bg-card">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-white/5 px-4 py-3">
+      <div className="flex items-center justify-between border-b border-border/60 px-4 py-3">
         <div>
           <div className="flex items-center gap-2">
-            <p className="font-syne text-sm font-semibold text-white">{pump.pump_name}</p>
-            <span className="number rounded bg-white/8 px-1.5 py-0.5 text-[10px] text-white/40">
+            <p className="font-syne text-sm font-semibold text-foreground">{pump.pump_name}</p>
+            <span className="number rounded bg-muted/50 px-1.5 py-0.5 text-[10px] text-foreground/40">
               {pump.pump_code}
             </span>
           </div>
@@ -650,7 +650,7 @@ function PumpCard({
           <StatusBadge status={pump.status} />
           <button
             onClick={() => setEditPumpOpen(true)}
-            className="rounded p-1.5 text-white/30 hover:bg-white/5 hover:text-white/70"
+            className="rounded p-1.5 text-foreground/30 hover:bg-muted/50 hover:text-foreground/70"
           >
             <Pencil size={13} />
           </button>
@@ -660,7 +660,7 @@ function PumpCard({
       {/* Nozzles */}
       <div className="flex flex-col gap-2 p-3">
         {(pump.nozzles ?? []).length === 0 ? (
-          <p className="text-center text-[11px] text-white/20">No nozzles</p>
+          <p className="text-center text-[11px] text-foreground/20">No nozzles</p>
         ) : (
           (pump.nozzles ?? []).map((nozzle) => (
             <NozzleCard key={nozzle.id} nozzle={nozzle} fuelProducts={fuelProducts} />
@@ -668,7 +668,7 @@ function PumpCard({
         )}
         <button
           onClick={() => setAddNozzleOpen(true)}
-          className="flex items-center justify-center gap-1 rounded-lg border border-dashed border-white/10 py-1.5 text-xs text-white/25 transition-colors hover:border-[#E85D04]/30 hover:text-[#E85D04]/60"
+          className="flex items-center justify-center gap-1 rounded-lg border border-dashed border-border py-1.5 text-xs text-foreground/25 transition-colors hover:border-[#E85D04]/30 hover:text-[#E85D04]/60"
         >
           <Plus size={11} /> Add Nozzle
         </button>
@@ -722,11 +722,11 @@ export default function PumpsPage() {
       {pumpsQuery.isLoading ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-48 animate-pulse rounded-xl bg-white/5" />
+            <div key={i} className="h-48 animate-pulse rounded-xl bg-muted/50" />
           ))}
         </div>
       ) : pumps.length === 0 ? (
-        <p className="text-sm text-white/30">No pumps configured yet.</p>
+        <p className="text-sm text-foreground/30">No pumps configured yet.</p>
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {pumps.map((pump) => (

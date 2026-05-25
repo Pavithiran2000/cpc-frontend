@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useMemo, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
@@ -24,11 +24,11 @@ const ACTION_COLORS: Record<string, string> = {
   UPDATE: 'bg-blue-500/15 text-blue-400',
   DELETE: 'bg-rose-500/15 text-rose-400',
   LOGIN:  'bg-amber-500/15 text-amber-400',
-  LOGOUT: 'bg-white/10 text-white/40',
+  LOGOUT: 'bg-muted/50 text-foreground/40',
 }
 
 function ActionBadge({ action }: { action: string }) {
-  const cls = ACTION_COLORS[action] ?? 'bg-white/10 text-white/40'
+  const cls = ACTION_COLORS[action] ?? 'bg-muted/50 text-foreground/40'
   return (
     <span
       className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${cls}`}
@@ -96,56 +96,56 @@ function ActivityLogsTab() {
           value={entityType}
           onChange={(e) => { setEntityType(e.target.value); setOffset(0) }}
           placeholder="Entity type…"
-          className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white placeholder:text-white/25 outline-none focus:border-[#E85D04]/50 w-36"
+          className="rounded-lg border border-border bg-muted/50 px-3 py-1.5 text-xs placeholder:text-muted-foreground text-foreground outline-none focus:border-[#E85D04]/50 w-36"
         />
         <select
           value={action}
           onChange={(e) => setAction(e.target.value)}
-          className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white outline-none focus:border-[#E85D04]/50 cursor-pointer"
+          className="rounded-lg border border-border bg-muted/50 px-3 py-1.5 text-xs text-foreground outline-none focus:border-[#E85D04]/50 cursor-pointer"
         >
-          <option value="" className="bg-[#18181C]">All Actions</option>
+          <option value="" className="bg-card">All Actions</option>
           {['CREATE', 'UPDATE', 'DELETE', 'LOGIN', 'LOGOUT'].map((a) => (
-            <option key={a} value={a} className="bg-[#18181C]">{a}</option>
+            <option key={a} value={a} className="bg-card">{a}</option>
           ))}
         </select>
         <input
           type="date"
           value={dateFrom}
           onChange={(e) => setDateFrom(e.target.value)}
-          className="number rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white outline-none focus:border-[#E85D04]/50"
+          className="number rounded-lg border border-border bg-muted/50 px-3 py-1.5 text-xs text-foreground outline-none focus:border-[#E85D04]/50"
         />
-        <span className="text-white/30 text-xs">–</span>
+        <span className="text-foreground/30 text-xs">–</span>
         <input
           type="date"
           value={dateTo}
           onChange={(e) => setDateTo(e.target.value)}
-          className="number rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white outline-none focus:border-[#E85D04]/50"
+          className="number rounded-lg border border-border bg-muted/50 px-3 py-1.5 text-xs text-foreground outline-none focus:border-[#E85D04]/50"
         />
       </div>
 
       {/* Table */}
-      <div className="rounded-xl border border-white/8 overflow-hidden">
+      <div className="rounded-xl border border-border overflow-hidden">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-white/8 bg-white/[0.02]">
-              <th className="px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-widest text-white/30">Timestamp</th>
-              <th className="px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-widest text-white/30">Actor</th>
-              <th className="px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-widest text-white/30">Action</th>
-              <th className="px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-widest text-white/30">Entity Type</th>
-              <th className="px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-widest text-white/30">Entity ID</th>
-              <th className="px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-widest text-white/30">Changes</th>
+            <tr className="border-b border-border bg-muted/20">
+              <th className="px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-widest text-foreground/30">Timestamp</th>
+              <th className="px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-widest text-foreground/30">Actor</th>
+              <th className="px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-widest text-foreground/30">Action</th>
+              <th className="px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-widest text-foreground/30">Entity Type</th>
+              <th className="px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-widest text-foreground/30">Entity ID</th>
+              <th className="px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-widest text-foreground/30">Changes</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
+          <tbody className="divide-y divide-border">
             {query.isLoading ? (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-xs text-white/25">
+                <td colSpan={6} className="px-4 py-8 text-center text-xs text-foreground/25">
                   Loading…
                 </td>
               </tr>
             ) : rows.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-xs text-white/25">
+                <td colSpan={6} className="px-4 py-8 text-center text-xs text-foreground/25">
                   No activity logs found
                 </td>
               </tr>
@@ -158,52 +158,52 @@ function ActivityLogsTab() {
                 return [
                   <tr
                     key={log.id}
-                    className="hover:bg-white/[0.02] cursor-pointer"
+                    className="hover:bg-muted/20 cursor-pointer"
                     onClick={() => fieldCount > 0 && toggleExpand(log.id)}
                   >
-                    <td className="number px-4 py-2.5 text-xs text-white/50">
+                    <td className="number px-4 py-2.5 text-xs text-foreground/50">
                       {formatDateTime(log.created_at)}
                     </td>
-                    <td className="px-4 py-2.5 text-xs text-white/70">
+                    <td className="px-4 py-2.5 text-xs text-foreground/70">
                       {log.actor_name ?? log.actor_user_id}
                     </td>
                     <td className="px-4 py-2.5">
                       <ActionBadge action={log.action} />
                     </td>
-                    <td className="px-4 py-2.5 text-xs font-medium text-white/60">
+                    <td className="px-4 py-2.5 text-xs font-medium text-foreground/60">
                       {log.entity_type}
                     </td>
-                    <td className="number px-4 py-2.5 text-[10px] text-white/30 max-w-[120px] truncate">
+                    <td className="number px-4 py-2.5 text-[10px] text-foreground/30 max-w-[120px] truncate">
                       {log.entity_id}
                     </td>
                     <td className="px-4 py-2.5">
                       {fieldCount > 0 ? (
-                        <button className="flex items-center gap-1 text-[10px] text-white/40 hover:text-white/70">
+                        <button className="flex items-center gap-1 text-[10px] text-foreground/40 hover:text-foreground/70">
                           {fieldCount} field{fieldCount > 1 ? 's' : ''}
                           {isExpanded ? <ChevronDown size={11} /> : <ChevronRight size={11} />}
                         </button>
                       ) : (
-                        <span className="text-[10px] text-white/20">—</span>
+                        <span className="text-[10px] text-foreground/20">—</span>
                       )}
                     </td>
                   </tr>,
                   ...(isExpanded && fieldCount > 0
                     ? [
-                        <tr key={`${log.id}-exp`} className="bg-white/[0.015]">
+                        <tr key={`${log.id}-exp`} className="bg-muted/10">
                           <td colSpan={6} className="px-4 py-3">
-                            <div className="rounded-lg border border-white/8 overflow-hidden">
+                            <div className="rounded-lg border border-border overflow-hidden">
                               <table className="w-full text-xs">
                                 <thead>
-                                  <tr className="border-b border-white/8 bg-white/[0.03]">
-                                    <th className="px-3 py-1.5 text-left text-[10px] uppercase tracking-widest text-white/25">Field</th>
-                                    <th className="px-3 py-1.5 text-left text-[10px] uppercase tracking-widest text-white/25">Before</th>
-                                    <th className="px-3 py-1.5 text-left text-[10px] uppercase tracking-widest text-white/25">After</th>
+                                  <tr className="border-b border-border bg-muted/30">
+                                    <th className="px-3 py-1.5 text-left text-[10px] uppercase tracking-widest text-foreground/25">Field</th>
+                                    <th className="px-3 py-1.5 text-left text-[10px] uppercase tracking-widest text-foreground/25">Before</th>
+                                    <th className="px-3 py-1.5 text-left text-[10px] uppercase tracking-widest text-foreground/25">After</th>
                                   </tr>
                                 </thead>
-                                <tbody className="divide-y divide-white/5">
+                                <tbody className="divide-y divide-border">
                                   {Object.entries(changedFields).map(([field, diff]) => (
                                     <tr key={field}>
-                                      <td className="px-3 py-1.5 font-medium text-white/60">{field}</td>
+                                      <td className="px-3 py-1.5 font-medium text-foreground/60">{field}</td>
                                       <td className="number px-3 py-1.5 text-rose-400/80">
                                         {diff.from != null ? String(diff.from) : '—'}
                                       </td>
@@ -228,20 +228,20 @@ function ActivityLogsTab() {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between text-xs text-white/40">
+        <div className="flex items-center justify-between text-xs text-foreground/40">
           <span>Page {currentPage} of {totalPages} ({total} records)</span>
           <div className="flex gap-2">
             <button
               disabled={offset === 0}
               onClick={() => setOffset(Math.max(0, offset - PAGE_SIZE))}
-              className="rounded-lg border border-white/10 px-3 py-1.5 hover:bg-white/5 disabled:opacity-40"
+              className="rounded-lg border border-border px-3 py-1.5 hover:bg-muted/50 disabled:opacity-40"
             >
               Previous
             </button>
             <button
               disabled={offset + PAGE_SIZE >= total}
               onClick={() => setOffset(offset + PAGE_SIZE)}
-              className="rounded-lg border border-white/10 px-3 py-1.5 hover:bg-white/5 disabled:opacity-40"
+              className="rounded-lg border border-border px-3 py-1.5 hover:bg-muted/50 disabled:opacity-40"
             >
               Next
             </button>
@@ -309,19 +309,19 @@ function EntityChangeLogsTab() {
           value={entityType}
           onChange={(e) => { setEntityType(e.target.value); setOffset(0) }}
           placeholder="Entity type (e.g. Staff)"
-          className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white placeholder:text-white/25 outline-none focus:border-[#E85D04]/50 w-44"
+          className="rounded-lg border border-border bg-muted/50 px-3 py-1.5 text-xs placeholder:text-muted-foreground text-foreground outline-none focus:border-[#E85D04]/50 w-44"
         />
         <input
           type="text"
           value={entityId}
           onChange={(e) => { setEntityId(e.target.value); setOffset(0) }}
           placeholder="Entity ID (UUID)"
-          className="number rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white placeholder:text-white/25 outline-none focus:border-[#E85D04]/50 w-64"
+          className="number rounded-lg border border-border bg-muted/50 px-3 py-1.5 text-xs placeholder:text-muted-foreground text-foreground outline-none focus:border-[#E85D04]/50 w-64"
         />
         {(entityType || entityId) && (
           <button
             onClick={() => { setEntityType(''); setEntityId(''); setOffset(0) }}
-            className="text-xs text-white/30 hover:text-white/60"
+            className="text-xs text-foreground/30 hover:text-foreground/60"
           >
             Clear
           </button>
@@ -329,52 +329,52 @@ function EntityChangeLogsTab() {
       </div>
 
       {/* Table */}
-      <div className="rounded-xl border border-white/8 overflow-hidden">
+      <div className="rounded-xl border border-border overflow-hidden">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-white/8 bg-white/[0.02]">
-              <th className="px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-widest text-white/30">Timestamp</th>
-              <th className="px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-widest text-white/30">Entity Type</th>
-              <th className="px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-widest text-white/30">Entity ID</th>
-              <th className="px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-widest text-white/30">Field</th>
-              <th className="px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-widest text-white/30">Old Value</th>
-              <th className="px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-widest text-white/30">New Value</th>
-              <th className="px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-widest text-white/30">By</th>
+            <tr className="border-b border-border bg-muted/20">
+              <th className="px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-widest text-foreground/30">Timestamp</th>
+              <th className="px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-widest text-foreground/30">Entity Type</th>
+              <th className="px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-widest text-foreground/30">Entity ID</th>
+              <th className="px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-widest text-foreground/30">Field</th>
+              <th className="px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-widest text-foreground/30">Old Value</th>
+              <th className="px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-widest text-foreground/30">New Value</th>
+              <th className="px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-widest text-foreground/30">By</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
+          <tbody className="divide-y divide-border">
             {query.isLoading ? (
               <tr>
-                <td colSpan={7} className="px-4 py-8 text-center text-xs text-white/25">
+                <td colSpan={7} className="px-4 py-8 text-center text-xs text-foreground/25">
                   Loading…
                 </td>
               </tr>
             ) : rows.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-4 py-8 text-center text-xs text-white/25">
+                <td colSpan={7} className="px-4 py-8 text-center text-xs text-foreground/25">
                   No entity change logs found
                 </td>
               </tr>
             ) : (
               rows.map((r) => (
-                <tr key={r.key} className="hover:bg-white/[0.02]">
-                  <td className="number px-4 py-2.5 text-xs text-white/50">
+                <tr key={r.key} className="hover:bg-muted/20">
+                  <td className="number px-4 py-2.5 text-xs text-foreground/50">
                     {formatDateTime(r.log.created_at)}
                   </td>
-                  <td className="px-4 py-2.5 text-xs font-medium text-white/70">
+                  <td className="px-4 py-2.5 text-xs font-medium text-foreground/70">
                     {r.log.entity_type}
                   </td>
-                  <td className="number px-4 py-2.5 text-[10px] text-white/30 max-w-[100px] truncate">
+                  <td className="number px-4 py-2.5 text-[10px] text-foreground/30 max-w-[100px] truncate">
                     {r.log.entity_id}
                   </td>
-                  <td className="px-4 py-2.5 text-xs text-white/60">{r.field}</td>
+                  <td className="px-4 py-2.5 text-xs text-foreground/60">{r.field}</td>
                   <td className="number px-4 py-2.5 text-xs text-rose-400/80">
                     {r.from != null ? String(r.from) : '—'}
                   </td>
                   <td className="number px-4 py-2.5 text-xs text-emerald-400/80">
                     {r.to != null ? String(r.to) : '—'}
                   </td>
-                  <td className="px-4 py-2.5 text-xs text-white/40">
+                  <td className="px-4 py-2.5 text-xs text-foreground/40">
                     {r.log.actor_name ?? r.log.actor_user_id}
                   </td>
                 </tr>
@@ -386,20 +386,20 @@ function EntityChangeLogsTab() {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between text-xs text-white/40">
+        <div className="flex items-center justify-between text-xs text-foreground/40">
           <span>Page {currentPage} of {totalPages} ({total} records)</span>
           <div className="flex gap-2">
             <button
               disabled={offset === 0}
               onClick={() => setOffset(Math.max(0, offset - PAGE_SIZE))}
-              className="rounded-lg border border-white/10 px-3 py-1.5 hover:bg-white/5 disabled:opacity-40"
+              className="rounded-lg border border-border px-3 py-1.5 hover:bg-muted/50 disabled:opacity-40"
             >
               Previous
             </button>
             <button
               disabled={offset + PAGE_SIZE >= total}
               onClick={() => setOffset(offset + PAGE_SIZE)}
-              className="rounded-lg border border-white/10 px-3 py-1.5 hover:bg-white/5 disabled:opacity-40"
+              className="rounded-lg border border-border px-3 py-1.5 hover:bg-muted/50 disabled:opacity-40"
             >
               Next
             </button>
@@ -432,14 +432,14 @@ export default function AuditLogsPage() {
         description="System-wide activity and entity change history — Admin only"
       />
 
-      <div className="flex gap-1 rounded-lg border border-white/8 bg-white/[0.03] p-1 w-fit">
+      <div className="flex gap-1 rounded-lg border border-border bg-muted/30 p-1 w-fit">
         {TABS.map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
             className={cn(
               'rounded-md px-4 py-1.5 text-sm font-medium transition-colors',
-              tab === t ? 'bg-[#E85D04] text-white' : 'text-white/40 hover:text-white/70',
+              tab === t ? 'bg-[#E85D04] text-white' : 'text-foreground/40 hover:text-foreground/70',
             )}
           >
             {t}

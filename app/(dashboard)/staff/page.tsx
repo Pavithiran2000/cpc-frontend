@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -29,7 +29,7 @@ const ROLE_COLORS: Record<string, string> = {
 }
 
 function RoleBadge({ name }: { name: string }) {
-  const cls = ROLE_COLORS[name.toUpperCase()] ?? 'bg-white/10 text-white/50'
+  const cls = ROLE_COLORS[name.toUpperCase()] ?? 'bg-muted/50 text-foreground/50'
   return (
     <span
       className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${cls}`}
@@ -43,9 +43,9 @@ function RoleBadge({ name }: { name: string }) {
 
 function inputCls(hasError?: boolean) {
   return [
-    'w-full rounded-lg border bg-white/5 px-3 py-2 text-sm text-white',
-    'placeholder:text-white/25 outline-none',
-    hasError ? 'border-rose-500/50' : 'border-white/10 focus:border-[#E85D04]/60',
+    'w-full rounded-lg border bg-muted/50 px-3 py-2 text-sm text-foreground',
+    'placeholder:text-muted-foreground outline-none',
+    hasError ? 'border-rose-500/50' : 'border-border focus:border-[#E85D04]/60',
   ].join(' ')
 }
 
@@ -60,7 +60,7 @@ function Field({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-[11px] font-semibold uppercase tracking-widest text-white/40">
+      <label className="text-[11px] font-semibold uppercase tracking-widest text-foreground/40">
         {label}
       </label>
       {children}
@@ -179,9 +179,9 @@ function StaffFormContent({
           {...register('operational_role_id')}
           className={inputCls(!!errors.operational_role_id) + ' cursor-pointer'}
         >
-          <option value="" className="bg-[#18181C]">Select role…</option>
+          <option value="" className="bg-card">Select role…</option>
           {roles.map((r) => (
-            <option key={r.id} value={r.id} className="bg-[#18181C]">
+            <option key={r.id} value={r.id} className="bg-card">
               {r.name}
             </option>
           ))}
@@ -228,8 +228,8 @@ function StaffFormContent({
             {...register('status')}
             className={inputCls(!!errors.status) + ' cursor-pointer'}
           >
-            <option value="ACTIVE"   className="bg-[#18181C]">Active</option>
-            <option value="INACTIVE" className="bg-[#18181C]">Inactive</option>
+            <option value="ACTIVE"   className="bg-card">Active</option>
+            <option value="INACTIVE" className="bg-card">Inactive</option>
           </select>
         </Field>
       )}
@@ -253,7 +253,7 @@ type RoleTab = (typeof ROLE_TABS)[number]
 
 export default function StaffPage() {
   const queryClient = useQueryClient()
-  const { page, limit, setPage, setLimit, resetPage } = usePagination()
+  const { page, limit, sortBy, sortOrder, setPage, setLimit, setSort, resetPage } = usePagination()
   const [search, setSearch]       = useState('')
   const [roleTab, setRoleTab]     = useState<RoleTab>('ALL')
   const [drawerStaff, setDrawerStaff] = useState<Staff | null | undefined>(undefined)
@@ -278,9 +278,11 @@ export default function StaffPage() {
       page,
       limit,
       search: search || undefined,
+      sort_by: sortBy,
+      sort_order: sortOrder,
       ...(selectedRoleId && { operational_role_id: selectedRoleId }),
     }),
-    [page, limit, search, selectedRoleId],
+    [page, limit, search, sortBy, sortOrder, selectedRoleId],
   )
 
   const staffQuery = useQuery({
@@ -306,10 +308,11 @@ export default function StaffPage() {
       {
         id: 'name',
         header: 'Name',
+        meta: { sortKey: 'name', defaultSortDir: 'ASC' as const },
         cell: ({ row }) => (
           <div>
-            <p className="font-medium text-white">{row.original.name}</p>
-            <p className="number text-[10px] text-white/35">{row.original.employee_no}</p>
+            <p className="font-medium text-foreground">{row.original.name}</p>
+            <p className="number text-[10px] text-foreground/35">{row.original.employee_no}</p>
           </div>
         ),
       },
@@ -317,12 +320,13 @@ export default function StaffPage() {
         id: 'nic',
         header: 'NIC',
         cell: ({ row }) => (
-          <span className="number text-xs text-white/50">{row.original.nic ?? '—'}</span>
+          <span className="number text-xs text-foreground/50">{row.original.nic ?? '—'}</span>
         ),
       },
       {
         id: 'role',
         header: 'Role',
+        meta: { sortKey: 'role', defaultSortDir: 'ASC' as const },
         cell: ({ row }) => (
           <RoleBadge name={row.original.operational_role?.name ?? '—'} />
         ),
@@ -331,12 +335,13 @@ export default function StaffPage() {
         id: 'phone',
         header: 'Phone',
         cell: ({ row }) => (
-          <span className="text-xs text-white/50">{row.original.phone ?? '—'}</span>
+          <span className="text-xs text-foreground/50">{row.original.phone ?? '—'}</span>
         ),
       },
       {
         id: 'status',
         header: 'Status',
+        meta: { sortKey: 'status', defaultSortDir: 'ASC' as const },
         cell: ({ row }) => <StatusBadge status={row.original.status} />,
       },
       {
@@ -348,7 +353,7 @@ export default function StaffPage() {
               'rounded-full px-2 py-0.5 text-[10px] font-medium',
               row.original.operational_role?.requires_attendance
                 ? 'bg-emerald-500/10 text-emerald-400'
-                : 'bg-white/5 text-white/25',
+                : 'bg-muted/50 text-foreground/25',
             )}
           >
             {row.original.operational_role?.requires_attendance ? 'Required' : 'No'}
@@ -364,7 +369,7 @@ export default function StaffPage() {
               'rounded-full px-2 py-0.5 text-[10px] font-medium',
               row.original.operational_role?.liable_for_cash_shortfall
                 ? 'bg-amber-500/10 text-amber-400'
-                : 'bg-white/5 text-white/25',
+                : 'bg-muted/50 text-foreground/25',
             )}
           >
             {row.original.operational_role?.liable_for_cash_shortfall ? 'Liable' : 'No'}
@@ -378,13 +383,13 @@ export default function StaffPage() {
           <div className="flex items-center justify-end gap-1">
             <button
               onClick={(e) => { e.stopPropagation(); setDrawerStaff(row.original) }}
-              className="rounded p-1.5 text-white/25 hover:bg-white/5 hover:text-white/60"
+              className="rounded p-1.5 text-foreground/25 hover:bg-muted/50 hover:text-foreground/60"
             >
               <Pencil size={13} />
             </button>
             <button
               onClick={(e) => { e.stopPropagation(); setDeleteTarget(row.original) }}
-              className="rounded p-1.5 text-white/25 hover:bg-rose-500/10 hover:text-rose-400"
+              className="rounded p-1.5 text-foreground/25 hover:bg-rose-500/10 hover:text-rose-400"
             >
               <Trash2 size={13} />
             </button>
@@ -411,7 +416,7 @@ export default function StaffPage() {
       />
 
       {/* Role filter tabs */}
-      <div className="flex gap-1 rounded-lg border border-white/8 bg-white/[0.03] p-1 w-fit">
+      <div className="flex gap-1 rounded-lg border border-border bg-muted/30 p-1 w-fit">
         {ROLE_TABS.map((t) => (
           <button
             key={t}
@@ -420,7 +425,7 @@ export default function StaffPage() {
               'rounded-md px-4 py-1.5 text-sm font-medium transition-colors',
               roleTab === t
                 ? 'bg-[#E85D04] text-white'
-                : 'text-white/40 hover:text-white/70',
+                : 'text-foreground/40 hover:text-foreground/70',
             )}
           >
             {t.charAt(0) + t.slice(1).toLowerCase()}
@@ -441,6 +446,9 @@ export default function StaffPage() {
         onSearch={(q) => { setSearch(q); resetPage() }}
         emptyMessage="No staff found"
         onRowClick={(row) => setDrawerStaff(row)}
+        sortBy={sortBy}
+        sortOrder={sortOrder}
+        onSortChange={setSort}
       />
 
       {/* Add / Edit Sheet */}
@@ -450,10 +458,10 @@ export default function StaffPage() {
       >
         <SheetContent
           side="right"
-          className="flex w-full flex-col border-l border-white/8 bg-[#111114] p-0 sm:max-w-[500px]"
+          className="flex w-full flex-col border-l border-border bg-card p-0 sm:max-w-[500px]"
         >
-          <SheetHeader className="border-b border-white/5 px-5 py-4">
-            <SheetTitle className="font-syne text-base font-semibold text-white">
+          <SheetHeader className="border-b border-border/60 px-5 py-4">
+            <SheetTitle className="font-syne text-base font-semibold text-foreground">
               {drawerStaff ? 'Edit Staff' : 'Add Staff'}
             </SheetTitle>
           </SheetHeader>

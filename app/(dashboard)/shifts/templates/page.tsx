@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useMemo, useCallback } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -42,11 +42,11 @@ type TemplateFormValues = z.infer<typeof templateSchema>
 
 function inputCls(hasError?: boolean) {
   return [
-    'w-full rounded-lg border bg-white/5 px-3 py-2 text-sm text-white',
-    'placeholder:text-white/25 outline-none transition-colors',
+    'w-full rounded-lg border bg-muted/50 px-3 py-2 text-sm text-foreground',
+    'placeholder:text-muted-foreground outline-none transition-colors',
     hasError
       ? 'border-rose-500/50 focus:border-rose-500/70 focus:ring-2 focus:ring-rose-500/15'
-      : 'border-white/10 focus:border-[#E85D04]/60 focus:ring-2 focus:ring-[#E85D04]/15',
+      : 'border-border focus:border-[#E85D04]/60 focus:ring-2 focus:ring-[#E85D04]/15',
   ].join(' ')
 }
 
@@ -61,7 +61,7 @@ function Field({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-[11px] font-semibold uppercase tracking-widest text-white/40">
+      <label className="text-[11px] font-semibold uppercase tracking-widest text-foreground/40">
         {label}
       </label>
       {children}
@@ -194,8 +194,8 @@ function TemplateForm({
             {...register('status')}
             className={inputCls(!!errors.status) + ' cursor-pointer'}
           >
-            <option value="ACTIVE" className="bg-[#18181C]">Active</option>
-            <option value="INACTIVE" className="bg-[#18181C]">Inactive</option>
+            <option value="ACTIVE" className="bg-card">Active</option>
+            <option value="INACTIVE" className="bg-card">Inactive</option>
           </select>
         </Field>
       )}
@@ -228,10 +228,10 @@ function TemplateDrawer({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="flex w-full flex-col border-l border-white/8 bg-[#111114] p-0 sm:max-w-[400px]"
+        className="flex w-full flex-col border-l border-border bg-card p-0 sm:max-w-[400px]"
       >
-        <SheetHeader className="border-b border-white/5 px-5 py-4">
-          <SheetTitle className="font-syne text-base font-semibold text-white">
+        <SheetHeader className="border-b border-border/60 px-5 py-4">
+          <SheetTitle className="font-syne text-base font-semibold text-foreground">
             {template ? 'Edit Shift Template' : 'New Shift Template'}
           </SheetTitle>
         </SheetHeader>
@@ -246,12 +246,12 @@ function TemplateDrawer({
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function ShiftTemplatesPage() {
-  const { page, limit, setPage, setLimit, resetPage } = usePagination()
+  const { page, limit, sortBy, sortOrder, setPage, setLimit, setSort, resetPage } = usePagination()
   const [search,     setSearch]     = useState('')
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [editTarget, setEditTarget] = useState<ShiftTemplate | null>(null)
 
-  const filters = useMemo(() => ({ page, limit, search }), [page, limit, search])
+  const filters = useMemo(() => ({ page, limit, search, sort_by: sortBy, sort_order: sortOrder }), [page, limit, search, sortBy, sortOrder])
 
   const query = useQuery({
     queryKey: TEMPLATES_KEY(filters),
@@ -271,22 +271,23 @@ export default function ShiftTemplatesPage() {
       {
         id: 'name',
         header: 'Shift Name',
+        meta: { sortKey: 'shift_name', defaultSortDir: 'ASC' as const },
         cell: ({ row }) => (
-          <span className="font-medium text-white">{row.original.shift_name}</span>
+          <span className="font-medium text-foreground">{row.original.shift_name}</span>
         ),
       },
       {
         id: 'start_time',
         header: 'Start',
         cell: ({ row }) => (
-          <span className="number text-xs text-white/70">{row.original.start_time}</span>
+          <span className="number text-xs text-foreground/70">{row.original.start_time}</span>
         ),
       },
       {
         id: 'end_time',
         header: 'End',
         cell: ({ row }) => (
-          <span className="number text-xs text-white/70">{row.original.end_time}</span>
+          <span className="number text-xs text-foreground/70">{row.original.end_time}</span>
         ),
       },
       {
@@ -297,7 +298,7 @@ export default function ShiftTemplatesPage() {
           return (
             <div className="flex items-center gap-1.5">
               {night ? <Moon size={12} className="text-sky-400" /> : <Sun size={12} className="text-amber-400" />}
-              <span className="text-xs text-white/50">{night ? 'Night' : 'Day'}</span>
+              <span className="text-xs text-foreground/50">{night ? 'Night' : 'Day'}</span>
             </div>
           )
         },
@@ -305,13 +306,15 @@ export default function ShiftTemplatesPage() {
       {
         id: 'sequence',
         header: 'Seq',
+        meta: { sortKey: 'sequence_no', defaultSortDir: 'ASC' as const },
         cell: ({ row }) => (
-          <span className="number text-xs text-white/50">{row.original.sequence_no}</span>
+          <span className="number text-xs text-foreground/50">{row.original.sequence_no}</span>
         ),
       },
       {
         id: 'status',
         header: 'Status',
+        meta: { sortKey: 'status', defaultSortDir: 'ASC' as const },
         cell: ({ row }) => <StatusBadge status={row.original.status} />,
       },
       {
@@ -321,7 +324,7 @@ export default function ShiftTemplatesPage() {
           <div className="flex justify-end">
             <button
               onClick={(e) => { e.stopPropagation(); openEdit(row.original) }}
-              className="rounded p-1.5 text-white/30 transition-colors hover:bg-white/5 hover:text-white/70"
+              className="rounded p-1.5 text-foreground/30 transition-colors hover:bg-muted/50 hover:text-foreground/70"
             >
               <Pencil size={13} />
             </button>
@@ -361,6 +364,9 @@ export default function ShiftTemplatesPage() {
         onSearch={handleSearch}
         emptyMessage="No shift templates defined yet"
         onRowClick={openEdit}
+        sortBy={sortBy}
+        sortOrder={sortOrder}
+        onSortChange={setSort}
       />
 
       <TemplateDrawer open={drawerOpen} onOpenChange={setDrawerOpen} template={editTarget} />

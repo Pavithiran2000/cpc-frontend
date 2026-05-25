@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useMemo, useCallback } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -29,9 +29,9 @@ type StatusTab = (typeof STATUS_TABS)[number]
 
 function inputCls(hasError?: boolean) {
   return [
-    'w-full rounded-lg border bg-white/5 px-3 py-2 text-sm text-white',
-    'placeholder:text-white/25 outline-none',
-    hasError ? 'border-rose-500/50' : 'border-white/10 focus:border-[#E85D04]/60',
+    'w-full rounded-lg border bg-muted/50 px-3 py-2 text-sm text-foreground',
+    'placeholder:text-muted-foreground outline-none',
+    hasError ? 'border-rose-500/50' : 'border-border focus:border-[#E85D04]/60',
   ].join(' ')
 }
 
@@ -46,7 +46,7 @@ function Field({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-[11px] font-semibold uppercase tracking-widest text-white/40">
+      <label className="text-[11px] font-semibold uppercase tracking-widest text-foreground/40">
         {label}
       </label>
       {children}
@@ -148,7 +148,7 @@ function CreateOrderForm({ onSuccess }: { onSuccess: () => void }) {
       {/* Items */}
       <div>
         <div className="mb-2 flex items-center justify-between">
-          <label className="text-[11px] font-semibold uppercase tracking-widest text-white/40">
+          <label className="text-[11px] font-semibold uppercase tracking-widest text-foreground/40">
             Items
           </label>
           <button
@@ -166,24 +166,24 @@ function CreateOrderForm({ onSuccess }: { onSuccess: () => void }) {
           {fields.map((field, idx) => (
             <div
               key={field.id}
-              className="flex items-end gap-2 rounded-lg border border-white/5 bg-white/[0.02] p-3"
+              className="flex items-end gap-2 rounded-lg border border-border/60 bg-muted/20 p-3"
             >
               <div className="flex flex-1 flex-col gap-1">
-                <label className="text-[10px] text-white/30">Product</label>
+                <label className="text-[10px] text-foreground/30">Product</label>
                 <select
                   {...register(`items.${idx}.product_id`)}
-                  className="rounded-lg border border-white/10 bg-white/5 px-2 py-1.5 text-xs text-white outline-none"
+                  className="rounded-lg border border-border bg-muted/50 px-2 py-1.5 text-xs text-foreground outline-none"
                 >
-                  <option value="" className="bg-[#18181C]">Select…</option>
+                  <option value="" className="bg-card">Select…</option>
                   {products.map((p) => (
-                    <option key={p.id} value={p.id} className="bg-[#18181C]">
+                    <option key={p.id} value={p.id} className="bg-card">
                       {p.product_name}
                     </option>
                   ))}
                 </select>
               </div>
               <div className="flex w-24 flex-col gap-1">
-                <label className="text-[10px] text-white/30">Qty</label>
+                <label className="text-[10px] text-foreground/30">Qty</label>
                 <input
                   {...register(`items.${idx}.ordered_quantity`, {
                     setValueAs: (v) => (v === '' ? 0 : parseFloat(v)),
@@ -191,11 +191,11 @@ function CreateOrderForm({ onSuccess }: { onSuccess: () => void }) {
                   type="number"
                   min="0"
                   step="0.001"
-                  className="number w-full rounded-lg border border-white/10 bg-white/5 px-2 py-1.5 text-xs text-white outline-none"
+                  className="number w-full rounded-lg border border-border bg-muted/50 px-2 py-1.5 text-xs text-foreground outline-none"
                 />
               </div>
               <div className="flex w-24 flex-col gap-1">
-                <label className="text-[10px] text-white/30">Unit Cost</label>
+                <label className="text-[10px] text-foreground/30">Unit Cost</label>
                 <input
                   {...register(`items.${idx}.unit_cost`, {
                     setValueAs: (v) => (v === '' ? 0 : parseFloat(v)),
@@ -203,13 +203,13 @@ function CreateOrderForm({ onSuccess }: { onSuccess: () => void }) {
                   type="number"
                   min="0"
                   step="0.01"
-                  className="number w-full rounded-lg border border-white/10 bg-white/5 px-2 py-1.5 text-xs text-white outline-none"
+                  className="number w-full rounded-lg border border-border bg-muted/50 px-2 py-1.5 text-xs text-foreground outline-none"
                 />
               </div>
               <button
                 type="button"
                 onClick={() => remove(idx)}
-                className="mb-0.5 rounded p-1 text-white/20 hover:text-rose-400"
+                className="mb-0.5 rounded p-1 text-foreground/20 hover:text-rose-400"
               >
                 <Trash2 size={13} />
               </button>
@@ -275,17 +275,17 @@ function AddPaymentDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="w-full max-w-sm rounded-xl border border-white/10 bg-[#18181C] p-5">
-        <h3 className="mb-4 font-syne text-base font-semibold text-white">Add Payment</h3>
+      <div className="w-full max-w-sm rounded-xl border border-border bg-card p-5">
+        <h3 className="mb-4 font-syne text-base font-semibold text-foreground">Add Payment</h3>
         <form onSubmit={onSubmit} className="flex flex-col gap-3">
           <Field label="Payment Type" error={errors.payment_type?.message}>
             <select
               {...register('payment_type')}
               className={inputCls(!!errors.payment_type) + ' cursor-pointer'}
             >
-              <option value="CASH"     className="bg-[#18181C]">Cash</option>
-              <option value="CHEQUE"   className="bg-[#18181C]">Cheque</option>
-              <option value="TRANSFER" className="bg-[#18181C]">Transfer</option>
+              <option value="CASH"     className="bg-card">Cash</option>
+              <option value="CHEQUE"   className="bg-card">Cheque</option>
+              <option value="TRANSFER" className="bg-card">Transfer</option>
             </select>
           </Field>
           <Field label="Amount (LKR)" error={errors.amount?.message}>
@@ -316,7 +316,7 @@ function AddPaymentDialog({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 rounded-lg border border-white/10 py-2 text-sm text-white/60 hover:bg-white/5"
+              className="flex-1 rounded-lg border border-border py-2 text-sm text-foreground/60 hover:bg-muted/50"
             >
               Cancel
             </button>
@@ -338,7 +338,7 @@ function AddPaymentDialog({
 
 export default function StockOrdersPage() {
   const queryClient = useQueryClient()
-  const { page, limit, setPage, setLimit, resetPage } = usePagination()
+  const { page, limit, sortBy, sortOrder, setPage, setLimit, setSort, resetPage } = usePagination()
   const [statusTab,     setStatusTab]     = useState<StatusTab>('ALL')
   const [drawerOpen,    setDrawerOpen]    = useState(false)
   const [paymentTarget, setPaymentTarget] = useState<string | null>(null)
@@ -349,8 +349,10 @@ export default function StockOrdersPage() {
       page,
       limit,
       status: statusTab === 'ALL' ? undefined : statusTab,
+      sort_by: sortBy,
+      sort_order: sortOrder,
     }),
-    [page, limit, statusTab],
+    [page, limit, statusTab, sortBy, sortOrder],
   )
 
   const query = useQuery({
@@ -373,22 +375,25 @@ export default function StockOrdersPage() {
       {
         id: 'order_no',
         header: 'Order No.',
+        meta: { sortKey: 'order_no', defaultSortDir: 'ASC' as const },
         cell: ({ row }) => (
-          <span className="number font-medium text-white">{row.original.order_no}</span>
+          <span className="number font-medium text-foreground">{row.original.order_no}</span>
         ),
       },
       {
         id: 'supplier',
         header: 'Supplier',
+        meta: { sortKey: 'supplier_name', defaultSortDir: 'ASC' as const },
         cell: ({ row }) => (
-          <span className="text-sm text-white/70">{row.original.supplier_name}</span>
+          <span className="text-sm text-foreground/70">{row.original.supplier_name}</span>
         ),
       },
       {
         id: 'order_date',
         header: 'Date',
+        meta: { sortKey: 'order_date', defaultSortDir: 'DESC' as const },
         cell: ({ row }) => (
-          <span className="number text-xs text-white/60">
+          <span className="number text-xs text-foreground/60">
             {formatDate(row.original.order_date)}
           </span>
         ),
@@ -396,8 +401,9 @@ export default function StockOrdersPage() {
       {
         id: 'delivery',
         header: 'Delivery',
+        meta: { sortKey: 'expected_delivery_date', defaultSortDir: 'DESC' as const },
         cell: ({ row }) => (
-          <span className="number text-xs text-white/40">
+          <span className="number text-xs text-foreground/40">
             {row.original.expected_delivery_date
               ? formatDate(row.original.expected_delivery_date)
               : '—'}
@@ -407,6 +413,7 @@ export default function StockOrdersPage() {
       {
         id: 'status',
         header: 'Status',
+        meta: { sortKey: 'status', defaultSortDir: 'ASC' as const },
         cell: ({ row }) => <StatusBadge status={row.original.status} />,
       },
       {
@@ -420,7 +427,7 @@ export default function StockOrdersPage() {
                   e.stopPropagation()
                   setApproveTarget(row.original)
                 }}
-                className="flex items-center gap-1 rounded p-1.5 text-xs text-white/30 hover:bg-emerald-500/10 hover:text-emerald-400"
+                className="flex items-center gap-1 rounded p-1.5 text-xs text-foreground/30 hover:bg-emerald-500/10 hover:text-emerald-400"
               >
                 <Check size={12} /> Approve
               </button>
@@ -431,7 +438,7 @@ export default function StockOrdersPage() {
                   e.stopPropagation()
                   setPaymentTarget(row.original.id)
                 }}
-                className="flex items-center gap-1 rounded p-1.5 text-xs text-white/30 hover:bg-sky-500/10 hover:text-sky-400"
+                className="flex items-center gap-1 rounded p-1.5 text-xs text-foreground/30 hover:bg-sky-500/10 hover:text-sky-400"
               >
                 <CreditCard size={12} /> Payment
               </button>
@@ -459,7 +466,7 @@ export default function StockOrdersPage() {
       />
 
       {/* Status tabs */}
-      <div className="flex border-b border-white/8">
+      <div className="flex border-b border-border">
         {STATUS_TABS.map((tab) => (
           <button
             key={tab}
@@ -470,8 +477,8 @@ export default function StockOrdersPage() {
             className={cn(
               'border-b-2 px-4 py-2.5 text-sm font-medium transition-colors',
               statusTab === tab
-                ? 'border-[#E85D04] text-white'
-                : 'border-transparent text-white/45 hover:text-white/70',
+                ? 'border-[#E85D04] text-foreground'
+                : 'border-transparent text-foreground/45 hover:text-foreground/70',
             )}
           >
             {tab}
@@ -489,16 +496,19 @@ export default function StockOrdersPage() {
         onLimitChange={setLimit}
         isLoading={query.isLoading}
         emptyMessage="No stock orders found"
+        sortBy={sortBy}
+        sortOrder={sortOrder}
+        onSortChange={setSort}
       />
 
       {/* Create drawer */}
       <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
         <SheetContent
           side="right"
-          className="flex w-full flex-col border-l border-white/8 bg-[#111114] p-0 sm:max-w-[480px]"
+          className="flex w-full flex-col border-l border-border bg-card p-0 sm:max-w-[480px]"
         >
-          <SheetHeader className="border-b border-white/5 px-5 py-4">
-            <SheetTitle className="font-syne text-base font-semibold text-white">
+          <SheetHeader className="border-b border-border/60 px-5 py-4">
+            <SheetTitle className="font-syne text-base font-semibold text-foreground">
               New Stock Order
             </SheetTitle>
           </SheetHeader>

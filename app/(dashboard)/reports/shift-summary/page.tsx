@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
@@ -42,33 +42,33 @@ export default function ShiftSummaryReportPage() {
       id: 'business_date',
       header: 'Date',
       cell: ({ row }) => (
-        <span className="number text-sm font-medium text-white">{formatDate(row.original.business_date)}</span>
+        <span className="number text-sm font-medium text-foreground">{formatDate(row.original.business_date)}</span>
       ),
     },
     {
       id: 'shift_name',
       header: 'Shift',
-      cell: ({ row }) => <span className="text-sm text-white/80">{row.original.shift_name}</span>,
+      cell: ({ row }) => <span className="text-sm text-foreground/80">{row.original.shift_name}</span>,
     },
     {
       id: 'expected_cash',
       header: 'Expected Cash',
       cell: ({ row }) => (
-        <span className="number text-sm font-semibold text-white/90">{formatCurrency(row.original.expected_cash)}</span>
+        <span className="number text-sm font-semibold text-foreground/90">{formatCurrency(row.original.expected_cash)}</span>
       ),
     },
     {
       id: 'actual_cash',
       header: 'Actual Cash',
       cell: ({ row }) => (
-        <span className="number text-sm text-white/70">{formatCurrency(row.original.actual_cash)}</span>
+        <span className="number text-sm text-foreground/70">{formatCurrency(row.original.actual_cash)}</span>
       ),
     },
     {
       id: 'shortfall',
       header: 'Shortfall',
       cell: ({ row }) => (
-        <span className={`number text-xs ${row.original.shortfall > 0 ? 'text-rose-400' : 'text-white/40'}`}>
+        <span className={`number text-xs ${row.original.shortfall > 0 ? 'text-rose-400' : 'text-foreground/40'}`}>
           {row.original.shortfall > 0 ? formatCurrency(row.original.shortfall) : '—'}
         </span>
       ),
@@ -77,7 +77,7 @@ export default function ShiftSummaryReportPage() {
       id: 'status',
       header: 'Status',
       cell: ({ row }) => (
-        <span className="text-xs text-white/60">{row.original.status}</span>
+        <span className="text-xs text-foreground/60">{row.original.status}</span>
       ),
     },
   ], [])
@@ -90,7 +90,7 @@ export default function ShiftSummaryReportPage() {
         actions={
           <button
             onClick={() => window.print()}
-            className="flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-sm text-white/60 hover:text-white/80"
+            className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm text-foreground/60 hover:text-foreground/80"
           >
             <Printer size={14} /> Print
           </button>
@@ -100,16 +100,16 @@ export default function ShiftSummaryReportPage() {
       {/* Date filters */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-2">
-          <label className="text-[11px] uppercase tracking-widest text-white/35">From</label>
+          <label className="text-[11px] uppercase tracking-widest text-foreground/35">From</label>
           <input type="date" value={dateFrom}
             onChange={(e) => { setDateFrom(e.target.value); resetPage() }}
-            className="number rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white/70 outline-none focus:border-[#E85D04]/60" />
+            className="number rounded-lg border border-border bg-muted/50 px-3 py-1.5 text-sm text-foreground/70 outline-none focus:border-[#E85D04]/60" />
         </div>
         <div className="flex items-center gap-2">
-          <label className="text-[11px] uppercase tracking-widest text-white/35">To</label>
+          <label className="text-[11px] uppercase tracking-widest text-foreground/35">To</label>
           <input type="date" value={dateTo}
             onChange={(e) => { setDateTo(e.target.value); resetPage() }}
-            className="number rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white/70 outline-none focus:border-[#E85D04]/60" />
+            className="number rounded-lg border border-border bg-muted/50 px-3 py-1.5 text-sm text-foreground/70 outline-none focus:border-[#E85D04]/60" />
         </div>
       </div>
 

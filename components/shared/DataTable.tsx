@@ -17,9 +17,20 @@ import {
 } from '@/components/ui/table'
 import { EmptyState } from './EmptyState'
 import { cn } from '@/lib/utils'
-import { ChevronLeft, ChevronRight, Database, Search } from 'lucide-react'
+import { ArrowDown, ArrowUp, ArrowUpDown, ChevronLeft, ChevronRight, Database, Search } from 'lucide-react'
+import type { SortOrder } from '@/lib/hooks/usePagination'
 
 export type { ColumnDef } from '@tanstack/react-table'
+
+// ─── Column meta ──────────────────────────────────────────────────────────────
+
+declare module '@tanstack/react-table' {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  interface ColumnMeta<TData, TValue> {
+    sortKey?: string
+    defaultSortDir?: SortOrder
+  }
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -39,9 +50,21 @@ interface DataTableProps<T> {
   actions?: React.ReactNode
   emptyMessage?: string
   onRowClick?: (row: T) => void
+  // Sort props
+  sortBy?: string
+  sortOrder?: SortOrder
+  onSortChange?: (key: string, defaultDir: SortOrder) => void
 }
 
 const PAGE_SIZES = [10, 25, 50]
+
+// ─── Sort icon ────────────────────────────────────────────────────────────────
+
+function SortIcon({ active, order }: { active: boolean; order?: SortOrder }) {
+  if (!active) return <ArrowUpDown size={12} className="ml-1 text-foreground/25" />
+  if (order === 'ASC') return <ArrowUp size={12} className="ml-1 text-[#E85D04]" />
+  return <ArrowDown size={12} className="ml-1 text-[#E85D04]" />
+}
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 
@@ -80,6 +103,9 @@ export function DataTable<T>({
   actions,
   emptyMessage = 'No records found',
   onRowClick,
+  sortBy,
+  sortOrder,
+  onSortChange,
 }: DataTableProps<T>) {
   const [searchVal, setSearchVal] = useState('')
 
@@ -94,6 +120,7 @@ export function DataTable<T>({
     columns,
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true,
+    manualSorting: true,
     rowCount: total,
   })
 
@@ -152,16 +179,32 @@ export function DataTable<T>({
           <TableHeader className="sticky top-0 z-10 bg-surface">
             {table.getHeaderGroups().map((hg) => (
               <TableRow key={hg.id} className="border-border hover:bg-transparent">
-                {hg.headers.map((header) => (
-                  <TableHead
-                    key={header.id}
-                    className="h-9 px-3 text-xs font-semibold uppercase tracking-widest text-foreground/35"
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
-                  </TableHead>
-                ))}
+                {hg.headers.map((header) => {
+                  const meta = header.column.columnDef.meta
+                  const sk = meta?.sortKey
+                  const defaultDir = meta?.defaultSortDir ?? 'ASC'
+                  const isActive = !!sk && sortBy === sk
+                  const sortable = !!sk && !!onSortChange
+
+                  return (
+                    <TableHead
+                      key={header.id}
+                      onClick={sortable ? () => onSortChange!(sk, defaultDir) : undefined}
+                      className={cn(
+                        'h-9 px-3 text-xs font-semibold uppercase tracking-widest text-foreground/35',
+                        sortable && 'cursor-pointer select-none hover:text-foreground/60',
+                        isActive && 'text-[#E85D04]/70',
+                      )}
+                    >
+                      {header.isPlaceholder ? null : (
+                        <span className="inline-flex items-center">
+                          {flexRender(header.column.columnDef.header, header.getContext())}
+                          {sortable && <SortIcon active={isActive} order={isActive ? sortOrder : undefined} />}
+                        </span>
+                      )}
+                    </TableHead>
+                  )
+                })}
               </TableRow>
             ))}
           </TableHeader>

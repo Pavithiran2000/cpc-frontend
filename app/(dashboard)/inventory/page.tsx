@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
@@ -35,7 +35,7 @@ function StockBar({ pct }: { pct: number }) {
     pct > 30 ? 'bg-emerald-500' : pct > 10 ? 'bg-amber-500' : 'bg-rose-500'
 
   return (
-    <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-white/5">
+    <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-muted/50">
       <div
         className={cn('h-full rounded-full transition-all', color)}
         style={{ width: `${Math.min(pct, 100)}%` }}
@@ -66,13 +66,13 @@ function StockCard({
     category === 'FUEL'      ? 'text-[#E85D04]' :
     category === 'GAS'       ? 'text-sky-400'   :
     category === 'LUBRICANT' ? 'text-amber-400'  :
-    'text-white/40'
+    'text-foreground/40'
 
   const catBg =
     category === 'FUEL'      ? 'bg-[#E85D04]/10 border-[#E85D04]/15' :
     category === 'GAS'       ? 'bg-sky-500/10 border-sky-500/15'      :
     category === 'LUBRICANT' ? 'bg-amber-500/10 border-amber-500/15'  :
-    'bg-white/5 border-white/5'
+    'bg-muted/50 border-border'
 
   return (
     <div className={cn('rounded-lg border p-4', catBg)}>
@@ -80,14 +80,14 @@ function StockCard({
         <div className="flex items-center gap-2">
           <Icon size={16} className={catColor} />
           <div>
-            <p className="text-sm font-medium text-white">{name}</p>
-            <p className="text-[10px] uppercase tracking-wider text-white/35">
+            <p className="text-sm font-medium text-foreground">{name}</p>
+            <p className="text-[10px] uppercase tracking-wider text-foreground/35">
               {category}
             </p>
           </div>
         </div>
         {product && (
-          <span className="text-[10px] uppercase tracking-wider text-white/30">
+          <span className="text-[10px] uppercase tracking-wider text-foreground/30">
             {product.category === 'FUEL' ? 'L' : 'UNIT'}
           </span>
         )}
@@ -95,13 +95,13 @@ function StockCard({
 
       <div className="mt-3">
         <div className="flex items-baseline justify-between gap-2">
-          <span className="number text-2xl font-bold text-white">
+          <span className="number text-2xl font-bold text-foreground">
             {product?.category === 'FUEL'
               ? qty.toLocaleString('en-LK', { minimumFractionDigits: 3, maximumFractionDigits: 3 })
               : qty.toLocaleString('en-LK')}
           </span>
           {capacity != null && (
-            <span className="number text-xs text-white/35">
+            <span className="number text-xs text-foreground/35">
               / {capacity.toLocaleString('en-LK', { maximumFractionDigits: 0 })} L
             </span>
           )}
@@ -121,7 +121,7 @@ function StockCard({
         )}
       </div>
 
-      <p className="mt-2 text-[10px] text-white/20">
+      <p className="mt-2 text-[10px] text-foreground/20">
         Updated {new Date(balance.updated_at).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
       </p>
     </div>
@@ -132,16 +132,16 @@ function StockCard({
 
 function SkeletonCard() {
   return (
-    <div className="animate-pulse rounded-lg border border-white/5 bg-[#18181C] p-4">
+    <div className="animate-pulse rounded-lg border border-border/60 bg-card p-4">
       <div className="flex items-start gap-2">
-        <div className="h-4 w-4 rounded bg-white/10" />
+        <div className="h-4 w-4 rounded bg-muted/50" />
         <div>
-          <div className="h-3 w-28 rounded bg-white/10" />
-          <div className="mt-1.5 h-2.5 w-16 rounded bg-white/8" />
+          <div className="h-3 w-28 rounded bg-muted/50" />
+          <div className="mt-1.5 h-2.5 w-16 rounded bg-muted/50" />
         </div>
       </div>
-      <div className="mt-4 h-7 w-36 rounded bg-white/10" />
-      <div className="mt-3 h-1.5 w-full rounded-full bg-white/5" />
+      <div className="mt-4 h-7 w-36 rounded bg-muted/50" />
+      <div className="mt-3 h-1.5 w-full rounded-full bg-muted/50" />
     </div>
   )
 }
@@ -198,13 +198,13 @@ export default function InventoryPage() {
           <div className="flex gap-2">
             <Link
               href="/inventory/movements"
-              className="rounded-lg border border-white/10 px-3 py-2 text-sm text-white/60 transition-colors hover:border-white/20 hover:text-white/80"
+              className="rounded-lg border border-border px-3 py-2 text-sm text-foreground/60 transition-colors hover:border-foreground/30 hover:text-foreground/80"
             >
               View Movements
             </Link>
             <Link
               href="/inventory/night-verify"
-              className="flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-sm text-white/60 transition-colors hover:border-white/20 hover:text-white/80"
+              className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm text-foreground/60 transition-colors hover:border-foreground/30 hover:text-foreground/80"
             >
               <Layers size={13} />
               Night Verification
@@ -225,7 +225,7 @@ export default function InventoryPage() {
       ) : (
         categories.map((cat) => (
           <div key={cat}>
-            <h2 className="mb-3 text-[10px] font-semibold uppercase tracking-widest text-white/30">
+            <h2 className="mb-3 text-[10px] font-semibold uppercase tracking-widest text-foreground/30">
               {cat}
             </h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

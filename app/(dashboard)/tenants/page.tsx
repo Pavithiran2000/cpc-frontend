@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useMemo, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -24,9 +24,9 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 
 function inputCls(hasError?: boolean) {
   return [
-    'w-full rounded-lg border bg-white/5 px-3 py-2 text-sm text-white',
-    'placeholder:text-white/25 outline-none',
-    hasError ? 'border-rose-500/50' : 'border-white/10 focus:border-[#E85D04]/60',
+    'w-full rounded-lg border bg-muted/50 px-3 py-2 text-sm text-foreground',
+    'placeholder:text-muted-foreground outline-none',
+    hasError ? 'border-rose-500/50' : 'border-border focus:border-[#E85D04]/60',
   ].join(' ')
 }
 
@@ -41,7 +41,7 @@ function Field({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-[11px] font-semibold uppercase tracking-widest text-white/40">
+      <label className="text-[11px] font-semibold uppercase tracking-widest text-foreground/40">
         {label}
       </label>
       {children}
@@ -64,15 +64,15 @@ function ToggleRow({
   return (
     <div className="flex items-center justify-between py-3">
       <div>
-        <p className="text-sm font-medium text-white">{label}</p>
-        {description && <p className="text-[11px] text-white/40">{description}</p>}
+        <p className="text-sm font-medium text-foreground">{label}</p>
+        {description && <p className="text-[11px] text-foreground/40">{description}</p>}
       </div>
       <button
         type="button"
         onClick={() => onChange(!checked)}
         className={cn(
           'relative h-5 w-9 rounded-full transition-colors',
-          checked ? 'bg-[#E85D04]' : 'bg-white/15',
+          checked ? 'bg-[#E85D04]' : 'bg-foreground/15',
         )}
       >
         <span
@@ -210,8 +210,8 @@ function TenantFormContent({
                 {...register('status')}
                 className={inputCls(!!errors.status) + ' cursor-pointer'}
               >
-                <option value="ACTIVE"   className="bg-[#18181C]">Active</option>
-                <option value="INACTIVE" className="bg-[#18181C]">Inactive</option>
+                <option value="ACTIVE"   className="bg-card">Active</option>
+                <option value="INACTIVE" className="bg-card">Inactive</option>
               </select>
             </Field>
           )}
@@ -281,7 +281,7 @@ function TenantSettingsForm({
 
   return (
     <div className="flex flex-col gap-0">
-      <div className="divide-y divide-white/5">
+      <div className="divide-y divide-border">
         <ToggleRow
           label="Salary Deduction"
           description="Auto-deduct shortfalls from salary"
@@ -373,13 +373,13 @@ export default function TenantsPage() {
     }
   }, [authLoading, user, router])
 
-  const { page, limit, setPage, setLimit, resetPage } = usePagination()
+  const { page, limit, sortBy, sortOrder, setPage, setLimit, setSort, resetPage } = usePagination()
   const [search, setSearch] = useState('')
   const [drawer, setDrawer] = useState<DrawerMode>({ type: 'none' })
 
   const filters = useMemo(
-    () => ({ page, limit, search: search || undefined }),
-    [page, limit, search],
+    () => ({ page, limit, search: search || undefined, sort_by: sortBy, sort_order: sortOrder }),
+    [page, limit, search, sortBy, sortOrder],
   )
 
   const query = useQuery({
@@ -406,8 +406,9 @@ export default function TenantsPage() {
       {
         id: 'station_code',
         header: 'Code',
+        meta: { sortKey: 'station_code', defaultSortDir: 'ASC' as const },
         cell: ({ row }) => (
-          <span className="number text-xs font-medium text-white/70">
+          <span className="number text-xs font-medium text-foreground/70">
             {row.original.station_code}
           </span>
         ),
@@ -415,11 +416,12 @@ export default function TenantsPage() {
       {
         id: 'station_name',
         header: 'Station',
+        meta: { sortKey: 'station_name', defaultSortDir: 'ASC' as const },
         cell: ({ row }) => (
           <div>
-            <p className="font-medium text-white">{row.original.station_name}</p>
+            <p className="font-medium text-foreground">{row.original.station_name}</p>
             {row.original.owner_name && (
-              <p className="text-[10px] text-white/40">{row.original.owner_name}</p>
+              <p className="text-[10px] text-foreground/40">{row.original.owner_name}</p>
             )}
           </div>
         ),
@@ -427,20 +429,23 @@ export default function TenantsPage() {
       {
         id: 'district',
         header: 'District',
+        meta: { sortKey: 'district', defaultSortDir: 'ASC' as const },
         cell: ({ row }) => (
-          <span className="text-xs text-white/50">{row.original.district ?? '—'}</span>
+          <span className="text-xs text-foreground/50">{row.original.district ?? '—'}</span>
         ),
       },
       {
         id: 'status',
         header: 'Status',
+        meta: { sortKey: 'status', defaultSortDir: 'ASC' as const },
         cell: ({ row }) => <StatusBadge status={row.original.status} />,
       },
       {
         id: 'created',
         header: 'Created',
+        meta: { sortKey: 'created_at', defaultSortDir: 'DESC' as const },
         cell: ({ row }) => (
-          <span className="number text-xs text-white/40">
+          <span className="number text-xs text-foreground/40">
             {formatDate(row.original.created_at)}
           </span>
         ),
@@ -452,13 +457,13 @@ export default function TenantsPage() {
           <div className="flex items-center justify-end gap-1">
             <button
               onClick={(e) => { e.stopPropagation(); openSettings(row.original) }}
-              className="rounded p-1.5 text-white/25 hover:bg-white/5 hover:text-white/60"
+              className="rounded p-1.5 text-foreground/25 hover:bg-muted/50 hover:text-foreground/60"
             >
               <Settings size={13} />
             </button>
             <button
               onClick={(e) => { e.stopPropagation(); openEdit(row.original) }}
-              className="rounded p-1.5 text-white/25 hover:bg-white/5 hover:text-white/60"
+              className="rounded p-1.5 text-foreground/25 hover:bg-muted/50 hover:text-foreground/60"
             >
               <Pencil size={13} />
             </button>
@@ -499,15 +504,18 @@ export default function TenantsPage() {
         onSearch={(q) => { setSearch(q); resetPage() }}
         emptyMessage="No tenants found"
         onRowClick={openEdit}
+        sortBy={sortBy}
+        sortOrder={sortOrder}
+        onSortChange={setSort}
       />
 
       <Sheet open={drawerOpen} onOpenChange={(v) => !v && setDrawer({ type: 'none' })}>
         <SheetContent
           side="right"
-          className={`flex w-full flex-col border-l border-white/8 bg-[#111114] p-0 ${sheetWidth}`}
+          className={`flex w-full flex-col border-l border-border bg-card p-0 ${sheetWidth}`}
         >
-          <SheetHeader className="border-b border-white/5 px-5 py-4">
-            <SheetTitle className="font-syne text-base font-semibold text-white">
+          <SheetHeader className="border-b border-border/60 px-5 py-4">
+            <SheetTitle className="font-syne text-base font-semibold text-foreground">
               {drawerTitle}
             </SheetTitle>
           </SheetHeader>

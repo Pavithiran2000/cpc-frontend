@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -35,9 +35,9 @@ const UNIT_LABELS: Record<string, string> = {
 
 function inputCls(hasError?: boolean) {
   return [
-    'w-full rounded-lg border bg-white/5 px-3 py-2 text-sm text-white',
-    'placeholder:text-white/25 outline-none',
-    hasError ? 'border-rose-500/50' : 'border-white/10 focus:border-[#E85D04]/60',
+    'w-full rounded-lg border bg-muted/50 px-3 py-2 text-sm text-foreground',
+    'placeholder:text-muted-foreground outline-none',
+    hasError ? 'border-rose-500/50' : 'border-border focus:border-[#E85D04]/60',
   ].join(' ')
 }
 
@@ -52,7 +52,7 @@ function Field({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-[11px] font-semibold uppercase tracking-widest text-white/40">
+      <label className="text-[11px] font-semibold uppercase tracking-widest text-foreground/40">
         {label}
       </label>
       {children}
@@ -111,10 +111,10 @@ function AddProductModal({
       onClick={() => onOpenChange(false)}
     >
       <div
-        className="w-full max-w-md rounded-xl border border-white/10 bg-[#18181C] p-5"
+        className="w-full max-w-md rounded-xl border border-border bg-card p-5"
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 className="mb-4 font-syne text-base font-semibold text-white">Add Product</h3>
+        <h3 className="mb-4 font-syne text-base font-semibold text-foreground">Add Product</h3>
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
           <div className="grid grid-cols-2 gap-4">
             <Field label="Product Code" error={errors.product_code?.message}>
@@ -138,9 +138,9 @@ function AddProductModal({
                 {...register('category')}
                 className={inputCls(!!errors.category) + ' cursor-pointer'}
               >
-                <option value="FUEL"      className="bg-[#18181C]">Fuel</option>
-                <option value="GAS"       className="bg-[#18181C]">Gas</option>
-                <option value="LUBRICANT" className="bg-[#18181C]">Lubricant</option>
+                <option value="FUEL"      className="bg-card">Fuel</option>
+                <option value="GAS"       className="bg-card">Gas</option>
+                <option value="LUBRICANT" className="bg-card">Lubricant</option>
               </select>
             </Field>
             <Field label="Unit" error={errors.measurement_unit_id?.message}>
@@ -148,8 +148,8 @@ function AddProductModal({
                 {...register('measurement_unit_id')}
                 className={inputCls(!!errors.measurement_unit_id) + ' cursor-pointer'}
               >
-                <option value="ff8993f8-cbb7-4641-8fa9-a56eaeae9813" className="bg-[#18181C]">Litre</option>
-                <option value="99a14f56-59e1-4efd-ad9a-0681b14f4c88" className="bg-[#18181C]">Unit</option>
+                <option value="ff8993f8-cbb7-4641-8fa9-a56eaeae9813" className="bg-card">Litre</option>
+                <option value="99a14f56-59e1-4efd-ad9a-0681b14f4c88" className="bg-card">Unit</option>
               </select>
             </Field>
           </div>
@@ -157,7 +157,7 @@ function AddProductModal({
             <button
               type="button"
               onClick={() => onOpenChange(false)}
-              className="flex-1 rounded-lg border border-white/10 py-2 text-sm text-white/60 hover:bg-white/5"
+              className="flex-1 rounded-lg border border-border py-2 text-sm text-foreground/60 hover:bg-muted/50"
             >
               Cancel
             </button>
@@ -231,13 +231,13 @@ function UpdatePriceModal({
       onClick={() => onOpenChange(false)}
     >
       <div
-        className="w-full max-w-sm rounded-xl border border-white/10 bg-[#18181C] p-5"
+        className="w-full max-w-sm rounded-xl border border-border bg-card p-5"
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 className="mb-1 font-syne text-base font-semibold text-white">
+        <h3 className="mb-1 font-syne text-base font-semibold text-foreground">
           Update Price
         </h3>
-        <p className="mb-4 text-xs text-white/40">{product.product_name}</p>
+        <p className="mb-4 text-xs text-foreground/40">{product.product_name}</p>
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
           <Field label="New Selling Price (LKR)" error={errors.selling_price?.message}>
             <input
@@ -272,7 +272,7 @@ function UpdatePriceModal({
             <button
               type="button"
               onClick={() => onOpenChange(false)}
-              className="flex-1 rounded-lg border border-white/10 py-2 text-sm text-white/60 hover:bg-white/5"
+              className="flex-1 rounded-lg border border-border py-2 text-sm text-foreground/60 hover:bg-muted/50"
             >
               Cancel
             </button>
@@ -303,10 +303,10 @@ function PriceHistoryAccordion({ product }: { product: Product }) {
   const prices: ProductPrice[] = pricesQuery.data?.data ?? []
 
   return (
-    <div className="mt-3 rounded-lg border border-white/8 overflow-hidden">
+    <div className="mt-3 rounded-lg border border-border overflow-hidden">
       <button
         onClick={() => setExpanded((v) => !v)}
-        className="flex w-full items-center justify-between px-3 py-2 text-xs text-white/40 hover:bg-white/[0.03] transition-colors"
+        className="flex w-full items-center justify-between px-3 py-2 text-xs text-foreground/40 hover:bg-muted/30 transition-colors"
       >
         <span className="font-semibold uppercase tracking-widest text-[10px]">
           Price History
@@ -315,36 +315,36 @@ function PriceHistoryAccordion({ product }: { product: Product }) {
       </button>
 
       {expanded && (
-        <div className="border-t border-white/8">
+        <div className="border-t border-border">
           {pricesQuery.isLoading ? (
-            <p className="px-3 py-3 text-xs text-white/25">Loading…</p>
+            <p className="px-3 py-3 text-xs text-foreground/25">Loading…</p>
           ) : prices.length === 0 ? (
-            <p className="px-3 py-3 text-xs text-white/25">No price history</p>
+            <p className="px-3 py-3 text-xs text-foreground/25">No price history</p>
           ) : (
             <table className="w-full text-xs">
               <thead>
-                <tr className="bg-white/[0.02]">
-                  <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-widest text-white/25">
+                <tr className="bg-muted/20">
+                  <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-widest text-foreground/25">
                     Effective From
                   </th>
-                  <th className="px-3 py-2 text-right text-[10px] font-semibold uppercase tracking-widest text-white/25">
+                  <th className="px-3 py-2 text-right text-[10px] font-semibold uppercase tracking-widest text-foreground/25">
                     Price
                   </th>
-                  <th className="px-3 py-2 text-right text-[10px] font-semibold uppercase tracking-widest text-white/25">
+                  <th className="px-3 py-2 text-right text-[10px] font-semibold uppercase tracking-widest text-foreground/25">
                     Until
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-border">
                 {prices.map((p) => (
-                  <tr key={p.id} className="hover:bg-white/[0.02]">
-                    <td className="number px-3 py-2 text-white/50">
+                  <tr key={p.id} className="hover:bg-muted/20">
+                    <td className="number px-3 py-2 text-foreground/50">
                       {formatDate(p.effective_from)}
                     </td>
-                    <td className="number px-3 py-2 text-right font-medium text-white/70">
+                    <td className="number px-3 py-2 text-right font-medium text-foreground/70">
                       {formatCurrency(p.selling_price)}
                     </td>
-                    <td className="number px-3 py-2 text-right text-white/30">
+                    <td className="number px-3 py-2 text-right text-foreground/30">
                       {p.effective_to ? formatDate(p.effective_to) : '—'}
                     </td>
                   </tr>
@@ -365,24 +365,24 @@ function ProductCard({ product }: { product: Product }) {
   const unit = product.category === 'FUEL' ? 'L' : 'unit'
 
   return (
-    <div className="flex flex-col rounded-xl border border-white/8 bg-[#18181C] p-4">
+    <div className="flex flex-col rounded-xl border border-border bg-card p-4">
       {/* Header */}
       <div className="flex items-start justify-between gap-2 mb-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <span
               className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
-                CATEGORY_COLORS[product.category as Category] ?? 'bg-white/10 text-white/50'
+                CATEGORY_COLORS[product.category as Category] ?? 'bg-muted/50 text-foreground/50'
               }`}
             >
               {product.category}
             </span>
-            <span className="number text-[10px] text-white/30">{product.product_code}</span>
+            <span className="number text-[10px] text-foreground/30">{product.product_code}</span>
           </div>
-          <p className="font-syne text-lg font-semibold text-white leading-tight truncate">
+          <p className="font-syne text-lg font-semibold text-foreground leading-tight truncate">
             {product.product_name}
           </p>
-          <p className="text-[11px] text-white/35 mt-0.5">per {unit}</p>
+          <p className="text-[11px] text-foreground/35 mt-0.5">per {unit}</p>
         </div>
         <StatusBadge status={product.status} />
       </div>
@@ -395,10 +395,10 @@ function ProductCard({ product }: { product: Product }) {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}
-            <span className="text-sm font-normal text-white/30 ml-1">/ {unit}</span>
+            <span className="text-sm font-normal text-foreground/30 ml-1">/ {unit}</span>
           </p>
         ) : (
-          <p className="text-sm text-white/25">No price set</p>
+          <p className="text-sm text-foreground/25">No price set</p>
         )}
       </div>
 
@@ -457,7 +457,7 @@ export default function ProductsPage() {
       />
 
       {/* Category tabs */}
-      <div className="flex gap-1 rounded-lg border border-white/8 bg-white/[0.03] p-1 w-fit">
+      <div className="flex gap-1 rounded-lg border border-border bg-muted/30 p-1 w-fit">
         {CATEGORIES.map((c) => (
           <button
             key={c}
@@ -466,7 +466,7 @@ export default function ProductsPage() {
               'rounded-md px-4 py-1.5 text-sm font-medium transition-colors',
               category === c
                 ? 'bg-[#E85D04] text-white'
-                : 'text-white/40 hover:text-white/70',
+                : 'text-foreground/40 hover:text-foreground/70',
             )}
           >
             {c.charAt(0) + c.slice(1).toLowerCase()}
@@ -478,11 +478,11 @@ export default function ProductsPage() {
       {query.isLoading ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="h-52 animate-pulse rounded-xl bg-white/5" />
+            <div key={i} className="h-52 animate-pulse rounded-xl bg-muted/50" />
           ))}
         </div>
       ) : filtered.length === 0 ? (
-        <p className="text-sm text-white/30 text-center py-12">
+        <p className="text-sm text-foreground/30 text-center py-12">
           No {category.toLowerCase()} products configured.
         </p>
       ) : (

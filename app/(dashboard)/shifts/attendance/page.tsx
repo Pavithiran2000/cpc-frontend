@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -16,7 +16,7 @@ import { PageHeader } from '@/components/shared/PageHeader'
 
 export default function AttendancePage() {
   const queryClient = useQueryClient()
-  const { page, limit, setPage, setLimit } = usePagination()
+  const { page, limit, sortBy, sortOrder, setPage, setLimit, setSort } = usePagination()
   const [selectedSession, setSelectedSession] = useState('')
   const [clockStaffId,    setClockStaffId]    = useState('')
 
@@ -40,8 +40,10 @@ export default function AttendancePage() {
       page,
       limit,
       shift_session_id: selectedSession || undefined,
+      sort_by: sortBy,
+      sort_order: sortOrder,
     }),
-    [page, limit, selectedSession],
+    [page, limit, selectedSession, sortBy, sortOrder],
   )
 
   const attendanceQuery = useQuery({
@@ -77,7 +79,7 @@ export default function AttendancePage() {
         id: 'staff',
         header: 'Staff',
         cell: ({ row }) => (
-          <p className="font-medium text-white">
+          <p className="font-medium text-foreground">
             {row.original.staff?.name ?? row.original.staff_id}
           </p>
         ),
@@ -85,25 +87,27 @@ export default function AttendancePage() {
       {
         id: 'clock_in',
         header: 'Clock In',
+        meta: { sortKey: 'clock_in_at', defaultSortDir: 'DESC' as const },
         cell: ({ row }) =>
           row.original.clock_in_at ? (
             <span className="number text-xs text-emerald-400">
               {formatDateTime(row.original.clock_in_at)}
             </span>
           ) : (
-            <span className="text-xs text-white/25">—</span>
+            <span className="text-xs text-foreground/25">—</span>
           ),
       },
       {
         id: 'clock_out',
         header: 'Clock Out',
+        meta: { sortKey: 'clock_out_at', defaultSortDir: 'DESC' as const },
         cell: ({ row }) =>
           row.original.clock_out_at ? (
-            <span className="number text-xs text-white/60">
+            <span className="number text-xs text-foreground/60">
               {formatDateTime(row.original.clock_out_at)}
             </span>
           ) : (
-            <span className="text-xs text-white/25">—</span>
+            <span className="text-xs text-foreground/25">—</span>
           ),
       },
       {
@@ -115,7 +119,7 @@ export default function AttendancePage() {
               <button
                 onClick={() => clockInMutation.mutate(row.original.staff_id)}
                 disabled={clockInMutation.isPending}
-                className="flex items-center gap-1 rounded px-2 py-1 text-xs text-white/30 hover:bg-emerald-500/10 hover:text-emerald-400 disabled:opacity-40"
+                className="flex items-center gap-1 rounded px-2 py-1 text-xs text-foreground/30 hover:bg-emerald-500/10 hover:text-emerald-400 disabled:opacity-40"
               >
                 <UserCheck size={12} /> In
               </button>
@@ -124,7 +128,7 @@ export default function AttendancePage() {
               <button
                 onClick={() => clockOutMutation.mutate(row.original.staff_id)}
                 disabled={clockOutMutation.isPending}
-                className="flex items-center gap-1 rounded px-2 py-1 text-xs text-white/30 hover:bg-rose-500/10 hover:text-rose-400 disabled:opacity-40"
+                className="flex items-center gap-1 rounded px-2 py-1 text-xs text-foreground/30 hover:bg-rose-500/10 hover:text-rose-400 disabled:opacity-40"
               >
                 <UserX size={12} /> Out
               </button>
@@ -146,17 +150,17 @@ export default function AttendancePage() {
       {/* Controls */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-2">
-          <label className="text-[11px] uppercase tracking-widest text-white/35">
+          <label className="text-[11px] uppercase tracking-widest text-foreground/35">
             Shift Session
           </label>
           <select
             value={selectedSession}
             onChange={(e) => setSelectedSession(e.target.value)}
-            className="number rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white outline-none focus:border-[#E85D04]/50"
+            className="number rounded-lg border border-border bg-muted/50 px-3 py-1.5 text-xs text-foreground outline-none focus:border-[#E85D04]/50"
           >
-            <option value="" className="bg-[#18181C]">All sessions</option>
+            <option value="" className="bg-card">All sessions</option>
             {sessions.map((s) => (
-              <option key={s.id} value={s.id} className="bg-[#18181C]">
+              <option key={s.id} value={s.id} className="bg-card">
                 {formatDate(s.business_date)} —{' '}
                 {s.shift_template?.shift_name ?? s.shift_template_id} ({s.status})
               </option>
@@ -169,11 +173,11 @@ export default function AttendancePage() {
             <select
               value={clockStaffId}
               onChange={(e) => setClockStaffId(e.target.value)}
-              className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white outline-none focus:border-[#E85D04]/50"
+              className="rounded-lg border border-border bg-muted/50 px-3 py-1.5 text-xs text-foreground outline-none focus:border-[#E85D04]/50"
             >
-              <option value="" className="bg-[#18181C]">Select staff…</option>
+              <option value="" className="bg-card">Select staff…</option>
               {staff.map((s) => (
-                <option key={s.id} value={s.id} className="bg-[#18181C]">
+                <option key={s.id} value={s.id} className="bg-card">
                   {s.name}
                 </option>
               ))}
@@ -199,6 +203,9 @@ export default function AttendancePage() {
         onLimitChange={setLimit}
         isLoading={attendanceQuery.isLoading}
         emptyMessage="No attendance records"
+        sortBy={sortBy}
+        sortOrder={sortOrder}
+        onSortChange={setSort}
       />
     </div>
   )

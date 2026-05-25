@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -522,8 +522,8 @@ function Disable2faSheet({
               placeholder="000000"
               className={
                 errors.code
-                  ? 'w-full rounded-lg border border-rose-500/50 bg-white/5 px-3 py-2.5 text-center font-mono text-xl tracking-[0.4em] text-white outline-none'
-                  : 'w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2.5 text-center font-mono text-xl tracking-[0.4em] text-white outline-none focus:border-[#E85D04]/60'
+                  ? 'w-full rounded-lg border border-rose-500/50 bg-muted/50 px-3 py-2.5 text-center font-mono text-xl tracking-[0.4em] text-foreground outline-none'
+                  : 'w-full rounded-lg border border-border bg-muted/50 px-3 py-2.5 text-center font-mono text-xl tracking-[0.4em] text-foreground outline-none focus:border-[#E85D04]/60'
               }
             />
           </Field>

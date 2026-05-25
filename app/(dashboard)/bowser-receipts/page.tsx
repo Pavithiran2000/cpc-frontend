@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useMemo, useCallback } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -65,18 +65,18 @@ type ApproveFormValues = z.infer<typeof approveSchema>
 
 function inputCls(hasError?: boolean) {
   return [
-    'w-full rounded-lg border bg-white/5 px-3 py-2 text-sm text-white',
-    'placeholder:text-white/25 outline-none transition-colors',
+    'w-full rounded-lg border bg-muted/50 px-3 py-2 text-sm text-foreground',
+    'placeholder:text-muted-foreground outline-none transition-colors',
     hasError
       ? 'border-rose-500/50 focus:border-rose-500/70 focus:ring-2 focus:ring-rose-500/15'
-      : 'border-white/10 focus:border-[#E85D04]/60 focus:ring-2 focus:ring-[#E85D04]/15',
+      : 'border-border focus:border-[#E85D04]/60 focus:ring-2 focus:ring-[#E85D04]/15',
   ].join(' ')
 }
 
 function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-[11px] font-semibold uppercase tracking-widest text-white/40">{label}</label>
+      <label className="text-[11px] font-semibold uppercase tracking-widest text-foreground/40">{label}</label>
       {children}
       {error && <p className="text-xs text-rose-400">{error}</p>}
     </div>
@@ -151,7 +151,7 @@ function CreateReceiptForm({ onSuccess }: { onSuccess: () => void }) {
       {/* Delivery lines */}
       <div>
         <div className="mb-2 flex items-center justify-between">
-          <p className="text-[11px] font-semibold uppercase tracking-widest text-white/40">
+          <p className="text-[11px] font-semibold uppercase tracking-widest text-foreground/40">
             Delivery Lines
           </p>
           <button type="button"
@@ -165,12 +165,12 @@ function CreateReceiptForm({ onSuccess }: { onSuccess: () => void }) {
         )}
         <div className="flex flex-col gap-3">
           {fields.map((field, idx) => (
-            <div key={field.id} className="relative rounded-lg border border-white/8 p-3">
+            <div key={field.id} className="relative rounded-lg border border-border p-3">
               <div className="mb-2 flex items-center justify-between">
-                <span className="text-[10px] uppercase tracking-wider text-white/30">Line {idx + 1}</span>
+                <span className="text-[10px] uppercase tracking-wider text-foreground/30">Line {idx + 1}</span>
                 {fields.length > 1 && (
                   <button type="button" onClick={() => remove(idx)}
-                    className="text-white/25 hover:text-rose-400">
+                    className="text-foreground/25 hover:text-rose-400">
                     <Trash2 size={12} />
                   </button>
                 )}
@@ -179,9 +179,9 @@ function CreateReceiptForm({ onSuccess }: { onSuccess: () => void }) {
                 <Field label="Tank" error={(errors.lines?.[idx] as { tank_id?: { message?: string } })?.tank_id?.message}>
                   <select {...register(`lines.${idx}.tank_id`)}
                     className={inputCls(!!(errors.lines?.[idx] as { tank_id?: unknown })?.tank_id) + ' cursor-pointer'}>
-                    <option value="" className="bg-[#18181C]">Select tank…</option>
+                    <option value="" className="bg-card">Select tank…</option>
                     {tanks.map((t) => (
-                      <option key={t.id} value={t.id} className="bg-[#18181C]">
+                      <option key={t.id} value={t.id} className="bg-card">
                         {t.tank_code} ({t.capacity_litres.toLocaleString('en-LK', { maximumFractionDigits: 0 })} L)
                       </option>
                     ))}
@@ -190,9 +190,9 @@ function CreateReceiptForm({ onSuccess }: { onSuccess: () => void }) {
                 <Field label="Product" error={(errors.lines?.[idx] as { product_id?: { message?: string } })?.product_id?.message}>
                   <select {...register(`lines.${idx}.product_id`)}
                     className={inputCls(!!(errors.lines?.[idx] as { product_id?: unknown })?.product_id) + ' cursor-pointer'}>
-                    <option value="" className="bg-[#18181C]">Select product…</option>
+                    <option value="" className="bg-card">Select product…</option>
                     {fuelProducts.map((p) => (
-                      <option key={p.id} value={p.id} className="bg-[#18181C]">{p.product_name}</option>
+                      <option key={p.id} value={p.id} className="bg-card">{p.product_name}</option>
                     ))}
                   </select>
                 </Field>
@@ -260,19 +260,19 @@ function ApproveReceiptForm({
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-4">
-      <div className="rounded-lg border border-white/5 bg-white/3 px-3.5 py-3">
-        <p className="text-xs font-medium text-white/60">Receipt: <span className="number text-white">{receipt.receipt_no}</span></p>
-        {receipt.supplier_name && <p className="text-xs text-white/40">{receipt.supplier_name}</p>}
+      <div className="rounded-lg border border-border/60 bg-muted/30 px-3.5 py-3">
+        <p className="text-xs font-medium text-foreground/60">Receipt: <span className="number text-foreground">{receipt.receipt_no}</span></p>
+        {receipt.supplier_name && <p className="text-xs text-foreground/40">{receipt.supplier_name}</p>}
       </div>
 
       <div className="flex flex-col gap-3">
         {fields.map((field, idx) => (
-          <div key={field.id} className="relative rounded-lg border border-white/8 p-3">
+          <div key={field.id} className="relative rounded-lg border border-border p-3">
             <div className="mb-2 flex items-center justify-between">
-              <span className="text-[10px] uppercase tracking-wider text-white/30">Line {idx + 1}</span>
+              <span className="text-[10px] uppercase tracking-wider text-foreground/30">Line {idx + 1}</span>
               {fields.length > 1 && (
                 <button type="button" onClick={() => remove(idx)}
-                  className="text-white/25 hover:text-rose-400">
+                  className="text-foreground/25 hover:text-rose-400">
                   <Trash2 size={12} />
                 </button>
               )}
@@ -281,9 +281,9 @@ function ApproveReceiptForm({
               <Field label="Tank" error={(errors.lines?.[idx] as { tank_id?: { message?: string } })?.tank_id?.message}>
                 <select {...register(`lines.${idx}.tank_id`)}
                   className={inputCls(!!(errors.lines?.[idx] as { tank_id?: unknown })?.tank_id) + ' cursor-pointer'}>
-                  <option value="" className="bg-[#18181C]">Select tank…</option>
+                  <option value="" className="bg-card">Select tank…</option>
                   {fuelTanks.map((t) => (
-                    <option key={t.id} value={t.id} className="bg-[#18181C]">
+                    <option key={t.id} value={t.id} className="bg-card">
                       {t.tank_code} ({t.capacity_litres.toLocaleString('en-LK', { maximumFractionDigits: 0 })} L)
                     </option>
                   ))}
@@ -292,9 +292,9 @@ function ApproveReceiptForm({
               <Field label="Product" error={(errors.lines?.[idx] as { product_id?: { message?: string } })?.product_id?.message}>
                 <select {...register(`lines.${idx}.product_id`)}
                   className={inputCls(!!(errors.lines?.[idx] as { product_id?: unknown })?.product_id) + ' cursor-pointer'}>
-                  <option value="" className="bg-[#18181C]">Select product…</option>
+                  <option value="" className="bg-card">Select product…</option>
                   {fuelProducts.map((p) => (
-                    <option key={p.id} value={p.id} className="bg-[#18181C]">{p.product_name}</option>
+                    <option key={p.id} value={p.id} className="bg-card">{p.product_name}</option>
                   ))}
                 </select>
               </Field>
@@ -315,7 +315,7 @@ function ApproveReceiptForm({
 
       <button type="button"
         onClick={() => append({ tank_id: '', product_id: '', received_litres: 0, unit_cost: 0 })}
-        className="flex items-center gap-1.5 text-xs text-white/35 hover:text-white/60">
+        className="flex items-center gap-1.5 text-xs text-foreground/35 hover:text-foreground/60">
         <Plus size={12} /> Add line
       </button>
 
@@ -366,11 +366,11 @@ function ReceiptDetailDrawer({
     <Sheet open={!!receipt} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="flex w-full flex-col border-l border-white/8 bg-[#111114] p-0 sm:max-w-[500px]"
+        className="flex w-full flex-col border-l border-border bg-card p-0 sm:max-w-[500px]"
       >
-        <SheetHeader className="border-b border-white/5 px-5 py-4">
+        <SheetHeader className="border-b border-border/60 px-5 py-4">
           <div className="flex items-center justify-between">
-            <SheetTitle className="font-syne text-base font-semibold text-white">
+            <SheetTitle className="font-syne text-base font-semibold text-foreground">
               Bowser Receipt
             </SheetTitle>
             {fullReceipt && <StatusBadge status={fullReceipt.status} />}
@@ -383,23 +383,23 @@ function ReceiptDetailDrawer({
               {/* Summary */}
               <div className="mb-5 grid grid-cols-2 gap-3">
                 <div>
-                  <p className="text-[10px] uppercase tracking-wider text-white/35">Receipt No.</p>
-                  <p className="number text-sm font-medium text-white">{fullReceipt.receipt_no}</p>
+                  <p className="text-[10px] uppercase tracking-wider text-foreground/35">Receipt No.</p>
+                  <p className="number text-sm font-medium text-foreground">{fullReceipt.receipt_no}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase tracking-wider text-white/35">Date</p>
-                  <p className="number text-sm text-white/70">{formatDate(fullReceipt.received_date)}</p>
+                  <p className="text-[10px] uppercase tracking-wider text-foreground/35">Date</p>
+                  <p className="number text-sm text-foreground/70">{formatDate(fullReceipt.received_date)}</p>
                 </div>
                 {fullReceipt.supplier_name && (
                   <div>
-                    <p className="text-[10px] uppercase tracking-wider text-white/35">Supplier</p>
-                    <p className="text-sm text-white/70">{fullReceipt.supplier_name}</p>
+                    <p className="text-[10px] uppercase tracking-wider text-foreground/35">Supplier</p>
+                    <p className="text-sm text-foreground/70">{fullReceipt.supplier_name}</p>
                   </div>
                 )}
                 {fullReceipt.vehicle_no && (
                   <div>
-                    <p className="text-[10px] uppercase tracking-wider text-white/35">Vehicle</p>
-                    <p className="number text-sm text-white/70">{fullReceipt.vehicle_no}</p>
+                    <p className="text-[10px] uppercase tracking-wider text-foreground/35">Vehicle</p>
+                    <p className="number text-sm text-foreground/70">{fullReceipt.vehicle_no}</p>
                   </div>
                 )}
               </div>
@@ -407,15 +407,15 @@ function ReceiptDetailDrawer({
               {/* Existing lines (approved) */}
               {fullReceipt.lines && fullReceipt.lines.length > 0 && (
                 <div className="mb-5">
-                  <p className="mb-2 text-[10px] uppercase tracking-wider text-white/35">Delivery Lines</p>
-                  <div className="divide-y divide-white/5 rounded-lg border border-white/5">
+                  <p className="mb-2 text-[10px] uppercase tracking-wider text-foreground/35">Delivery Lines</p>
+                  <div className="divide-y divide-border rounded-lg border border-border">
                     {fullReceipt.lines.map((line) => (
                       <div key={line.id} className="flex items-center justify-between px-3.5 py-2.5">
                         <div>
-                          <p className="text-sm text-white">{line.product?.product_name ?? line.product_id}</p>
-                          <p className="number text-xs text-white/40">{formatLitres(line.received_litres)}</p>
+                          <p className="text-sm text-foreground">{line.product?.product_name ?? line.product_id}</p>
+                          <p className="number text-xs text-foreground/40">{formatLitres(line.received_litres)}</p>
                         </div>
-                        <p className="number text-xs text-white/60">{formatCurrency(line.unit_cost)}/L</p>
+                        <p className="number text-xs text-foreground/60">{formatCurrency(line.unit_cost)}/L</p>
                       </div>
                     ))}
                   </div>
@@ -450,7 +450,7 @@ const STATUS_TABS = [
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function BowserReceiptsPage() {
-  const { page, limit, setPage, setLimit, resetPage } = usePagination()
+  const { page, limit, sortBy, sortOrder, setPage, setLimit, setSort, resetPage } = usePagination()
   const [search,       setSearch]       = useState('')
   const [statusFilter, setStatusFilter] = useState('')
   const [dateFrom,     setDateFrom]     = useState('')
@@ -459,8 +459,8 @@ export default function BowserReceiptsPage() {
   const [detailTarget, setDetailTarget] = useState<BowserReceipt | null>(null)
 
   const filters = useMemo(
-    () => ({ page, limit, search, status: statusFilter || undefined, date_from: dateFrom || undefined, date_to: dateTo || undefined }),
-    [page, limit, search, statusFilter, dateFrom, dateTo],
+    () => ({ page, limit, search, status: statusFilter || undefined, date_from: dateFrom || undefined, date_to: dateTo || undefined, sort_by: sortBy, sort_order: sortOrder }),
+    [page, limit, search, statusFilter, dateFrom, dateTo, sortBy, sortOrder],
   )
 
   const query = useQuery({
@@ -478,34 +478,38 @@ export default function BowserReceiptsPage() {
       {
         id: 'receipt_no',
         header: 'Receipt No.',
+        meta: { sortKey: 'receipt_no', defaultSortDir: 'ASC' as const },
         cell: ({ row }) => (
-          <span className="number text-sm font-medium text-white">{row.original.receipt_no}</span>
+          <span className="number text-sm font-medium text-foreground">{row.original.receipt_no}</span>
         ),
       },
       {
         id: 'received_date',
         header: 'Date',
+        meta: { sortKey: 'received_date', defaultSortDir: 'DESC' as const },
         cell: ({ row }) => (
-          <span className="number text-xs text-white/60">{formatDate(row.original.received_date)}</span>
+          <span className="number text-xs text-foreground/60">{formatDate(row.original.received_date)}</span>
         ),
       },
       {
         id: 'supplier',
         header: 'Supplier',
+        meta: { sortKey: 'supplier_name', defaultSortDir: 'ASC' as const },
         cell: ({ row }) => (
-          <span className="text-sm text-white/70">{row.original.supplier_name ?? '—'}</span>
+          <span className="text-sm text-foreground/70">{row.original.supplier_name ?? '—'}</span>
         ),
       },
       {
         id: 'vehicle_no',
         header: 'Vehicle',
         cell: ({ row }) => (
-          <span className="number text-xs text-white/50">{row.original.vehicle_no ?? '—'}</span>
+          <span className="number text-xs text-foreground/50">{row.original.vehicle_no ?? '—'}</span>
         ),
       },
       {
         id: 'status',
         header: 'Status',
+        meta: { sortKey: 'status', defaultSortDir: 'ASC' as const },
         cell: ({ row }) => <StatusBadge status={row.original.status} />,
       },
       {
@@ -515,7 +519,7 @@ export default function BowserReceiptsPage() {
           <div className="flex justify-end">
             <button
               onClick={(e) => { e.stopPropagation(); setDetailTarget(row.original) }}
-              className="rounded p-1.5 text-white/30 transition-colors hover:bg-white/5 hover:text-white/70"
+              className="rounded p-1.5 text-foreground/30 transition-colors hover:bg-muted/50 hover:text-foreground/70"
             >
               <ChevronRight size={13} />
             </button>
@@ -544,7 +548,7 @@ export default function BowserReceiptsPage() {
 
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-3">
-        <div className="flex rounded-lg border border-white/8 bg-[#18181C] p-0.5">
+        <div className="flex rounded-lg border border-border bg-card p-0.5">
           {STATUS_TABS.map((t) => (
             <button
               key={t.key}
@@ -553,7 +557,7 @@ export default function BowserReceiptsPage() {
                 'rounded-md px-3 py-1.5 text-xs font-medium transition-colors',
                 statusFilter === t.key
                   ? 'bg-[#E85D04]/15 text-[#E85D04]'
-                  : 'text-white/40 hover:text-white/70',
+                  : 'text-foreground/40 hover:text-foreground/70',
               ].join(' ')}
             >
               {t.label}
@@ -563,11 +567,11 @@ export default function BowserReceiptsPage() {
         <div className="flex items-center gap-2">
           <input type="date" value={dateFrom}
             onChange={(e) => { setDateFrom(e.target.value); resetPage() }}
-            className="number rounded-lg border border-white/10 bg-[#18181C] px-2.5 py-1.5 text-xs text-white/60 outline-none focus:border-[#E85D04]/50" />
-          <span className="text-white/30">—</span>
+            className="number rounded-lg border border-border bg-card px-2.5 py-1.5 text-xs text-foreground/60 outline-none focus:border-[#E85D04]/50" />
+          <span className="text-foreground/30">—</span>
           <input type="date" value={dateTo}
             onChange={(e) => { setDateTo(e.target.value); resetPage() }}
-            className="number rounded-lg border border-white/10 bg-[#18181C] px-2.5 py-1.5 text-xs text-white/60 outline-none focus:border-[#E85D04]/50" />
+            className="number rounded-lg border border-border bg-card px-2.5 py-1.5 text-xs text-foreground/60 outline-none focus:border-[#E85D04]/50" />
         </div>
       </div>
 
@@ -584,16 +588,19 @@ export default function BowserReceiptsPage() {
         onSearch={handleSearch}
         emptyMessage="No bowser receipts found"
         onRowClick={(row) => setDetailTarget(row)}
+        sortBy={sortBy}
+        sortOrder={sortOrder}
+        onSortChange={setSort}
       />
 
       {/* Create drawer */}
       <Sheet open={createOpen} onOpenChange={setCreateOpen}>
         <SheetContent
           side="right"
-          className="flex w-full flex-col border-l border-white/8 bg-[#111114] p-0 sm:max-w-[520px]"
+          className="flex w-full flex-col border-l border-border bg-card p-0 sm:max-w-[520px]"
         >
-          <SheetHeader className="border-b border-white/5 px-5 py-4">
-            <SheetTitle className="font-syne text-base font-semibold text-white">
+          <SheetHeader className="border-b border-border/60 px-5 py-4">
+            <SheetTitle className="font-syne text-base font-semibold text-foreground">
               New Bowser Receipt
             </SheetTitle>
           </SheetHeader>
