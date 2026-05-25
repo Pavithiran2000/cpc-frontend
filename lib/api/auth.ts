@@ -28,4 +28,10 @@ export const authApi = {
 
   challenge2fa: (challenge_token: string, code: string) =>
     api.post<{ user: PortalUser }>('/auth/2fa/challenge', { challenge_token, code }),
+
+  forgotPassword: (station_code: string, email: string) =>
+    api.post<{ ok: boolean }>('/auth/forgot-password', { station_code, email }),
+
+  resetPassword: (token: string, new_password: string) =>
+    api.post<{ ok: boolean }>('/auth/reset-password', { token, new_password }),
 }

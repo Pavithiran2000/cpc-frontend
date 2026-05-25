@@ -212,6 +212,14 @@ function CredentialsForm({
               {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
             </button>
           </div>
+          <div className="flex justify-end">
+            <Link
+              href="/forgot-password"
+              className="text-xs text-white/35 transition-colors hover:text-[#E85D04]"
+            >
+              Forgot password?
+            </Link>
+          </div>
         </Field>
 
         {apiError && (
