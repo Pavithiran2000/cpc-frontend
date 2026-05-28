@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -26,7 +26,7 @@ type Tab = (typeof TABS)[number]
 
 function TabBar({ active, onChange }: { active: Tab; onChange: (t: Tab) => void }) {
   return (
-    <div className="flex gap-1 rounded-lg border border-white/8 bg-white/[0.03] p-1 w-fit">
+    <div className="flex gap-1 rounded-lg border border-border bg-muted/30 p-1 w-fit">
       {TABS.map((t) => (
         <button
           key={t}
@@ -35,7 +35,7 @@ function TabBar({ active, onChange }: { active: Tab; onChange: (t: Tab) => void 
             'rounded-md px-4 py-1.5 text-sm font-medium transition-colors',
             active === t
               ? 'bg-[#E85D04] text-white'
-              : 'text-white/40 hover:text-white/70',
+              : 'text-foreground/40 hover:text-foreground/70',
           )}
         >
           {t}
@@ -49,9 +49,9 @@ function TabBar({ active, onChange }: { active: Tab; onChange: (t: Tab) => void 
 
 function inputCls(hasError?: boolean) {
   return [
-    'w-full rounded-lg border bg-white/5 px-3 py-2 text-sm text-white',
-    'placeholder:text-white/25 outline-none',
-    hasError ? 'border-rose-500/50' : 'border-white/10 focus:border-[#E85D04]/60',
+    'w-full rounded-lg border bg-muted/50 px-3 py-2 text-sm text-foreground',
+    'placeholder:text-muted-foreground outline-none',
+    hasError ? 'border-rose-500/50' : 'border-border focus:border-[#E85D04]/60',
   ].join(' ')
 }
 
@@ -66,7 +66,7 @@ function Field({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-[11px] font-semibold uppercase tracking-widest text-white/40">
+      <label className="text-[11px] font-semibold uppercase tracking-widest text-foreground/40">
         {label}
       </label>
       {children}
@@ -78,8 +78,8 @@ function Field({
 // ─── Create Payroll Run Form ──────────────────────────────────────────────────
 
 const runSchema = z.object({
-  period_from: z.string().min(1, 'Required'),
-  period_to: z.string().min(1, 'Required'),
+  period_start: z.string().min(1, 'Required'),
+  period_end:   z.string().min(1, 'Required'),
 })
 type RunForm = z.infer<typeof runSchema>
 
@@ -92,10 +92,10 @@ function CreatePayrollRunForm({ onSuccess }: { onSuccess: () => void }) {
   } = useForm<RunForm>({
     resolver: zodResolver(runSchema),
     defaultValues: {
-      period_from: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+      period_start: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
         .toISOString()
         .slice(0, 10),
-      period_to: new Date().toISOString().slice(0, 10),
+      period_end: new Date().toISOString().slice(0, 10),
     },
   })
 
@@ -112,21 +112,21 @@ function CreatePayrollRunForm({ onSuccess }: { onSuccess: () => void }) {
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-4">
-      <Field label="Period From" error={errors.period_from?.message}>
+      <Field label="Period From" error={errors.period_start?.message}>
         <input
-          {...register('period_from')}
+          {...register('period_start')}
           type="date"
-          className={inputCls(!!errors.period_from) + ' number'}
+          className={inputCls(!!errors.period_start) + ' number'}
         />
       </Field>
-      <Field label="Period To" error={errors.period_to?.message}>
+      <Field label="Period To" error={errors.period_end?.message}>
         <input
-          {...register('period_to')}
+          {...register('period_end')}
           type="date"
-          className={inputCls(!!errors.period_to) + ' number'}
+          className={inputCls(!!errors.period_end) + ' number'}
         />
       </Field>
-      <p className="text-xs text-white/35">
+      <p className="text-xs text-foreground/35">
         Leave staff IDs blank to include all active staff in the payroll run.
       </p>
       <button
@@ -144,13 +144,13 @@ function CreatePayrollRunForm({ onSuccess }: { onSuccess: () => void }) {
 
 function PayrollRunsTab() {
   const queryClient = useQueryClient()
-  const { page, limit, setPage, setLimit } = usePagination()
+  const { page, limit, sortBy, sortOrder, setPage, setLimit, setSort } = usePagination()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [finalizeTarget, setFinalizeTarget] = useState<string | null>(null)
 
   const query = useQuery({
-    queryKey: ['payroll-runs', { page, limit }],
-    queryFn: () => payrollApi.listRuns({ page, limit }).then((r) => r.data),
+    queryKey: ['payroll-runs', { page, limit, sortBy, sortOrder }],
+    queryFn: () => payrollApi.listRuns({ page, limit, sort_by: sortBy, sort_order: sortOrder }).then((r) => r.data),
   })
 
   const finalizeMutation = useMutation({
@@ -166,33 +166,37 @@ function PayrollRunsTab() {
   const columns = useMemo<ColumnDef<PayrollRun>[]>(
     () => [
       {
-        id: 'period_from',
+        id: 'period_start',
         header: 'Period From',
+        meta: { sortKey: 'period_start', defaultSortDir: 'DESC' as const },
         cell: ({ row }) => (
-          <span className="number text-sm text-white">
-            {formatDate(row.original.period_from)}
+          <span className="number text-sm text-foreground">
+            {formatDate(row.original.period_start)}
           </span>
         ),
       },
       {
-        id: 'period_to',
+        id: 'period_end',
         header: 'Period To',
+        meta: { sortKey: 'period_end', defaultSortDir: 'DESC' as const },
         cell: ({ row }) => (
-          <span className="number text-sm text-white/70">
-            {formatDate(row.original.period_to)}
+          <span className="number text-sm text-foreground/70">
+            {formatDate(row.original.period_end)}
           </span>
         ),
       },
       {
         id: 'status',
         header: 'Status',
+        meta: { sortKey: 'status', defaultSortDir: 'ASC' as const },
         cell: ({ row }) => <StatusBadge status={row.original.status} />,
       },
       {
         id: 'created_at',
         header: 'Created',
+        meta: { sortKey: 'created_at', defaultSortDir: 'DESC' as const },
         cell: ({ row }) => (
-          <span className="number text-xs text-white/40">
+          <span className="number text-xs text-foreground/40">
             {formatDate(row.original.created_at)}
           </span>
         ),
@@ -208,7 +212,7 @@ function PayrollRunsTab() {
                   e.stopPropagation()
                   setFinalizeTarget(row.original.id)
                 }}
-                className="flex items-center gap-1 rounded-lg border border-white/10 px-3 py-1.5 text-xs text-white/50 hover:border-emerald-500/30 hover:text-emerald-400 transition-colors"
+                className="flex items-center gap-1 rounded-lg border border-border px-3 py-1.5 text-xs text-foreground/50 hover:border-emerald-500/30 hover:text-emerald-400 transition-colors"
               >
                 <Check size={11} /> Finalize
               </button>
@@ -241,15 +245,18 @@ function PayrollRunsTab() {
         onLimitChange={setLimit}
         isLoading={query.isLoading}
         emptyMessage="No payroll runs found"
+        sortBy={sortBy}
+        sortOrder={sortOrder}
+        onSortChange={setSort}
       />
 
       <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
         <SheetContent
           side="right"
-          className="flex w-full flex-col border-l border-white/8 bg-[#111114] p-0 sm:max-w-[400px]"
+          className="flex w-full flex-col border-l border-border bg-card p-0 sm:max-w-[400px]"
         >
-          <SheetHeader className="border-b border-white/5 px-5 py-4">
-            <SheetTitle className="font-syne text-base font-semibold text-white">
+          <SheetHeader className="border-b border-border/60 px-5 py-4">
+            <SheetTitle className="font-syne text-base font-semibold text-foreground">
               Create Payroll Run
             </SheetTitle>
           </SheetHeader>
@@ -279,7 +286,7 @@ type DeductionStatusFilter = (typeof DEDUCTION_STATUSES)[number]
 
 function SalaryDeductionsTab() {
   const queryClient = useQueryClient()
-  const { page, limit, setPage, setLimit, resetPage } = usePagination()
+  const { page, limit, sortBy, sortOrder, setPage, setLimit, setSort, resetPage } = usePagination()
   const [statusFilter, setStatusFilter] = useState<DeductionStatusFilter>('ALL')
 
   const filters = useMemo(
@@ -287,8 +294,10 @@ function SalaryDeductionsTab() {
       page,
       limit,
       status: statusFilter === 'ALL' ? undefined : statusFilter,
+      sort_by: sortBy,
+      sort_order: sortOrder,
     }),
-    [page, limit, statusFilter],
+    [page, limit, statusFilter, sortBy, sortOrder],
   )
 
   const query = useQuery({
@@ -311,7 +320,7 @@ function SalaryDeductionsTab() {
         id: 'staff',
         header: 'Staff',
         cell: ({ row }) => (
-          <p className="font-medium text-white">
+          <p className="font-medium text-foreground">
             {row.original.staff?.name ?? row.original.staff_id}
           </p>
         ),
@@ -319,6 +328,7 @@ function SalaryDeductionsTab() {
       {
         id: 'amount',
         header: 'Amount',
+        meta: { sortKey: 'amount', defaultSortDir: 'DESC' as const },
         cell: ({ row }) => (
           <span className="number text-sm font-semibold text-rose-400">
             {formatCurrency(row.original.amount)}
@@ -329,7 +339,7 @@ function SalaryDeductionsTab() {
         id: 'reason',
         header: 'Reason',
         cell: ({ row }) => (
-          <span className="text-xs text-white/60 max-w-[200px] truncate block">
+          <span className="text-xs text-foreground/60 max-w-[200px] truncate block">
             {row.original.reason}
           </span>
         ),
@@ -337,8 +347,9 @@ function SalaryDeductionsTab() {
       {
         id: 'created_at',
         header: 'Date',
+        meta: { sortKey: 'created_at', defaultSortDir: 'DESC' as const },
         cell: ({ row }) => (
-          <span className="number text-xs text-white/40">
+          <span className="number text-xs text-foreground/40">
             {formatDate(row.original.created_at)}
           </span>
         ),
@@ -346,6 +357,7 @@ function SalaryDeductionsTab() {
       {
         id: 'status',
         header: 'Status',
+        meta: { sortKey: 'status', defaultSortDir: 'ASC' as const },
         cell: ({ row }) => <StatusBadge status={row.original.status} />,
       },
       {
@@ -360,7 +372,7 @@ function SalaryDeductionsTab() {
                   approveMutation.mutate(row.original.id)
                 }}
                 disabled={approveMutation.isPending}
-                className="flex items-center gap-1 rounded-lg border border-white/10 px-3 py-1.5 text-xs text-white/50 hover:border-emerald-500/30 hover:text-emerald-400 transition-colors disabled:opacity-40"
+                className="flex items-center gap-1 rounded-lg border border-border px-3 py-1.5 text-xs text-foreground/50 hover:border-emerald-500/30 hover:text-emerald-400 transition-colors disabled:opacity-40"
               >
                 <Check size={11} /> Approve
               </button>
@@ -375,7 +387,7 @@ function SalaryDeductionsTab() {
   return (
     <>
       {/* Status filter */}
-      <div className="flex gap-1 rounded-lg border border-white/8 bg-white/[0.03] p-1 w-fit">
+      <div className="flex gap-1 rounded-lg border border-border bg-muted/30 p-1 w-fit">
         {DEDUCTION_STATUSES.map((s) => (
           <button
             key={s}
@@ -384,7 +396,7 @@ function SalaryDeductionsTab() {
               'rounded-md px-3 py-1.5 text-xs font-medium transition-colors',
               statusFilter === s
                 ? 'bg-[#E85D04] text-white'
-                : 'text-white/40 hover:text-white/70',
+                : 'text-foreground/40 hover:text-foreground/70',
             )}
           >
             {s.charAt(0) + s.slice(1).toLowerCase()}
@@ -402,6 +414,9 @@ function SalaryDeductionsTab() {
         onLimitChange={setLimit}
         isLoading={query.isLoading}
         emptyMessage="No salary deductions found"
+        sortBy={sortBy}
+        sortOrder={sortOrder}
+        onSortChange={setSort}
       />
     </>
   )

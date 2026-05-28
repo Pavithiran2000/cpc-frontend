@@ -10,7 +10,14 @@ export const bowserApi = {
   list: (params?: ListQuery) =>
     api.get<PaginatedResponse<BowserReceipt>>('/bowser-receipts', { params }),
 
-  create: (data: Partial<BowserReceipt>) =>
+  create: (data: {
+    receipt_no: string
+    received_date: string
+    supplier_name?: string
+    vehicle_no?: string
+    driver_name?: string
+    lines: Array<{ tank_id: string; product_id: string; received_litres: number; unit_cost: number }>
+  }) =>
     api.post<BowserReceipt>('/bowser-receipts', data),
 
   getById: (id: string) =>

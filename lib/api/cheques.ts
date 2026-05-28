@@ -10,6 +10,6 @@ export const chequesApi = {
 
   updateStatus: (
     id: string,
-    data: { status: ChequeStatus; deposit_date?: string },
+    data: { status: ChequeStatus },
   ) => api.patch<Cheque>(`/cheques/${id}/status`, data),
 }

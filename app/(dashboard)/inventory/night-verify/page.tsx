@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -52,11 +52,11 @@ export default function NightVerifyPage() {
         .map((b) => {
           const counted = parseFloat(counts[b.product_id] ?? '0')
           return {
-            product_name: b.product?.name ?? b.product_id,
+            product_name: b.product?.product_name ?? b.product_id,
             product_id:   b.product_id,
-            system_qty:   b.quantity,
+            system_qty:   b.quantity_on_hand,
             counted_qty:  counted,
-            variance:     counted - b.quantity,
+            variance:     counted - b.quantity_on_hand,
           }
         })
       setResults(mapped)
@@ -96,10 +96,10 @@ export default function NightVerifyPage() {
   if (balancesQuery.isLoading) {
     return (
       <div className="p-5">
-        <div className="mb-4 h-8 w-48 animate-pulse rounded bg-white/8" />
+        <div className="mb-4 h-8 w-48 animate-pulse rounded bg-muted/50" />
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-16 animate-pulse rounded-lg bg-white/5" />
+            <div key={i} className="h-16 animate-pulse rounded-lg bg-muted/50" />
           ))}
         </div>
       </div>
@@ -109,16 +109,16 @@ export default function NightVerifyPage() {
   return (
     <div className="flex flex-col gap-5 p-5">
       <div className="mb-2">
-        <h1 className="font-syne text-2xl font-bold text-white">Night Verification</h1>
-        <p className="mt-1 text-sm text-white/50">
+        <h1 className="font-syne text-2xl font-bold text-foreground">Night Verification</h1>
+        <p className="mt-1 text-sm text-foreground/50">
           Enter physical stock counts at end of shift to detect variances
         </p>
       </div>
 
       {/* Result panel */}
       {results && (
-        <div className="rounded-lg border border-white/8 bg-[#18181C] p-4">
-          <h2 className="mb-3 font-syne text-sm font-semibold text-white">
+        <div className="rounded-lg border border-border bg-card p-4">
+          <h2 className="mb-3 font-syne text-sm font-semibold text-foreground">
             Verification Results — {formatDate(businessDate)}
           </h2>
           <div className="space-y-2">
@@ -140,19 +140,19 @@ export default function NightVerifyPage() {
                     ) : (
                       <CheckCircle2 size={14} className="text-emerald-400" />
                     )}
-                    <span className="text-sm font-medium text-white">{r.product_name}</span>
+                    <span className="text-sm font-medium text-foreground">{r.product_name}</span>
                   </div>
                   <div className="flex items-center gap-4 text-right">
                     <div>
-                      <p className="text-[10px] uppercase tracking-wider text-white/35">System</p>
-                      <p className="number text-xs text-white/70">{formatLitres(r.system_qty)}</p>
+                      <p className="text-[10px] uppercase tracking-wider text-foreground/35">System</p>
+                      <p className="number text-xs text-foreground/70">{formatLitres(r.system_qty)}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] uppercase tracking-wider text-white/35">Counted</p>
-                      <p className="number text-xs text-white/70">{formatLitres(r.counted_qty)}</p>
+                      <p className="text-[10px] uppercase tracking-wider text-foreground/35">Counted</p>
+                      <p className="number text-xs text-foreground/70">{formatLitres(r.counted_qty)}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] uppercase tracking-wider text-white/35">Variance</p>
+                      <p className="text-[10px] uppercase tracking-wider text-foreground/35">Variance</p>
                       <p
                         className={cn(
                           'number text-xs font-semibold',
@@ -169,7 +169,7 @@ export default function NightVerifyPage() {
           </div>
           <button
             onClick={() => { setResults(null); setCounts({}) }}
-            className="mt-3 text-xs text-white/35 hover:text-white/60"
+            className="mt-3 text-xs text-foreground/35 hover:text-foreground/60"
           >
             Start new verification
           </button>
@@ -180,7 +180,7 @@ export default function NightVerifyPage() {
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           {/* Date picker */}
           <div className="flex items-center gap-3">
-            <label className="text-[11px] font-semibold uppercase tracking-widest text-white/40">
+            <label className="text-[11px] font-semibold uppercase tracking-widest text-foreground/40">
               Business Date
             </label>
             <input
@@ -188,38 +188,38 @@ export default function NightVerifyPage() {
               value={businessDate}
               onChange={(e) => setBusinessDate(e.target.value)}
               max={today}
-              className="number rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white outline-none focus:border-[#E85D04]/60"
+              className="number rounded-lg border border-border bg-muted/50 px-3 py-1.5 text-sm text-foreground outline-none focus:border-[#E85D04]/60"
             />
           </div>
 
           {/* Product count entries */}
-          <div className="overflow-hidden rounded-lg border border-white/5">
-            <div className="border-b border-white/5 bg-[#111114] px-4 py-2.5">
-              <h2 className="font-syne text-sm font-semibold text-white/80">
+          <div className="overflow-hidden rounded-lg border border-border">
+            <div className="border-b border-border/60 bg-card px-4 py-2.5">
+              <h2 className="font-syne text-sm font-semibold text-foreground/80">
                 Physical Stock Count
               </h2>
             </div>
             {balances.length === 0 ? (
-              <div className="px-4 py-8 text-center text-sm text-white/40">
+              <div className="px-4 py-8 text-center text-sm text-foreground/40">
                 No stock balances found. Ensure products and tanks are configured.
               </div>
             ) : (
-              <div className="divide-y divide-white/5">
+              <div className="divide-y divide-border">
                 {balances.map((b) => (
                   <div
                     key={b.product_id}
                     className="grid grid-cols-[1fr_auto_auto] items-center gap-4 px-4 py-3"
                   >
                     <div>
-                      <p className="text-sm font-medium text-white">
-                        {b.product?.name ?? b.product_id}
+                      <p className="text-sm font-medium text-foreground">
+                        {b.product?.product_name ?? b.product_id}
                       </p>
-                      <p className="text-xs text-white/40">
-                        System: {formatLitres(b.quantity)}
+                      <p className="text-xs text-foreground/40">
+                        System: {formatLitres(b.quantity_on_hand)}
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-[10px] uppercase tracking-wider text-white/35">
+                      <p className="text-[10px] uppercase tracking-wider text-foreground/35">
                         Counted Qty
                       </p>
                     </div>
@@ -232,7 +232,7 @@ export default function NightVerifyPage() {
                         setCounts((prev) => ({ ...prev, [b.product_id]: e.target.value }))
                       }
                       placeholder="0.000"
-                      className="number w-36 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-right text-sm text-white outline-none focus:border-[#E85D04]/60"
+                      className="number w-36 rounded-lg border border-border bg-muted/50 px-3 py-2 text-right text-sm text-foreground outline-none focus:border-[#E85D04]/60"
                     />
                   </div>
                 ))}

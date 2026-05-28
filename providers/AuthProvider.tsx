@@ -8,17 +8,21 @@ import type { PortalUser } from '@/lib/types'
 
 export const AUTH_KEY = ['auth', 'me'] as const
 
+type LoginResult = { requires_2fa: true; challenge_token: string } | { requires_2fa: false }
+
 interface AuthContextValue {
   user: PortalUser | null
   isLoading: boolean
-  login: (station_code: string, email: string, password: string) => Promise<void>
+  login: (station_code: string, email: string, password: string) => Promise<LoginResult>
+  loginWithChallenge: (challenge_token: string, code: string) => Promise<void>
   logout: () => Promise<void>
 }
 
 export const AuthContext = createContext<AuthContextValue>({
   user: null,
   isLoading: true,
-  login: async () => {},
+  login: async () => ({ requires_2fa: false }),
+  loginWithChallenge: async () => {},
   logout: async () => {},
 })
 
@@ -34,8 +38,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   })
 
   const login = useCallback(
-    async (station_code: string, email: string, password: string) => {
+    async (station_code: string, email: string, password: string): Promise<LoginResult> => {
       const res = await authApi.login(station_code, email, password)
+      const data = res.data as { requires_2fa?: boolean; challenge_token?: string; user?: PortalUser }
+      if (data.requires_2fa) {
+        return { requires_2fa: true, challenge_token: data.challenge_token! }
+      }
+      queryClient.setQueryData(AUTH_KEY, data.user)
+      router.push('/')
+      return { requires_2fa: false }
+    },
+    [queryClient, router],
+  )
+
+  const loginWithChallenge = useCallback(
+    async (challenge_token: string, code: string) => {
+      const res = await authApi.challenge2fa(challenge_token, code)
       queryClient.setQueryData(AUTH_KEY, res.data.user)
       router.push('/')
     },
@@ -49,7 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [queryClient, router])
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, login, loginWithChallenge, logout }}>
       {children}
     </AuthContext.Provider>
   )

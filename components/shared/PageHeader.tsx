@@ -13,9 +13,9 @@ export function PageHeader({ title, subtitle, description, actions, className }:
   return (
     <div className={cn('mb-6 flex items-start justify-between gap-4', className)}>
       <div>
-        <h1 className="font-syne text-2xl font-bold text-white">{title}</h1>
+        <h1 className="font-syne text-2xl font-bold text-foreground">{title}</h1>
         {sub && (
-          <p className="mt-1 text-sm text-white/50">{sub}</p>
+          <p className="mt-1 text-sm text-foreground/50">{sub}</p>
         )}
       </div>
       {actions && (

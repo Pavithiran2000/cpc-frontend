@@ -17,9 +17,20 @@ import {
 } from '@/components/ui/table'
 import { EmptyState } from './EmptyState'
 import { cn } from '@/lib/utils'
-import { ChevronLeft, ChevronRight, Database, Search } from 'lucide-react'
+import { ArrowDown, ArrowUp, ArrowUpDown, ChevronLeft, ChevronRight, Database, Search } from 'lucide-react'
+import type { SortOrder } from '@/lib/hooks/usePagination'
 
 export type { ColumnDef } from '@tanstack/react-table'
+
+// ─── Column meta ──────────────────────────────────────────────────────────────
+
+declare module '@tanstack/react-table' {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  interface ColumnMeta<TData, TValue> {
+    sortKey?: string
+    defaultSortDir?: SortOrder
+  }
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -39,20 +50,32 @@ interface DataTableProps<T> {
   actions?: React.ReactNode
   emptyMessage?: string
   onRowClick?: (row: T) => void
+  // Sort props
+  sortBy?: string
+  sortOrder?: SortOrder
+  onSortChange?: (key: string, defaultDir: SortOrder) => void
 }
 
 const PAGE_SIZES = [10, 25, 50]
+
+// ─── Sort icon ────────────────────────────────────────────────────────────────
+
+function SortIcon({ active, order }: { active: boolean; order?: SortOrder }) {
+  if (!active) return <ArrowUpDown size={12} className="ml-1 text-foreground/25" />
+  if (order === 'ASC') return <ArrowUp size={12} className="ml-1 text-[#E85D04]" />
+  return <ArrowDown size={12} className="ml-1 text-[#E85D04]" />
+}
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 
 function SkeletonRows({ cols }: { cols: number }) {
   return Array.from({ length: 5 }).map((_, i) => (
-    <TableRow key={i} className="animate-pulse border-white/5 hover:bg-transparent">
+    <TableRow key={i} className="animate-pulse border-border hover:bg-transparent">
       {Array.from({ length: cols }).map((_, j) => (
         <TableCell key={j} className="px-3 py-3">
           <div
             className={cn(
-              'h-3 rounded bg-white/8',
+              'h-3 rounded bg-foreground/8',
               j === 0 ? 'w-32' : j % 2 === 0 ? 'w-20' : 'w-24',
             )}
           />
@@ -80,6 +103,9 @@ export function DataTable<T>({
   actions,
   emptyMessage = 'No records found',
   onRowClick,
+  sortBy,
+  sortOrder,
+  onSortChange,
 }: DataTableProps<T>) {
   const [searchVal, setSearchVal] = useState('')
 
@@ -94,6 +120,7 @@ export function DataTable<T>({
     columns,
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true,
+    manualSorting: true,
     rowCount: total,
   })
 
@@ -105,33 +132,32 @@ export function DataTable<T>({
 
   const hasToolbar = title || searchable || actions
 
-  // Helper: column header as string for mobile cards
   function headerLabel(def: ColumnDef<T>): string {
     if (typeof def.header === 'string') return def.header
     return (def as { id?: string }).id ?? ''
   }
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-lg border border-white/5">
+    <div className="flex flex-col overflow-hidden rounded-lg border border-border">
       {/* ── Toolbar ── */}
       {hasToolbar && (
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/5 bg-[#111114] px-4 py-3">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-surface px-4 py-3">
           <div className="flex flex-1 items-center gap-3">
             {title && (
-              <h2 className="font-syne text-sm font-semibold text-white/80">{title}</h2>
+              <h2 className="font-syne text-sm font-semibold text-foreground/80">{title}</h2>
             )}
             {searchable && (
               <div className="relative">
                 <Search
                   size={13}
-                  className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-white/30"
+                  className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-foreground/30"
                 />
                 <input
                   type="text"
                   value={searchVal}
                   onChange={(e) => setSearchVal(e.target.value)}
                   placeholder="Search…"
-                  className="w-48 rounded border border-white/10 bg-white/5 py-1.5 pl-7 pr-3 text-xs text-white/80 placeholder:text-white/30 focus:border-[#E85D04]/50 focus:outline-none"
+                  className="w-48 rounded border border-border bg-background py-1.5 pl-7 pr-3 text-xs text-foreground/80 placeholder:text-foreground/30 focus:border-[#E85D04]/50 focus:outline-none"
                 />
               </div>
             )}
@@ -142,7 +168,7 @@ export function DataTable<T>({
 
       {/* ── Filters slot ── */}
       {filters && (
-        <div className="flex flex-wrap items-center gap-3 border-b border-white/5 bg-[#111114] px-4 py-2">
+        <div className="flex flex-wrap items-center gap-3 border-b border-border bg-surface px-4 py-2">
           {filters}
         </div>
       )}
@@ -150,19 +176,35 @@ export function DataTable<T>({
       {/* ── Desktop table (≥ 640px) ── */}
       <div className="hidden sm:block">
         <Table>
-          <TableHeader className="sticky top-0 z-10 bg-[#111114]">
+          <TableHeader className="sticky top-0 z-10 bg-surface">
             {table.getHeaderGroups().map((hg) => (
-              <TableRow key={hg.id} className="border-white/5 hover:bg-transparent">
-                {hg.headers.map((header) => (
-                  <TableHead
-                    key={header.id}
-                    className="h-9 px-3 text-xs font-semibold uppercase tracking-widest text-white/35"
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
-                  </TableHead>
-                ))}
+              <TableRow key={hg.id} className="border-border hover:bg-transparent">
+                {hg.headers.map((header) => {
+                  const meta = header.column.columnDef.meta
+                  const sk = meta?.sortKey
+                  const defaultDir = meta?.defaultSortDir ?? 'ASC'
+                  const isActive = !!sk && sortBy === sk
+                  const sortable = !!sk && !!onSortChange
+
+                  return (
+                    <TableHead
+                      key={header.id}
+                      onClick={sortable ? () => onSortChange!(sk, defaultDir) : undefined}
+                      className={cn(
+                        'h-9 px-3 text-xs font-semibold uppercase tracking-widest text-foreground/35',
+                        sortable && 'cursor-pointer select-none hover:text-foreground/60',
+                        isActive && 'text-[#E85D04]/70',
+                      )}
+                    >
+                      {header.isPlaceholder ? null : (
+                        <span className="inline-flex items-center">
+                          {flexRender(header.column.columnDef.header, header.getContext())}
+                          {sortable && <SortIcon active={isActive} order={isActive ? sortOrder : undefined} />}
+                        </span>
+                      )}
+                    </TableHead>
+                  )
+                })}
               </TableRow>
             ))}
           </TableHeader>
@@ -182,17 +224,17 @@ export function DataTable<T>({
                   key={row.id}
                   onClick={onRowClick ? () => onRowClick(row.original) : undefined}
                   className={cn(
-                    'border-white/5 transition-colors',
-                    i % 2 === 0 ? 'bg-[#18181C]' : 'bg-[#1A1A1E]',
+                    'border-border transition-colors',
+                    i % 2 === 0 ? 'bg-card' : 'bg-muted/30',
                     onRowClick
                       ? 'cursor-pointer hover:bg-[rgba(232,93,4,0.06)]'
-                      : 'hover:bg-white/[0.02]',
+                      : 'hover:bg-foreground/[0.02]',
                   )}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
-                      className="px-3 py-2.5 text-sm text-white/75"
+                      className="px-3 py-2.5 text-sm text-foreground/75"
                     >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
@@ -211,12 +253,12 @@ export function DataTable<T>({
             {Array.from({ length: 5 }).map((_, i) => (
               <div
                 key={i}
-                className="animate-pulse rounded-lg border border-white/5 bg-[#18181C] p-3"
+                className="animate-pulse rounded-lg border border-border bg-card p-3"
               >
                 {Array.from({ length: Math.min(columns.length, 4) }).map((_, j) => (
                   <div key={j} className="flex justify-between py-1.5">
-                    <div className="h-2.5 w-20 rounded bg-white/10" />
-                    <div className="h-2.5 w-24 rounded bg-white/10" />
+                    <div className="h-2.5 w-20 rounded bg-foreground/10" />
+                    <div className="h-2.5 w-24 rounded bg-foreground/10" />
                   </div>
                 ))}
               </div>
@@ -231,19 +273,19 @@ export function DataTable<T>({
                 key={row.id}
                 onClick={onRowClick ? () => onRowClick(row.original) : undefined}
                 className={cn(
-                  'rounded-lg border border-white/5 bg-[#18181C] p-3',
+                  'rounded-lg border border-border bg-card p-3',
                   onRowClick && 'cursor-pointer hover:border-[#E85D04]/30',
                 )}
               >
                 {row.getVisibleCells().map((cell) => (
                   <div
                     key={cell.id}
-                    className="flex items-start justify-between gap-2 border-b border-white/5 py-1.5 last:border-0"
+                    className="flex items-start justify-between gap-2 border-b border-border py-1.5 last:border-0"
                   >
-                    <span className="shrink-0 text-[10px] uppercase tracking-wider text-white/35">
+                    <span className="shrink-0 text-[10px] uppercase tracking-wider text-foreground/35">
                       {headerLabel(cell.column.columnDef)}
                     </span>
-                    <span className="text-right text-xs text-white/75">
+                    <span className="text-right text-xs text-foreground/75">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </span>
                   </div>
@@ -255,10 +297,10 @@ export function DataTable<T>({
       </div>
 
       {/* ── Pagination footer ── */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/5 bg-[#111114] px-4 py-2.5">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border bg-surface px-4 py-2.5">
         {/* Per-page */}
         <div className="flex items-center gap-0.5">
-          <span className="mr-1.5 text-[10px] text-white/30 uppercase tracking-wider">Rows</span>
+          <span className="mr-1.5 text-[10px] text-foreground/30 uppercase tracking-wider">Rows</span>
           {PAGE_SIZES.map((size) => (
             <button
               key={size}
@@ -267,7 +309,7 @@ export function DataTable<T>({
                 'min-w-[28px] rounded px-2 py-0.5 text-xs transition-colors',
                 limit === size
                   ? 'bg-[#E85D04]/15 text-[#E85D04]'
-                  : 'text-white/40 hover:text-white/70',
+                  : 'text-foreground/40 hover:text-foreground/70',
               )}
             >
               {size}
@@ -276,7 +318,7 @@ export function DataTable<T>({
         </div>
 
         {/* Record count */}
-        <span className="number text-xs text-white/30">
+        <span className="number text-xs text-foreground/30">
           {total === 0
             ? '0 records'
             : `${startRecord}–${endRecord} of ${total}`}
@@ -287,20 +329,20 @@ export function DataTable<T>({
           <button
             onClick={() => onPageChange(page - 1)}
             disabled={page <= 1}
-            className="flex items-center gap-0.5 rounded px-1.5 py-1 text-xs text-white/40 transition-colors hover:text-white/70 disabled:cursor-not-allowed disabled:opacity-30"
+            className="flex items-center gap-0.5 rounded px-1.5 py-1 text-xs text-foreground/40 transition-colors hover:text-foreground/70 disabled:cursor-not-allowed disabled:opacity-30"
           >
             <ChevronLeft size={13} />
             <span>Prev</span>
           </button>
 
-          <span className="number min-w-[64px] text-center text-xs text-white/50">
+          <span className="number min-w-[64px] text-center text-xs text-foreground/50">
             {page} / {totalPages}
           </span>
 
           <button
             onClick={() => onPageChange(page + 1)}
             disabled={page >= totalPages}
-            className="flex items-center gap-0.5 rounded px-1.5 py-1 text-xs text-white/40 transition-colors hover:text-white/70 disabled:cursor-not-allowed disabled:opacity-30"
+            className="flex items-center gap-0.5 rounded px-1.5 py-1 text-xs text-foreground/40 transition-colors hover:text-foreground/70 disabled:cursor-not-allowed disabled:opacity-30"
           >
             <span>Next</span>
             <ChevronRight size={13} />

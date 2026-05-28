@@ -36,25 +36,17 @@ export const shiftsApi = {
   cancelSession: (id: string) =>
     api.post<ShiftSession>(`/shift-sessions/${id}/cancel`),
 
-  setAssignments: (id: string, assignments: PumperAssignment[]) =>
+  setAssignments: (id: string, assignments: Array<{ pumper_id: string; nozzle_id: string }>) =>
     api.post(`/shift-sessions/${id}/assignments`, { assignments }),
 
   setOpeningReadings: (
     id: string,
-    readings: Array<{
-      pump_id: string
-      nozzle_id: string
-      opening_reading: number
-    }>,
+    readings: Array<{ nozzle_id: string; meter_reading: number }>,
   ) => api.post(`/shift-sessions/${id}/opening-readings`, { readings }),
 
   setClosingReadings: (
     id: string,
-    readings: Array<{
-      pump_id: string
-      nozzle_id: string
-      closing_reading: number
-    }>,
+    readings: Array<{ nozzle_id: string; meter_reading: number }>,
   ) => api.post(`/shift-sessions/${id}/closing-readings`, { readings }),
 
   setCashSubmissions: (
@@ -62,8 +54,15 @@ export const shiftsApi = {
     submissions: Array<{ pumper_id: string; actual_cash: number }>,
   ) => api.post(`/shift-sessions/${id}/cash-submissions`, { submissions }),
 
-  closeSession: (id: string, notes?: string) =>
-    api.post<ShiftSession>(`/shift-sessions/${id}/close`, { notes }),
+  closeSession: (
+    id: string,
+    closingReadings: Array<{ nozzle_id: string; meter_reading: number }>,
+    cashSubmissions: Array<{ pumper_id: string; actual_cash: number }>,
+  ) =>
+    api.post<ShiftSession>(`/shift-sessions/${id}/close`, {
+      closing_readings: closingReadings,
+      cash_submissions: cashSubmissions,
+    }),
 
   // Attendance
   listAttendance: (params?: ListQuery & { shift_session_id?: string }) =>

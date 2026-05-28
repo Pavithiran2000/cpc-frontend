@@ -11,14 +11,13 @@ export const payrollApi = {
     api.get<PaginatedResponse<PayrollRun>>('/payroll-runs', { params }),
 
   createRun: (data: {
-    period_from: string
-    period_to: string
-    staff_ids?: string[]
+    period_start: string
+    period_end: string
   }) => api.post<PayrollRun>('/payroll-runs', data),
 
   finalizeRun: (
     id: string,
-    options?: { include_pending_deductions?: boolean },
+    options?: { attendance_override?: boolean },
   ) => api.post<PayrollRun>(`/payroll-runs/${id}/finalize`, options),
 
   listDeductions: (params?: ListQuery) =>

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -67,12 +67,12 @@ export default function CpcStockPage() {
     {
       id: 'report_date',
       header: 'Report Date',
-      cell: ({ row }) => <span className="number font-medium text-white">{formatDate(row.original.report_date)}</span>,
+      cell: ({ row }) => <span className="number font-medium text-foreground">{formatDate(row.original.report_date)}</span>,
     },
     {
       id: 'report_type',
       header: 'Type',
-      cell: ({ row }) => <span className="text-xs text-white/60">{row.original.report_type ?? 'Standard'}</span>,
+      cell: ({ row }) => <span className="text-xs text-foreground/60">{row.original.report_type ?? 'Standard'}</span>,
     },
     {
       id: 'status',
@@ -84,9 +84,9 @@ export default function CpcStockPage() {
       header: 'Submitted To',
       cell: ({ row }) => (
         <div>
-          <p className="text-xs text-white/60">{row.original.submitted_to ?? '—'}</p>
+          <p className="text-xs text-foreground/60">{row.original.submitted_to ?? '—'}</p>
           {row.original.submission_date && (
-            <p className="number text-[10px] text-white/35">{formatDate(row.original.submission_date)}</p>
+            <p className="number text-[10px] text-foreground/35">{formatDate(row.original.submission_date)}</p>
           )}
         </div>
       ),
@@ -98,7 +98,7 @@ export default function CpcStockPage() {
         <div className="flex justify-end">
           <button
             onClick={(e) => { e.stopPropagation(); setSubmitTarget(row.original) }}
-            className="flex items-center gap-1 rounded p-1.5 text-xs text-white/30 hover:bg-sky-500/10 hover:text-sky-400">
+            className="flex items-center gap-1 rounded p-1.5 text-xs text-foreground/30 hover:bg-sky-500/10 hover:text-sky-400">
             <Send size={12} /> Submit
           </button>
         </div>
@@ -113,9 +113,9 @@ export default function CpcStockPage() {
       {/* Generate + date range */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-2">
-          <label className="text-[11px] uppercase tracking-widest text-white/35">Report Date</label>
+          <label className="text-[11px] uppercase tracking-widest text-foreground/35">Report Date</label>
           <input type="date" value={reportDate} onChange={(e) => setReportDate(e.target.value)}
-            className="number rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white/70 outline-none focus:border-[#E85D04]/60" />
+            className="number rounded-lg border border-border bg-muted/50 px-3 py-1.5 text-sm text-foreground/70 outline-none focus:border-[#E85D04]/60" />
         </div>
         <button
           onClick={() => generateMutation.mutate()}
@@ -128,10 +128,10 @@ export default function CpcStockPage() {
 
       <div className="flex items-center gap-2">
         <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)}
-          className="number rounded-lg border border-white/10 bg-[#18181C] px-2.5 py-1.5 text-xs text-white/60 outline-none focus:border-[#E85D04]/50" />
-        <span className="text-white/30">—</span>
+          className="number rounded-lg border border-border bg-card px-2.5 py-1.5 text-xs text-foreground/60 outline-none focus:border-[#E85D04]/50" />
+        <span className="text-foreground/30">—</span>
         <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)}
-          className="number rounded-lg border border-white/10 bg-[#18181C] px-2.5 py-1.5 text-xs text-white/60 outline-none focus:border-[#E85D04]/50" />
+          className="number rounded-lg border border-border bg-card px-2.5 py-1.5 text-xs text-foreground/60 outline-none focus:border-[#E85D04]/50" />
       </div>
 
       <DataTable columns={columns} data={query.data?.data ?? []} total={query.data?.meta.total ?? 0}
@@ -141,20 +141,20 @@ export default function CpcStockPage() {
       {/* Submit dialog */}
       {submitTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="w-full max-w-sm rounded-xl border border-white/10 bg-[#18181C] p-5">
-            <h3 className="mb-4 font-syne text-base font-semibold text-white">Submit CPC Report</h3>
-            <p className="mb-4 text-sm text-white/60">
-              Submitting report for <span className="number font-medium text-white">{formatDate(submitTarget.report_date)}</span>
+          <div className="w-full max-w-sm rounded-xl border border-border bg-card p-5">
+            <h3 className="mb-4 font-syne text-base font-semibold text-foreground">Submit CPC Report</h3>
+            <p className="mb-4 text-sm text-foreground/60">
+              Submitting report for <span className="number font-medium text-foreground">{formatDate(submitTarget.report_date)}</span>
             </p>
             <div className="mb-4 flex flex-col gap-1.5">
-              <label className="text-[11px] uppercase tracking-widest text-white/40">Submitted To</label>
+              <label className="text-[11px] uppercase tracking-widest text-foreground/40">Submitted To</label>
               <input type="text" value={submitTo} onChange={(e) => setSubmitTo(e.target.value)}
                 placeholder="CPC Regional Office"
-                className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-[#E85D04]/60" />
+                className="rounded-lg border border-border bg-muted/50 px-3 py-2 text-sm text-foreground outline-none focus:border-[#E85D04]/60" />
             </div>
             <div className="flex gap-2">
               <button onClick={() => setSubmitTarget(null)}
-                className="flex-1 rounded-lg border border-white/10 py-2 text-sm text-white/60 hover:bg-white/5">
+                className="flex-1 rounded-lg border border-border py-2 text-sm text-foreground/60 hover:bg-muted/50">
                 Cancel
               </button>
               <button onClick={() => submitMutation.mutate(submitTarget.id)} disabled={submitMutation.isPending}

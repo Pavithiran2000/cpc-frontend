@@ -63,6 +63,9 @@
   --color-border-dark: #2A2A30;
   --color-border-light: #E4E2DC;
 
+  /* ── Theme-aware surface token (toolbar/panel — sits between background and card) ── */
+  --color-surface: var(--surface);
+
   /* ── Font tokens ──
      --font-sans / --font-mono reference next/font vars (non-circular).
      --font-syne would be circular here so it lives in @layer utilities. */
@@ -112,6 +115,9 @@
   --chart-4: #2D6A4F;
   --chart-5: #E63946;
 
+  /* Surface — toolbar/header panel layer (darker than card, lighter than background) */
+  --surface: #F0EDE8;
+
   /* Sidebar — always dark */
   --sidebar:                  #111114;
   --sidebar-foreground:       rgba(255,255,255,0.80);
@@ -133,11 +139,11 @@
   --destructive:        #E63946;
 
   --background:   #0A0A0B;
-  --foreground:   rgba(255,255,255,0.90);
+  --foreground:   #FFFFFF;
   --card:         #18181C;
-  --card-foreground: rgba(255,255,255,0.90);
+  --card-foreground: #FFFFFF;
   --popover:      #18181C;
-  --popover-foreground: rgba(255,255,255,0.90);
+  --popover-foreground: #FFFFFF;
   --secondary:    #1E1E23;
   --secondary-foreground: rgba(255,255,255,0.70);
   --muted:        #1E1E23;
@@ -145,6 +151,9 @@
   --border:       #2A2A30;
   --input:        #2A2A30;
   --ring:         #E85D04;
+
+  /* Surface — toolbar/header panel layer */
+  --surface: #111114;
 
   /* Charts */
   --chart-1: #E85D04;
@@ -219,18 +228,18 @@
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #111114;
+  background: var(--background);
 }
 ::-webkit-scrollbar-thumb {
-  background: #E85D04;
+  background: var(--primary);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #F48C06;
+  background: var(--accent);
 }
 * {
   scrollbar-width: thin;
-  scrollbar-color: #E85D04 #111114;
+  scrollbar-color: var(--primary) var(--background);
 }
 
 /* ─── Selection colour ──────────────────────────────────────────────────── */

@@ -29,6 +29,7 @@ import {
   Clock,
   Users,
   LogOut,
+  Settings2,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
@@ -228,6 +229,20 @@ export function Sidebar({ onNavigate }: SidebarProps) {
               {user?.portal_role ?? '—'}
             </span>
           </div>
+
+          {/* Settings */}
+          <Link
+            href="/settings"
+            title="Settings"
+            className={cn(
+              'shrink-0 rounded p-1.5 transition-colors hover:bg-white/5',
+              pathname.startsWith('/settings')
+                ? 'text-[#E85D04]'
+                : 'text-white/30 hover:text-white/70',
+            )}
+          >
+            <Settings2 size={13} />
+          </Link>
 
           {/* Logout */}
           <button

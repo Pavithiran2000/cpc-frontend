@@ -25,7 +25,6 @@ import type {
   Staff,
   MeterReading,
   CashSubmission,
-  PumperAssignment,
 } from '@/lib/types'
 import { formatDate, formatDateTime, cn } from '@/lib/utils'
 import { usePagination } from '@/lib/hooks/usePagination'
@@ -60,9 +59,9 @@ interface SessionDetail extends ShiftSession {
 
 function inputCls(hasError?: boolean) {
   return [
-    'w-full rounded-lg border bg-white/5 px-3 py-2 text-sm text-white',
-    'placeholder:text-white/25 outline-none',
-    hasError ? 'border-rose-500/50' : 'border-white/10 focus:border-[#E85D04]/60',
+    'w-full rounded-lg border bg-muted/50 px-3 py-2 text-sm text-foreground',
+    'placeholder:text-muted-foreground outline-none',
+    hasError ? 'border-rose-500/50' : 'border-border focus:border-[#E85D04]/60',
   ].join(' ')
 }
 
@@ -81,7 +80,7 @@ function Field({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-[11px] font-semibold uppercase tracking-widest text-white/40">
+      <label className="text-[11px] font-semibold uppercase tracking-widest text-foreground/40">
         {label}
       </label>
       {children}
@@ -92,7 +91,7 @@ function Field({
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="text-[11px] font-semibold uppercase tracking-widest text-white/40 mb-3">
+    <h3 className="text-[11px] font-semibold uppercase tracking-widest text-foreground/40 mb-3">
       {children}
     </h3>
   )
@@ -148,25 +147,25 @@ function TimelineStepper({ session }: { session: SessionDetail }) {
               <div
                 className={cn(
                   'flex h-7 w-7 items-center justify-center rounded-full border-2 transition-colors',
-                  done ? 'border-[#E85D04] bg-[#E85D04]' : 'border-white/20 bg-transparent',
+                  done ? 'border-[#E85D04] bg-[#E85D04]' : 'border-foreground/20 bg-transparent',
                 )}
               >
                 {done ? (
                   <CheckCircle2 size={14} className="text-white" />
                 ) : (
-                  <Circle size={14} className="text-white/20" />
+                  <Circle size={14} className="text-foreground/20" />
                 )}
               </div>
               <p
                 className={cn(
                   'text-center text-[10px] leading-tight',
-                  done ? 'text-white/70' : 'text-white/25',
+                  done ? 'text-foreground/70' : 'text-foreground/25',
                 )}
               >
                 {step.label}
               </p>
               {ts && done && (
-                <p className="number text-center text-[9px] text-white/30 leading-tight">
+                <p className="number text-center text-[9px] text-foreground/30 leading-tight">
                   {formatDateTime(ts)}
                 </p>
               )}
@@ -176,7 +175,7 @@ function TimelineStepper({ session }: { session: SessionDetail }) {
                 <div
                   className={cn(
                     'h-0.5 w-5 transition-colors',
-                    i < completedSteps ? 'bg-[#E85D04]' : 'bg-white/10',
+                    i < completedSteps ? 'bg-[#E85D04]' : 'bg-foreground/10',
                   )}
                 />
               </div>
@@ -237,20 +236,20 @@ function CreateSessionModal({
       onClick={() => onOpenChange(false)}
     >
       <div
-        className="w-full max-w-sm rounded-xl border border-white/10 bg-[#18181C] p-5"
+        className="w-full max-w-sm rounded-xl border border-border bg-card p-5"
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 className="mb-4 font-syne text-base font-semibold text-white">New Shift Session</h3>
+        <h3 className="mb-4 font-syne text-base font-semibold text-foreground">New Shift Session</h3>
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
           <Field label="Shift Template" error={errors.shift_template_id?.message}>
             <select
               {...register('shift_template_id')}
               className={selectCls(!!errors.shift_template_id)}
             >
-              <option value="" className="bg-[#18181C]">Select template…</option>
+              <option value="" className="bg-card">Select template…</option>
               {templates.map((t) => (
-                <option key={t.id} value={t.id} className="bg-[#18181C]">
-                  {t.name} ({t.start_time} – {t.end_time})
+                <option key={t.id} value={t.id} className="bg-card">
+                  {t.shift_name} ({t.start_time} – {t.end_time})
                 </option>
               ))}
             </select>
@@ -335,14 +334,9 @@ function AddAssignmentModal({
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      const nozzle = nozzles.find((n) => n.id === data.nozzle_id)
-      if (!nozzle) return
-      const assignment: PumperAssignment = {
-        pumper_id: data.pumper_id,
-        pump_id: nozzle.pump_id,
-        nozzle_id: data.nozzle_id,
-      }
-      await shiftsApi.setAssignments(sessionId, [assignment])
+      await shiftsApi.setAssignments(sessionId, [
+        { pumper_id: data.pumper_id, nozzle_id: data.nozzle_id },
+      ])
       await queryClient.invalidateQueries({ queryKey: ['shift-session', sessionId] })
       toast.success('Assignment added')
       reset()
@@ -360,16 +354,16 @@ function AddAssignmentModal({
       onClick={() => onOpenChange(false)}
     >
       <div
-        className="w-full max-w-sm rounded-xl border border-white/10 bg-[#18181C] p-5"
+        className="w-full max-w-sm rounded-xl border border-border bg-card p-5"
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 className="mb-4 font-syne text-base font-semibold text-white">Add Assignment</h3>
+        <h3 className="mb-4 font-syne text-base font-semibold text-foreground">Add Assignment</h3>
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
           <Field label="Nozzle" error={errors.nozzle_id?.message}>
             <select {...register('nozzle_id')} className={selectCls(!!errors.nozzle_id)}>
-              <option value="" className="bg-[#18181C]">Select nozzle…</option>
+              <option value="" className="bg-card">Select nozzle…</option>
               {nozzles.map((n) => (
-                <option key={n.id} value={n.id} className="bg-[#18181C]">
+                <option key={n.id} value={n.id} className="bg-card">
                   {n.nozzle_name} ({n.nozzle_code})
                 </option>
               ))}
@@ -377,9 +371,9 @@ function AddAssignmentModal({
           </Field>
           <Field label="Pumper" error={errors.pumper_id?.message}>
             <select {...register('pumper_id')} className={selectCls(!!errors.pumper_id)}>
-              <option value="" className="bg-[#18181C]">Select pumper…</option>
+              <option value="" className="bg-card">Select pumper…</option>
               {pumpers.map((s) => (
-                <option key={s.id} value={s.id} className="bg-[#18181C]">
+                <option key={s.id} value={s.id} className="bg-card">
                   {s.name}
                 </option>
               ))}
@@ -411,7 +405,7 @@ function AssignmentsSection({ session }: { session: SessionDetail }) {
         {session.status === 'OPEN' && (
           <button
             onClick={() => setAddOpen(true)}
-            className="flex items-center gap-1 rounded-lg border border-dashed border-white/15 px-2.5 py-1 text-xs text-white/30 hover:border-[#E85D04]/40 hover:text-[#E85D04]/70 transition-colors"
+            className="flex items-center gap-1 rounded-lg border border-dashed border-border px-2.5 py-1 text-xs text-foreground/30 hover:border-[#E85D04]/40 hover:text-[#E85D04]/70 transition-colors"
           >
             <Plus size={11} /> Add Assignment
           </button>
@@ -419,38 +413,38 @@ function AssignmentsSection({ session }: { session: SessionDetail }) {
       </div>
 
       {assignments.length === 0 ? (
-        <p className="text-xs text-white/25 text-center py-4">No assignments yet</p>
+        <p className="text-xs text-foreground/25 text-center py-4">No assignments yet</p>
       ) : (
-        <div className="rounded-lg border border-white/8 overflow-hidden">
+        <div className="rounded-lg border border-border overflow-hidden">
           <table className="w-full text-xs">
             <thead>
-              <tr className="border-b border-white/8 bg-white/[0.02]">
-                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-widest text-white/30">
+              <tr className="border-b border-border bg-muted/20">
+                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-widest text-foreground/30">
                   Nozzle
                 </th>
-                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-widest text-white/30">
+                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-widest text-foreground/30">
                   Code
                 </th>
-                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-widest text-white/30">
+                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-widest text-foreground/30">
                   Pumper
                 </th>
                 {session.status === 'OPEN' && <th className="w-8" />}
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-border">
               {assignments.map((a) => (
-                <tr key={a.id} className="hover:bg-white/[0.02]">
-                  <td className="px-3 py-2.5 text-white/70">
+                <tr key={a.id} className="hover:bg-muted/20">
+                  <td className="px-3 py-2.5 text-foreground/70">
                     {a.nozzle?.nozzle_name ?? a.nozzle_id}
                   </td>
-                  <td className="px-3 py-2 number text-white/40">
+                  <td className="px-3 py-2 number text-foreground/40">
                     {a.nozzle?.nozzle_code ?? '—'}
                   </td>
-                  <td className="px-3 py-2 text-white/70">{a.pumper?.name ?? a.pumper_id}</td>
+                  <td className="px-3 py-2 text-foreground/70">{a.pumper?.name ?? a.pumper_id}</td>
                   {session.status === 'OPEN' && (
                     <td className="px-2 py-2">
                       <button
-                        className="rounded p-1 text-white/15 hover:bg-rose-500/10 hover:text-rose-400"
+                        className="rounded p-1 text-foreground/15 hover:bg-rose-500/10 hover:text-rose-400"
                         title="Remove"
                       >
                         <Trash2 size={11} />
@@ -497,9 +491,8 @@ function OpeningReadingsSection({ session }: { session: SessionDetail }) {
       const readings = assignments
         .filter((a) => values[a.nozzle_id] !== '' && values[a.nozzle_id] != null)
         .map((a) => ({
-          pump_id: a.pump_id,
           nozzle_id: a.nozzle_id,
-          opening_reading: parseFloat(values[a.nozzle_id] ?? '0'),
+          meter_reading: parseFloat(values[a.nozzle_id] ?? '0'),
         }))
       await shiftsApi.setOpeningReadings(session.id, readings)
       await queryClient.invalidateQueries({ queryKey: ['shift-session', session.id] })
@@ -515,7 +508,7 @@ function OpeningReadingsSection({ session }: { session: SessionDetail }) {
     return (
       <div>
         <SectionHeading>Opening Readings</SectionHeading>
-        <p className="text-xs text-white/25 text-center py-4">Add assignments first</p>
+        <p className="text-xs text-foreground/25 text-center py-4">Add assignments first</p>
       </div>
     )
   }
@@ -523,24 +516,24 @@ function OpeningReadingsSection({ session }: { session: SessionDetail }) {
   return (
     <div>
       <SectionHeading>Opening Readings</SectionHeading>
-      <div className="rounded-lg border border-white/8 overflow-hidden mb-3">
+      <div className="rounded-lg border border-border overflow-hidden mb-3">
         <table className="w-full text-xs">
           <thead>
-            <tr className="border-b border-white/8 bg-white/[0.02]">
-              <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-widest text-white/30">
+            <tr className="border-b border-border bg-muted/20">
+              <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-widest text-foreground/30">
                 Nozzle
               </th>
-              <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-widest text-white/30">
+              <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-widest text-foreground/30">
                 Opening Reading
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
+          <tbody className="divide-y divide-border">
             {assignments.map((a) => (
-              <tr key={a.nozzle_id} className="hover:bg-white/[0.02]">
-                <td className="px-3 py-2.5 text-white/70">
+              <tr key={a.nozzle_id} className="hover:bg-muted/20">
+                <td className="px-3 py-2.5 text-foreground/70">
                   {a.nozzle?.nozzle_name ?? a.nozzle_id}
-                  <span className="number ml-2 text-[10px] text-white/30">
+                  <span className="number ml-2 text-[10px] text-foreground/30">
                     {a.nozzle?.nozzle_code}
                   </span>
                 </td>
@@ -554,7 +547,7 @@ function OpeningReadingsSection({ session }: { session: SessionDetail }) {
                     }
                     placeholder="0.000"
                     disabled={hasOpeningReadings && session.status !== 'OPEN'}
-                    className="number w-32 rounded border border-white/10 bg-white/5 px-2 py-1 text-sm text-white placeholder:text-white/20 outline-none focus:border-[#E85D04]/60 disabled:opacity-40"
+                    className="number w-32 rounded border border-border bg-muted/50 px-2 py-1 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#E85D04]/60 disabled:opacity-40"
                   />
                 </td>
               </tr>
@@ -616,9 +609,8 @@ function ClosingReadingsSection({ session }: { session: SessionDetail }) {
       const readings = assignments
         .filter((a) => values[a.nozzle_id] !== '' && values[a.nozzle_id] != null)
         .map((a) => ({
-          pump_id: a.pump_id,
           nozzle_id: a.nozzle_id,
-          closing_reading: parseFloat(values[a.nozzle_id] ?? '0'),
+          meter_reading: parseFloat(values[a.nozzle_id] ?? '0'),
         }))
       await shiftsApi.setClosingReadings(session.id, readings)
       await queryClient.invalidateQueries({ queryKey: ['shift-session', session.id] })
@@ -634,7 +626,7 @@ function ClosingReadingsSection({ session }: { session: SessionDetail }) {
     return (
       <div>
         <SectionHeading>Closing Readings</SectionHeading>
-        <p className="text-xs text-white/25 text-center py-4">Save opening readings first</p>
+        <p className="text-xs text-foreground/25 text-center py-4">Save opening readings first</p>
       </div>
     )
   }
@@ -642,34 +634,34 @@ function ClosingReadingsSection({ session }: { session: SessionDetail }) {
   return (
     <div>
       <SectionHeading>Closing Readings</SectionHeading>
-      <div className="rounded-lg border border-white/8 overflow-hidden mb-3">
+      <div className="rounded-lg border border-border overflow-hidden mb-3">
         <table className="w-full text-xs">
           <thead>
-            <tr className="border-b border-white/8 bg-white/[0.02]">
-              <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-widest text-white/30">
+            <tr className="border-b border-border bg-muted/20">
+              <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-widest text-foreground/30">
                 Nozzle
               </th>
-              <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-widest text-white/30">
+              <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-widest text-foreground/30">
                 Opening
               </th>
-              <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-widest text-white/30">
+              <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-widest text-foreground/30">
                 Closing
               </th>
-              <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-widest text-white/30">
+              <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-widest text-foreground/30">
                 Dispensed
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
+          <tbody className="divide-y divide-border">
             {assignments.map((a) => {
               const opening = getOpening(a.nozzle_id)
               const disp = calcDispensed(a.nozzle_id)
               return (
-                <tr key={a.nozzle_id} className="hover:bg-white/[0.02]">
-                  <td className="px-3 py-2.5 text-white/70">
+                <tr key={a.nozzle_id} className="hover:bg-muted/20">
+                  <td className="px-3 py-2.5 text-foreground/70">
                     {a.nozzle?.nozzle_name ?? a.nozzle_id}
                   </td>
-                  <td className="px-3 py-2 number text-white/40">
+                  <td className="px-3 py-2 number text-foreground/40">
                     {opening != null ? opening.toFixed(3) : '—'}
                   </td>
                   <td className="px-3 py-2">
@@ -682,7 +674,7 @@ function ClosingReadingsSection({ session }: { session: SessionDetail }) {
                       }
                       placeholder="0.000"
                       disabled={session.status !== 'OPEN'}
-                      className="number w-28 rounded border border-white/10 bg-white/5 px-2 py-1 text-sm text-white placeholder:text-white/20 outline-none focus:border-[#E85D04]/60 disabled:opacity-40"
+                      className="number w-28 rounded border border-border bg-muted/50 px-2 py-1 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#E85D04]/60 disabled:opacity-40"
                     />
                   </td>
                   <td className="px-3 py-2">
@@ -698,7 +690,7 @@ function ClosingReadingsSection({ session }: { session: SessionDetail }) {
                         )}
                       </div>
                     ) : (
-                      <span className="text-white/20">—</span>
+                      <span className="text-foreground/20">—</span>
                     )}
                   </td>
                 </tr>
@@ -763,7 +755,7 @@ function CashSubmissionsSection({ session }: { session: SessionDetail }) {
     return (
       <div>
         <SectionHeading>Cash Submissions</SectionHeading>
-        <p className="text-xs text-white/25 text-center py-4">
+        <p className="text-xs text-foreground/25 text-center py-4">
           Save closing readings first
         </p>
       </div>
@@ -774,7 +766,7 @@ function CashSubmissionsSection({ session }: { session: SessionDetail }) {
     return (
       <div>
         <SectionHeading>Cash Submissions</SectionHeading>
-        <p className="text-xs text-white/25 text-center py-4">No pumpers assigned</p>
+        <p className="text-xs text-foreground/25 text-center py-4">No pumpers assigned</p>
       </div>
     )
   }
@@ -796,12 +788,12 @@ function CashSubmissionsSection({ session }: { session: SessionDetail }) {
           return (
             <div
               key={pumperId}
-              className="flex items-center gap-3 rounded-lg border border-white/8 bg-white/[0.02] px-3 py-2.5"
+              className="flex items-center gap-3 rounded-lg border border-border bg-muted/20 px-3 py-2.5"
             >
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white truncate">{pumperName}</p>
+                <p className="text-sm font-medium text-foreground truncate">{pumperName}</p>
                 {expectedCash != null && (
-                  <p className="number text-[10px] text-white/35 mt-0.5">
+                  <p className="number text-[10px] text-foreground/35 mt-0.5">
                     Expected: LKR{' '}
                     {expectedCash.toLocaleString('en-LK', { minimumFractionDigits: 2 })}
                   </p>
@@ -816,7 +808,7 @@ function CashSubmissionsSection({ session }: { session: SessionDetail }) {
                         ? 'bg-rose-500/15 text-rose-400'
                         : diff > 0
                           ? 'bg-emerald-500/15 text-emerald-400'
-                          : 'bg-white/10 text-white/40',
+                          : 'bg-muted/50 text-foreground/40',
                     )}
                   >
                     {diff < 0 ? '-' : '+'}LKR{' '}
@@ -834,7 +826,7 @@ function CashSubmissionsSection({ session }: { session: SessionDetail }) {
                   }
                   placeholder="0.00"
                   disabled={session.status !== 'OPEN'}
-                  className="number w-28 rounded border border-white/10 bg-white/5 px-2 py-1 text-sm text-white placeholder:text-white/20 outline-none focus:border-[#E85D04]/60 disabled:opacity-40"
+                  className="number w-28 rounded border border-border bg-muted/50 px-2 py-1 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#E85D04]/60 disabled:opacity-40"
                 />
                 {session.status === 'OPEN' && (
                   <button
@@ -878,7 +870,14 @@ function SessionDetailPanel({ sessionId }: { sessionId: string }) {
   })
 
   const closeMutation = useMutation({
-    mutationFn: () => shiftsApi.closeSession(sessionId),
+    mutationFn: () => {
+      const closingReadings = (session?.meter_readings ?? [])
+        .filter((r) => r.closing_reading != null)
+        .map((r) => ({ nozzle_id: r.nozzle_id, meter_reading: r.closing_reading as number }))
+      const cashSubmissions = (session?.cash_submissions ?? [])
+        .map((s) => ({ pumper_id: s.pumper_id, actual_cash: s.actual_cash }))
+      return shiftsApi.closeSession(sessionId, closingReadings, cashSubmissions)
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['shift-session', sessionId] })
       queryClient.invalidateQueries({ queryKey: ['shift-sessions'] })
@@ -890,7 +889,7 @@ function SessionDetailPanel({ sessionId }: { sessionId: string }) {
   if (!session) {
     return (
       <div className="flex h-full items-center justify-center">
-        <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/20 border-t-[#E85D04]" />
+        <div className="h-5 w-5 animate-spin rounded-full border-2 border-foreground/20 border-t-[#E85D04]" />
       </div>
     )
   }
@@ -901,10 +900,10 @@ function SessionDetailPanel({ sessionId }: { sessionId: string }) {
   return (
     <div className="flex h-full flex-col">
       {/* Header */}
-      <div className="flex items-start gap-3 border-b border-white/8 px-6 py-4 shrink-0">
+      <div className="flex items-start gap-3 border-b border-border px-6 py-4 shrink-0">
         <div className="flex-1 min-w-0">
-          <p className="font-syne text-base font-semibold text-white truncate">
-            {session.shift_template?.name ?? 'Session'} — {formatDate(session.business_date)}
+          <p className="font-syne text-base font-semibold text-foreground truncate">
+            {session.shift_template?.shift_name ?? 'Session'} — {formatDate(session.business_date)}
           </p>
           <div className="mt-1.5">
             <StatusBadge status={session.status} />
@@ -913,7 +912,7 @@ function SessionDetailPanel({ sessionId }: { sessionId: string }) {
       </div>
 
       {/* Timeline */}
-      <div className="border-b border-white/8 px-6 py-4 shrink-0">
+      <div className="border-b border-border px-6 py-4 shrink-0">
         <TimelineStepper session={session} />
       </div>
 
@@ -983,7 +982,7 @@ function SessionDetailPanel({ sessionId }: { sessionId: string }) {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function ShiftSessionsPage() {
-  const { page, limit, setPage, setLimit, resetPage } = usePagination()
+  const { page, limit, sortBy, sortOrder, setPage, setLimit, setSort, resetPage } = usePagination()
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
   const [dateFilter, setDateFilter] = useState('')
@@ -998,8 +997,10 @@ export default function ShiftSessionsPage() {
       status: statusFilter || undefined,
       date_from: dateFilter || undefined,
       date_to: dateFilter || undefined,
+      sort_by: sortBy,
+      sort_order: sortOrder,
     }),
-    [page, limit, search, statusFilter, dateFilter],
+    [page, limit, search, statusFilter, dateFilter, sortBy, sortOrder],
   )
 
   const query = useQuery({
@@ -1012,8 +1013,9 @@ export default function ShiftSessionsPage() {
       {
         id: 'business_date',
         header: 'Business Date',
+        meta: { sortKey: 'business_date', defaultSortDir: 'DESC' as const },
         cell: ({ row }) => (
-          <span className="number text-sm font-medium text-white">
+          <span className="number text-sm font-medium text-foreground">
             {formatDate(row.original.business_date)}
           </span>
         ),
@@ -1022,21 +1024,23 @@ export default function ShiftSessionsPage() {
         id: 'shift_name',
         header: 'Shift',
         cell: ({ row }) => (
-          <span className="text-sm text-white/70">
-            {row.original.shift_template?.name ?? row.original.shift_template_id}
+          <span className="text-sm text-foreground/70">
+            {row.original.shift_template?.shift_name ?? row.original.shift_template_id}
           </span>
         ),
       },
       {
         id: 'status',
         header: 'Status',
+        meta: { sortKey: 'status', defaultSortDir: 'ASC' as const },
         cell: ({ row }) => <StatusBadge status={row.original.status} />,
       },
       {
         id: 'opened_at',
         header: 'Opened At',
+        meta: { sortKey: 'opened_at', defaultSortDir: 'DESC' as const },
         cell: ({ row }) => (
-          <span className="number text-xs text-white/40">
+          <span className="number text-xs text-foreground/40">
             {row.original.opened_at ? formatDateTime(row.original.opened_at) : '—'}
           </span>
         ),
@@ -1044,8 +1048,9 @@ export default function ShiftSessionsPage() {
       {
         id: 'closed_at',
         header: 'Closed At',
+        meta: { sortKey: 'closed_at', defaultSortDir: 'DESC' as const },
         cell: ({ row }) => (
-          <span className="number text-xs text-white/40">
+          <span className="number text-xs text-foreground/40">
             {row.original.closed_at ? formatDateTime(row.original.closed_at) : '—'}
           </span>
         ),
@@ -1060,7 +1065,7 @@ export default function ShiftSessionsPage() {
                 e.stopPropagation()
                 setSelectedId(row.original.id)
               }}
-              className="flex items-center gap-1 rounded px-2 py-1 text-xs text-white/30 hover:bg-white/5 hover:text-white/60"
+              className="flex items-center gap-1 rounded px-2 py-1 text-xs text-foreground/30 hover:bg-muted/50 hover:text-foreground/60"
             >
               View <ChevronRight size={12} />
             </button>
@@ -1095,7 +1100,7 @@ export default function ShiftSessionsPage() {
             setDateFilter(e.target.value)
             resetPage()
           }}
-          className="number rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white outline-none focus:border-[#E85D04]/50"
+          className="number rounded-lg border border-border bg-muted/50 px-3 py-1.5 text-xs text-foreground outline-none focus:border-[#E85D04]/50"
         />
         <select
           value={statusFilter}
@@ -1103,13 +1108,13 @@ export default function ShiftSessionsPage() {
             setStatusFilter(e.target.value)
             resetPage()
           }}
-          className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white outline-none focus:border-[#E85D04]/50 cursor-pointer"
+          className="rounded-lg border border-border bg-muted/50 px-3 py-1.5 text-xs text-foreground outline-none focus:border-[#E85D04]/50 cursor-pointer"
         >
-          <option value="" className="bg-[#18181C]">All Statuses</option>
-          <option value="DRAFT" className="bg-[#18181C]">Draft</option>
-          <option value="OPEN" className="bg-[#18181C]">Open</option>
-          <option value="CLOSED" className="bg-[#18181C]">Closed</option>
-          <option value="CANCELLED" className="bg-[#18181C]">Cancelled</option>
+          <option value="" className="bg-card">All Statuses</option>
+          <option value="DRAFT" className="bg-card">Draft</option>
+          <option value="OPEN" className="bg-card">Open</option>
+          <option value="CLOSED" className="bg-card">Closed</option>
+          <option value="CANCELLED" className="bg-card">Cancelled</option>
         </select>
         {(dateFilter || statusFilter) && (
           <button
@@ -1118,7 +1123,7 @@ export default function ShiftSessionsPage() {
               setStatusFilter('')
               resetPage()
             }}
-            className="text-xs text-white/30 hover:text-white/60"
+            className="text-xs text-foreground/30 hover:text-foreground/60"
           >
             Clear filters
           </button>
@@ -1141,6 +1146,9 @@ export default function ShiftSessionsPage() {
         }}
         emptyMessage="No shift sessions found"
         onRowClick={(row) => setSelectedId(row.id)}
+        sortBy={sortBy}
+        sortOrder={sortOrder}
+        onSortChange={setSort}
       />
 
       <CreateSessionModal open={createOpen} onOpenChange={setCreateOpen} />
@@ -1148,7 +1156,7 @@ export default function ShiftSessionsPage() {
       <Sheet open={!!selectedId} onOpenChange={(v) => !v && setSelectedId(null)}>
         <SheetContent
           side="right"
-          className="flex w-full flex-col border-l border-white/8 bg-[#111114] p-0 sm:max-w-[700px]"
+          className="flex w-full flex-col border-l border-border bg-card p-0 sm:max-w-[700px]"
         >
           {selectedId && <SessionDetailPanel sessionId={selectedId} />}
         </SheetContent>

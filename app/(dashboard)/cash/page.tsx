@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -22,7 +22,7 @@ type Tab = (typeof TABS)[number]
 
 function TabBar({ active, onChange }: { active: Tab; onChange: (t: Tab) => void }) {
   return (
-    <div className="flex gap-1 rounded-lg border border-white/8 bg-white/[0.03] p-1 w-fit">
+    <div className="flex gap-1 rounded-lg border border-border bg-muted/30 p-1 w-fit">
       {TABS.map((t) => (
         <button
           key={t}
@@ -31,7 +31,7 @@ function TabBar({ active, onChange }: { active: Tab; onChange: (t: Tab) => void 
             'rounded-md px-4 py-1.5 text-sm font-medium transition-colors',
             active === t
               ? 'bg-[#E85D04] text-white'
-              : 'text-white/40 hover:text-white/70',
+              : 'text-foreground/40 hover:text-foreground/70',
           )}
         >
           {t}
@@ -53,8 +53,8 @@ function StatCard({
   variant?: 'default' | 'green' | 'red'
 }) {
   return (
-    <div className="flex flex-col gap-1 rounded-xl border border-white/8 bg-[#18181C] px-4 py-3">
-      <p className="text-[11px] font-semibold uppercase tracking-widest text-white/35">
+    <div className="flex flex-col gap-1 rounded-xl border border-border bg-card px-4 py-3">
+      <p className="text-[11px] font-semibold uppercase tracking-widest text-foreground/35">
         {label}
       </p>
       <p
@@ -62,7 +62,7 @@ function StatCard({
           'number text-xl font-semibold',
           variant === 'green' && 'text-emerald-400',
           variant === 'red' && 'text-rose-400',
-          variant === 'default' && 'text-white',
+          variant === 'default' && 'text-foreground',
         )}
       >
         {value}
@@ -95,32 +95,32 @@ function ShiftCashSummaryTab() {
     <div className="flex flex-col gap-5">
       {/* Session selector */}
       <div className="flex items-center gap-3">
-        <label className="text-[11px] font-semibold uppercase tracking-widest text-white/35">
+        <label className="text-[11px] font-semibold uppercase tracking-widest text-foreground/35">
           Shift Session
         </label>
         <select
           value={selectedSessionId}
           onChange={(e) => setSelectedSessionId(e.target.value)}
-          className="number rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white outline-none focus:border-[#E85D04]/50 cursor-pointer"
+          className="number rounded-lg border border-border bg-muted/50 px-3 py-1.5 text-xs text-foreground outline-none focus:border-[#E85D04]/50 cursor-pointer"
         >
-          <option value="" className="bg-[#18181C]">Select a session…</option>
+          <option value="" className="bg-card">Select a session…</option>
           {sessions.map((s) => (
-            <option key={s.id} value={s.id} className="bg-[#18181C]">
-              {formatDate(s.business_date)} — {s.shift_template?.name ?? s.shift_template_id} ({s.status})
+            <option key={s.id} value={s.id} className="bg-card">
+              {formatDate(s.business_date)} — {s.shift_template?.shift_name ?? s.shift_template_id} ({s.status})
             </option>
           ))}
         </select>
       </div>
 
       {!selectedSessionId && (
-        <p className="text-sm text-white/30 text-center py-8">
+        <p className="text-sm text-foreground/30 text-center py-8">
           Select a shift session to view cash summary
         </p>
       )}
 
       {selectedSessionId && summaryQuery.isLoading && (
         <div className="flex justify-center py-8">
-          <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/20 border-t-[#E85D04]" />
+          <div className="h-5 w-5 animate-spin rounded-full border-2 border-foreground/20 border-t-[#E85D04]" />
         </div>
       )}
 
@@ -145,38 +145,38 @@ function ShiftCashSummaryTab() {
 
           {/* Per-pumper table */}
           {(summary.submissions ?? []).length > 0 && (
-            <div className="rounded-xl border border-white/8 overflow-hidden">
+            <div className="rounded-xl border border-border overflow-hidden">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-white/8 bg-white/[0.02]">
-                    <th className="px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-widest text-white/30">
+                  <tr className="border-b border-border bg-muted/20">
+                    <th className="px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-widest text-foreground/30">
                       Pumper
                     </th>
-                    <th className="px-4 py-2.5 text-right text-[10px] font-semibold uppercase tracking-widest text-white/30">
+                    <th className="px-4 py-2.5 text-right text-[10px] font-semibold uppercase tracking-widest text-foreground/30">
                       Expected
                     </th>
-                    <th className="px-4 py-2.5 text-right text-[10px] font-semibold uppercase tracking-widest text-white/30">
+                    <th className="px-4 py-2.5 text-right text-[10px] font-semibold uppercase tracking-widest text-foreground/30">
                       Actual
                     </th>
-                    <th className="px-4 py-2.5 text-right text-[10px] font-semibold uppercase tracking-widest text-white/30">
+                    <th className="px-4 py-2.5 text-right text-[10px] font-semibold uppercase tracking-widest text-foreground/30">
                       Difference
                     </th>
                     <th className="w-24" />
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5">
+                <tbody className="divide-y divide-border">
                   {(summary.submissions ?? []).map((sub) => {
                     const diff = (sub.actual_cash ?? 0) - (sub.expected_cash ?? 0)
                     const isShortfall = diff < 0
                     return (
-                      <tr key={sub.id} className="hover:bg-white/[0.02]">
-                        <td className="px-4 py-3 font-medium text-white">
+                      <tr key={sub.id} className="hover:bg-muted/20">
+                        <td className="px-4 py-3 font-medium text-foreground">
                           {sub.pumper_id}
                         </td>
-                        <td className="px-4 py-3 number text-right text-white/60">
+                        <td className="px-4 py-3 number text-right text-foreground/60">
                           {formatCurrency(sub.expected_cash)}
                         </td>
-                        <td className="px-4 py-3 number text-right text-white/80">
+                        <td className="px-4 py-3 number text-right text-foreground/80">
                           {formatCurrency(sub.actual_cash)}
                         </td>
                         <td className="px-4 py-3 number text-right">
@@ -206,7 +206,7 @@ function ShiftCashSummaryTab() {
           )}
 
           {(summary.submissions ?? []).length === 0 && (
-            <p className="text-sm text-white/30 text-center py-4">
+            <p className="text-sm text-foreground/30 text-center py-4">
               No cash submissions for this session
             </p>
           )}
@@ -220,19 +220,21 @@ function ShiftCashSummaryTab() {
 
 function DailyBalancingTab() {
   const queryClient = useQueryClient()
-  const { page, limit, setPage, setLimit } = usePagination()
+  const { page, limit, sortBy, sortOrder, setPage, setLimit, setSort } = usePagination()
   const [closeTarget, setCloseTarget] = useState<string | null>(null)
   const [creating, setCreating] = useState(false)
 
   const query = useQuery({
-    queryKey: ['daily-balancing', { page, limit }],
-    queryFn: () => cashApi.listDailyBalances({ page, limit }).then((r) => r.data),
+    queryKey: ['daily-balancing', { page, limit, sortBy, sortOrder }],
+    queryFn: () => cashApi.listDailyBalances({ page, limit, sort_by: sortBy, sort_order: sortOrder }).then((r) => r.data),
   })
 
   const createMutation = useMutation({
     mutationFn: () =>
       cashApi.createDailyBalance({
         business_date: new Date().toISOString().slice(0, 10),
+        expected_cash: 0,
+        actual_cash:   0,
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['daily-balancing'] })
@@ -257,8 +259,9 @@ function DailyBalancingTab() {
       {
         id: 'business_date',
         header: 'Business Date',
+        meta: { sortKey: 'business_date', defaultSortDir: 'DESC' as const },
         cell: ({ row }) => (
-          <span className="number text-sm font-medium text-white">
+          <span className="number text-sm font-medium text-foreground">
             {formatDate(row.original.business_date)}
           </span>
         ),
@@ -267,7 +270,7 @@ function DailyBalancingTab() {
         id: 'total_revenue',
         header: 'Total Cash',
         cell: ({ row }) => (
-          <span className="number text-sm text-white/70">
+          <span className="number text-sm text-foreground/70">
             {row.original.total_revenue != null
               ? formatCurrency(row.original.total_revenue)
               : '—'}
@@ -277,13 +280,14 @@ function DailyBalancingTab() {
       {
         id: 'status',
         header: 'Status',
+        meta: { sortKey: 'status', defaultSortDir: 'ASC' as const },
         cell: ({ row }) => <StatusBadge status={row.original.status} />,
       },
       {
         id: 'closed_at',
         header: 'Closed At',
         cell: ({ row }) => (
-          <span className="number text-xs text-white/40">
+          <span className="number text-xs text-foreground/40">
             {row.original.status === 'CLOSED' ? formatDate(row.original.business_date) : '—'}
           </span>
         ),
@@ -299,7 +303,7 @@ function DailyBalancingTab() {
                   e.stopPropagation()
                   setCloseTarget(row.original.id)
                 }}
-                className="rounded-lg border border-white/10 px-3 py-1.5 text-xs text-white/50 hover:border-white/20 hover:text-white/80 transition-colors"
+                className="rounded-lg border border-border px-3 py-1.5 text-xs text-foreground/50 hover:border-foreground/30 hover:text-foreground/80 transition-colors"
               >
                 Close
               </button>
@@ -333,6 +337,9 @@ function DailyBalancingTab() {
         onLimitChange={setLimit}
         isLoading={query.isLoading}
         emptyMessage="No daily balances found"
+        sortBy={sortBy}
+        sortOrder={sortOrder}
+        onSortChange={setSort}
       />
 
       {/* Create confirmation */}
@@ -342,19 +349,19 @@ function DailyBalancingTab() {
           onClick={() => setCreating(false)}
         >
           <div
-            className="w-full max-w-sm rounded-xl border border-white/10 bg-[#18181C] p-5"
+            className="w-full max-w-sm rounded-xl border border-border bg-card p-5"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="mb-2 font-syne text-base font-semibold text-white">
+            <h3 className="mb-2 font-syne text-base font-semibold text-foreground">
               Create Daily Balance
             </h3>
-            <p className="mb-5 text-sm text-white/50">
+            <p className="mb-5 text-sm text-foreground/50">
               This will create a daily balance for today ({new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}), summing all shift cash for the day.
             </p>
             <div className="flex gap-2">
               <button
                 onClick={() => setCreating(false)}
-                className="flex-1 rounded-lg border border-white/10 py-2 text-sm text-white/60 hover:bg-white/5"
+                className="flex-1 rounded-lg border border-border py-2 text-sm text-foreground/60 hover:bg-muted/50"
               >
                 Cancel
               </button>
