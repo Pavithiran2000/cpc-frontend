@@ -31,6 +31,27 @@ const STATUS_STYLES: Record<string, string> = {
 
   // Blue — submitted externally
   SUBMITTED: 'bg-sky-500/10 text-sky-600 border-sky-500/25 dark:text-sky-400 dark:border-sky-500/20',
+
+  // Platform admin roles
+  SUPER_ADMIN: 'bg-rose-500/10 text-rose-600 border-rose-500/25 dark:text-rose-400 dark:border-rose-500/20',
+  ADMIN:       'bg-sky-500/10 text-sky-600 border-sky-500/25 dark:text-sky-400 dark:border-sky-500/20',
+  SUPPORT:     'bg-emerald-500/10 text-emerald-600 border-emerald-500/25 dark:text-emerald-400 dark:border-emerald-500/20',
+
+  // Tenant lifecycle
+  SUSPENDED: 'bg-amber-500/10 text-amber-600 border-amber-500/25 dark:text-amber-400 dark:border-amber-500/20',
+
+  // Alert severity
+  CRITICAL: 'bg-rose-500/10 text-rose-600 border-rose-500/25 dark:text-rose-400 dark:border-rose-500/20',
+  WARNING:  'bg-amber-500/10 text-amber-600 border-amber-500/25 dark:text-amber-400 dark:border-amber-500/20',
+  INFO:     'bg-sky-500/10 text-sky-600 border-sky-500/25 dark:text-sky-400 dark:border-sky-500/20',
+
+  // Security event types
+  LOGIN_FAILED:    'bg-rose-500/10 text-rose-600 border-rose-500/25 dark:text-rose-400 dark:border-rose-500/20',
+  MFA_FAILED:      'bg-rose-500/10 text-rose-600 border-rose-500/25 dark:text-rose-400 dark:border-rose-500/20',
+  ACCOUNT_LOCKED:  'bg-rose-500/10 text-rose-600 border-rose-500/25 dark:text-rose-400 dark:border-rose-500/20',
+  SUSPICIOUS_IP:   'bg-amber-500/10 text-amber-600 border-amber-500/25 dark:text-amber-400 dark:border-amber-500/20',
+  SESSION_REVOKED: 'bg-amber-500/10 text-amber-600 border-amber-500/25 dark:text-amber-400 dark:border-amber-500/20',
+  PASSWORD_RESET:  'bg-sky-500/10 text-sky-600 border-sky-500/25 dark:text-sky-400 dark:border-sky-500/20',
 }
 
 const FALLBACK = 'bg-foreground/5 text-foreground/45 border-border'
